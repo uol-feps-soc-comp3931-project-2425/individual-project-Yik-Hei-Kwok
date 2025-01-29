@@ -1,0 +1,34 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel ReadPixel
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+
+Texture2D<float4> inputTexture;
+
+float img_height;
+float img_width;
+
+RWStructuredBuffer<float4> outputBuffer;
+
+// how thread groups are used
+[numthreads(8,8,1)]
+void ReadPixel (uint3 id : SV_DispatchThreadID)
+{
+    uint x = id.x;
+    uint y = id.y;
+    
+    // flip x to make sure it accommodates to flipped image
+    // and calculate index for buffer
+    int flipX = (img_width - 1) - x;
+    int index = y * img_width + flipX;
+
+    // Read the pixel colour of referenced image
+    float4 colour = inputTexture.Load(int3(x, y, 0));
+
+    // and store extracted colour in array
+    outputBuffer[index] = colour;
+        
+
+    
+}
