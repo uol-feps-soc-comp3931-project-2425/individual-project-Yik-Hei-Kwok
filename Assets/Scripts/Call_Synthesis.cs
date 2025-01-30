@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Call_Synthesis : MonoBehaviour
 {
@@ -8,8 +9,10 @@ public class Call_Synthesis : MonoBehaviour
 
     public Texture2D ref_texture;
 
+    public RawImage ref_texture2;
+
     private int outputSize = 1000;
-    private int patchSize = 2;
+    private int patchSize = 3;
     private int overlapSize = 10;
 
     private void Start()

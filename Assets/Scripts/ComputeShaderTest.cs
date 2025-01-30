@@ -44,142 +44,126 @@ public class Texturesynthesis : MonoBehaviour
         float[] allPixelDataRef = StoreRefPixels(texture);
 
         // -----------------------------------------------------------------------------------------------
+        // R G B A values are items
 
-        // number of patches that should be resulted from the reference image
+        // number of items in a patch 
+        int rowItemsPerPatch = patchSize * 4;
+        int totalItemsPerPatch = patchSize * patchSize * 4;
+        Debug.Log("rowItemsPerPatch = " + rowItemsPerPatch);
+
+        // get total number of derived patches 
+        int rowPatches = Mathf.FloorToInt(sizeOfRef.x / patchSize);
+        int colPatches = Mathf.FloorToInt(sizeOfRef.y / patchSize);
+
+        int totalPatches = rowPatches * colPatches;
+        Debug.Log("sizeOfRef.x / patchSize = " + (sizeOfRef.x / patchSize));
+        Debug.Log("sizeOfRef.y / patchSize = " + (sizeOfRef.y / patchSize));
+        Debug.Log("totalPatches = " + totalPatches);
+
+        // get total number of items in each row 
+        int rowItemsTotal = rowPatches * rowItemsPerPatch;
+
+        Debug.Log("rowItemsTotal = " + rowItemsTotal);
 
 
-        // for storing rgba values of each row 
-        // might change: Current implementation obtains patches by ignoring extra pixels that cannot make up a patch
-        int numRowPatches = Mathf.FloorToInt(sizeOfRef.x / patchSize);
-        int numColPatches = Mathf.FloorToInt(sizeOfRef.y / patchSize);
-        int numOfPatches = numRowPatches * numColPatches;
-        Debug.Log("numOfPatches = " + numOfPatches);
 
+        // create initial segementation of the pixel data so that we leave out
+        // data that is not in patch.
 
         
-        float[][] storePatches = new float[numOfPatches+1][];
-        // for segmenting array of pixels into patches
-        // number of elements in a patch = patchSize * patchSize * 4
 
-        // get number of rgba elements of each row (after this many elements, a new row is started)
-        float elementsPerRow = numRowPatches * patchSize * 4;
-        Debug.Log("elementsPerRow = " + elementsPerRow);
+        
+        
+       
 
-        // number of elements in a row in a patch
-        int rowElementsInPatch = patchSize * 4;
+        
 
 
-        // number of elements in a column in a patch
-        int totalColElements = patchSize * numColPatches;
 
-        Debug.Log("rowElementsInPatch = " + rowElementsInPatch);
 
-        // will be incremented every time rowElementsInPatch amount of times is looped
-        int nextHPatch = 0;
-        // will be incremented every time to check if we reached end of all patches in a row
-        int checkEndofRow = 0;
-        // incremented to represent which row of a patch is being managed
-        int currentPatchRow = 0;
-        // indicates which patch is being managed
-        int patchNum = 0;
-        int savePatchNum = 0;
 
-        int loopInPatch = 0;
-        int finalLoopValue = 0;
-        int saveLoopValue = 0;
 
-        // initialize the array
-        for (int i = 0; i < numOfPatches + 1; i++)
+        // initialize array for storing patches
+        float[][] storePatches = new float[totalPatches][];
+        for (int i = 0; i < totalPatches; i++)
         {
-            storePatches[i] = new float[patchSize * patchSize * 4 + 1];
+            storePatches[i] = new float[totalItemsPerPatch];
         }
+        
 
-        Debug.Log("allPixelDataRef.Length = " + allPixelDataRef.Length);
-        for (int i = 0; i < allPixelDataRef.Length; i++) {
-            //Debug.Log("i = " + i);
-            //Debug.Log("allPixelDataRef[i] = " + allPixelDataRef[i]);
-            Debug.Log("patchNum = " + patchNum);
-            //Debug.Log("loopInPatch = " + loopInPatch);
-            // store element in target patch
-            storePatches[savePatchNum][loopInPatch] = allPixelDataRef[i];
+        int currentPatch = 0; // indicate which patch we are working on
+        int currentItem = 0; // indicate which item position of the patch is being dealt with
+        int currentRow = 1; // indicate which row of the patch are we dealing with
+        int startingPatch = 0; // for saving which patch is at the start of the set of horizontal patches
+        int startingItem = 0; // for saving what position we are starting for each patch
 
-            //Debug.Log("storePatches[patchNum][loopInPatch] = " + storePatches[patchNum][loopInPatch]);
-            // never reset looElements
-            loopInPatch++;
-            nextHPatch++;
-            checkEndofRow++;
-            // when reached end of row in a single patch, move to the next patch
-            if (nextHPatch == rowElementsInPatch)
+        int itemInRow = 0; // track which item are we in, in the row
+
+        int ignoreItemsWidth = (int)(sizeOfRef.x * 4) - (rowPatches * rowItemsPerPatch); // number of items in each row to ignore
+        Debug.Log("ignoreItemsWidth = " + ignoreItemsWidth);
+        int ignoreItemsHeight = (int)(sizeOfRef.y) - (colPatches * patchSize); // number of items in each column to ignore
+        int totalHeightIgnore = allPixelDataRef.Length - (int)(ignoreItemsHeight * sizeOfRef.x * 4);
+        Debug.Log("totalHeightIgnore = " + totalHeightIgnore);
+
+        // segment the pixel data of the reference image into patches
+        for (int i = 0; i < allPixelDataRef.Length; i++)
+        {
+            storePatches[currentPatch][currentItem] = allPixelDataRef[i];
+            Debug.Log("storePatches[currentPatch][currentItem] = " + storePatches[currentPatch][currentItem]);
+            currentItem++;
+            itemInRow++;
+            // if we reached the end of a row in the patch
+            if (currentItem == rowItemsPerPatch * currentRow)
             {
-                //Debug.Log("checkEndofRow = " + checkEndofRow);
-                // Are we at the end of the row for all horizontal patches?
-                if (checkEndofRow == elementsPerRow)
+                // check if we are at the final item of the entire reference image row
+                if (itemInRow == rowItemsTotal)
                 {
-                //    Debug.Log("currentPatchRow = " + currentPatchRow);
-                //    Debug.Log("patchSize - 1 = " + (patchSize - 1));
-                    // if we have not reached last row of the patch
-                    if (currentPatchRow != patchSize - 1)
+                    // skip through the set amount of width pixels
+                    i += ignoreItemsWidth;
+
+                    // we check if we are at the final row of the patch
+                    // if yes, then we start working on a new set of patches below current patch
+                    if (currentRow == patchSize)
                     {
-                        Debug.Log("Add line");
-                        // indicate we are in next row of the patch, and reset nextHPatch
-                        currentPatchRow += 1;
-                        nextHPatch = 0;
-                        // also reset patch number 
-                        patchNum = savePatchNum;
-                        // set loopInPatch to where we left off
-                        loopInPatch = finalLoopValue + 1;
-                        // save it for future use
-                        saveLoopValue = loopInPatch;
-                        // reset to start of row
-                        checkEndofRow = 0;
+                        currentRow = 1;
+                        currentItem = 0;
+                        startingItem = 0;
+                        // set starting patch as the patch at leftmost new row, and set it as current patch
+                        startingPatch = currentPatch + 1;
+                        currentPatch = startingPatch;
+                        itemInRow = 0;
                     }
-                    // if we reached last row of the patch
+                    // we continue working on our current set of patches
                     else
                     {
-                        // time to manage patch below previously computed patches
-                        // set the default start patch number
-                        Debug.Log("Next Patch Vertical");
-                        patchNum += 1;
-                        savePatchNum = patchNum + 1;
-                        nextHPatch = 0;
-                        loopInPatch = 0;
-                        saveLoopValue = 0;
-                        checkEndofRow = 0;
-                        currentPatchRow = 0;
-
+                        currentRow++;
+                        // we set the starting item
+                        startingItem = currentItem;
+                        
+                        // since we are not starting a new set of patches, go back to our current starting patch
+                        currentPatch = startingPatch;
+                        itemInRow = 0;
                     }
-
                 }
-                // move to the next patch horizontal to current patch
+                // we are only at the final item in the row of our current patch, not the entire reference image
                 else
                 {
-                    Debug.Log("Next Patch Horizontal");
-                    patchNum += 1;
-                    nextHPatch = 0;
-
-                    finalLoopValue = loopInPatch - 1;
-                    loopInPatch = saveLoopValue;
+                    currentItem = startingItem;
+                    // move to the patch next to our current patch
+                    currentPatch += 1;
                 }
 
-                
             }
-            //Debug.Log("checkEndofRow = " + checkEndofRow);
-            //Debug.Log("elementsPerRow = " + elementsPerRow);
-            // when reached end of row in all row patches
-            
+
+            // we skip through the column items that we want to ignore
+            if(i == totalHeightIgnore - 1)
+            break;
         }
-        
-        
-
-
-
-        //Debug.Log(rowsOfPixels[0].Length);
-
-
-
-
+        Debug.Log($"First patch first item = {storePatches[0][0]} , {storePatches[0][1]} , {storePatches[0][2]} , {storePatches[0][3]}");
+        Debug.Log($"First patch second item = {storePatches[0][4]} , {storePatches[0][5]} , {storePatches[0][6]} , {storePatches[0][7]}");
+        Debug.Log($"First patch third item = {storePatches[0][8]} , {storePatches[0][9]} , {storePatches[0][10]} , {storePatches[0][11]}");
+        //Debug.Log($"Last patch last item = {storePatches[][0]} , {storePatches[1][1]} , {storePatches[1][2]} , {storePatches[1][3]}");
     }
-
     private Vector2 GetRefTextureProperties(Texture2D ref_texture)
     {
         int numOfPixels_height = ref_texture.height;
