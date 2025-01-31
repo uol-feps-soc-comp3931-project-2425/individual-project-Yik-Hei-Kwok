@@ -1,6 +1,6 @@
 // Each #kernel tells which function to compile; you can have many kernels
 #pragma kernel ReadPixel
-
+#pragma kernel SegmentPatches
 // Create a RenderTexture with enableRandomWrite flag and set it
 // with cs.SetTexture
 
@@ -28,7 +28,4 @@ void ReadPixel (uint3 id : SV_DispatchThreadID)
 
     // and store extracted colour in array
     outputBuffer[index] = colour;
-        
-
-    
 }

@@ -1,14 +1,75 @@
 // Each #kernel tells which function to compile; you can have many kernels
-#pragma kernel CSMain
+#pragma kernel SegmentPatches
 
 // Create a RenderTexture with enableRandomWrite flag and set it
 // with cs.SetTexture
-RWTexture2D<float4> Result;
+
+RWStructuredBuffer<float4> outputPatches;
+
+float imgHeight;
+float imgWidth;
+
+float heightIgnore;
+float widthIgnore;
+
+// total number of patches on x axis
+int numRowPatches;
+// total number of patches on y axis
+int numColPatches;
+// dimensions of a patch
+int sizePatch;
+
+StructuredBuffer<float> pixelData;
+
+// for my reference
+// https://www.youtube.com/watch?v=XyUusirGAl4&ab_channel=Arsiliath
 
 [numthreads(8,8,1)]
-void CSMain (uint3 id : SV_DispatchThreadID)
+void SegmentPatches (uint3 id : SV_DispatchThreadID)
 {
-    // TODO: insert actual code here!
+    uint x = id.x;
+    uint y = id.y;
+    
+    // indicates which pixel is being worked on
+    int pixelIndex = (y * imgWidth + x) * 4;
+    
+    //(imgWidth * 4 - widthIgnore) && y
+    
+    // check if pixel is outside the confineded patch spaces
+    // y
+    
+    // get position of the patch that the current pixel should be in
+    int horizontalPatch = x / numRowPatches;
+    int verticalPatch = y / numColPatches;
+    int patchIndex = horizontalPatch * verticalPatch;
+        
+    // only process the pixel if it resides in a horizontal patch
+    // and vertical patch inside of what is defined
+    if (horizontalPatch <= (numRowPatches - 1) && verticalPatch <= (numColPatches - 1))
+    {
+        // get pixel data from the current pixel index
+        float4 pixelValues = float4(pixelData[pixelIndex], pixelData[pixelIndex + 1], pixelData[pixelIndex + 2], pixelData[pixelIndex + 3]);
+            
+        // determine where is the target pixel data in, in the selected patch
+        int hCoodsInPatch = x - (horizontalPatch * sizePatch);
+        int vCoodsInPatch = y - (verticalPatch * sizePatch);
+            
+        // get the 1D position of current processing pixel relative to a patch
+        int itemInPatchIndex = (vCoodsInPatch * sizePatch + hCoodsInPatch);
+            
+        // total number of items in each patch
+        int totalItemsInPatch = sizePatch * sizePatch * 4;
+            
+        // get actual 1d position for the patch storing array
+        int outputIndex = patchIndex * totalItemsInPatch + (itemInPatchIndex);
+            
+        // place pixel values in output buffer
+        outputPatches[outputIndex] = pixelValues;
 
-    Result[id.xy] = float4(id.x & id.y, (id.x & 15)/15.0, (id.y & 15)/15.0, 0.0);
+        
+       
+        
+    }
+    
+   
 }
