@@ -19,26 +19,46 @@ int numColPatches;
 // dimensions of a patch
 int sizePatch;
 
+// our current processing patch
+int currentPatchHorizontal;
+int currentPatchVertical;
+
 StructuredBuffer<float> pixelData;
 
-// for debugging purposes
-RWStructuredBuffer<float4> currentPatches;
-RWStructuredBuffer<uint4> x_bytes;
-RWStructuredBuffer<uint4> y_bytes;
 
-// for my reference
-// https://www.youtube.com/watch?v=XyUusirGAl4&ab_channel=Arsiliath
+
 
 [numthreads(8,8,1)]
 void SegmentPatches (uint3 id : SV_DispatchThreadID)
 {
+    // positions of pixel based on how large a patch is
     uint x = id.x;
     uint y = id.y;
+    // global position of our pixel
+    uint globalPositionX = x + currentPatchHorizontal * sizePatch;
+    uint globalPositionY = y + currentPatchVertical * sizePatch;
     
-    // indicates which pixel is being worked on
-    int pixelIndex = (y * imgWidth + x) * 4;
+    // pixel position in the 1D array of pixels
+    int pixelInArray = globalPositionY * (imgWidth * 4) + globalPositionX * 4;
     
-    //(imgWidth * 4 - widthIgnore) && y
+    // get the pixel from the input array of pixels based on the global position
+    float4 currentPixel = float4(pixelData[pixelInArray + 0], pixelData[pixelInArray + 1], pixelData[pixelInArray + 2], pixelData[pixelInArray + 3]);
+    
+    // choose location of pixel to be stored in in the output array
+    int outputIndex = y * sizePatch + x;
+    
+    // save pixel into the output buffer
+    outputPatches[outputIndex] = currentPixel;
+   
+}
+
+
+// for my reference
+// https://www.youtube.com/watch?v=XyUusirGAl4&ab_channel=Arsiliath
+
+
+
+//(imgWidth * 4 - widthIgnore) && y
     
     // check if pixel is outside the confineded patch spaces
     // y
@@ -46,44 +66,7 @@ void SegmentPatches (uint3 id : SV_DispatchThreadID)
     // get position of the patch that the current pixel should be in
     //int horizontalPatch = x / numRowPatches;
     //int horizontalPatch = x * (numRowPatches / (sizePatch * numRowPatches));
-    int horizontalPatch = x / sizePatch;
-    int verticalPatch = y / sizePatch;
+    
+    //int horizontalPatch = x / sizePatch;
+    //int verticalPatch = y / sizePatch;
     //int patchIndex = horizontalPatch * verticalPatch;
-    int patchIndex = numRowPatches * verticalPatch + horizontalPatch;
-    
-    // only process the pixel if it resides in a horizontal patch
-    // and vertical patch inside of what is defined
-    if (horizontalPatch <= (numRowPatches - 1) && verticalPatch <= (numColPatches - 1))
-    {
-        // get pixel data from the current pixel index
-        float4 pixelValues = float4(pixelData[pixelIndex], pixelData[pixelIndex + 1], pixelData[pixelIndex + 2], pixelData[pixelIndex + 3]);
-        
-        // determine where is the target pixel data in, in the selected patch
-        int hCoodsInPatch = x - (horizontalPatch * sizePatch);
-        int vCoodsInPatch = y - (verticalPatch * sizePatch);
-            
-        // get the 1D position of current processing pixel relative to a patch
-        int itemInPatchIndex = (vCoodsInPatch * sizePatch + hCoodsInPatch);
-            
-        // total number of items in each patch
-        int totalItemsInPatch = sizePatch * sizePatch * 4;
-            
-        // get actual 1d position for the patch storing array
-        int outputIndex = patchIndex * totalItemsInPatch + (itemInPatchIndex);
-            
-        // place pixel values in output buffer
-        outputPatches[outputIndex] = pixelValues;
-
-        
-        // only for debug
-        uint4 xs = uint4(x, x, x, x);
-        uint4 ys = uint4(y, y, y, y);
-        int4 patchess = int4(patchIndex, patchIndex, patchIndex, patchIndex);
-        currentPatches[outputIndex] = patchess;
-        x_bytes[outputIndex] = xs;
-        y_bytes[outputIndex] = ys;
-
-    }
-    
-   
-}
