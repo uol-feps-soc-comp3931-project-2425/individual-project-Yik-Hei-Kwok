@@ -21,6 +21,11 @@ int sizePatch;
 
 StructuredBuffer<float> pixelData;
 
+// for debugging purposes
+RWStructuredBuffer<float4> currentPatches;
+RWStructuredBuffer<uint4> x_bytes;
+RWStructuredBuffer<uint4> y_bytes;
+
 // for my reference
 // https://www.youtube.com/watch?v=XyUusirGAl4&ab_channel=Arsiliath
 
@@ -39,17 +44,20 @@ void SegmentPatches (uint3 id : SV_DispatchThreadID)
     // y
     
     // get position of the patch that the current pixel should be in
-    int horizontalPatch = x / numRowPatches;
-    int verticalPatch = y / numColPatches;
-    int patchIndex = horizontalPatch * verticalPatch;
-        
+    //int horizontalPatch = x / numRowPatches;
+    //int horizontalPatch = x * (numRowPatches / (sizePatch * numRowPatches));
+    int horizontalPatch = x / sizePatch;
+    int verticalPatch = y / sizePatch;
+    //int patchIndex = horizontalPatch * verticalPatch;
+    int patchIndex = numRowPatches * verticalPatch + horizontalPatch;
+    
     // only process the pixel if it resides in a horizontal patch
     // and vertical patch inside of what is defined
     if (horizontalPatch <= (numRowPatches - 1) && verticalPatch <= (numColPatches - 1))
     {
         // get pixel data from the current pixel index
         float4 pixelValues = float4(pixelData[pixelIndex], pixelData[pixelIndex + 1], pixelData[pixelIndex + 2], pixelData[pixelIndex + 3]);
-            
+        
         // determine where is the target pixel data in, in the selected patch
         int hCoodsInPatch = x - (horizontalPatch * sizePatch);
         int vCoodsInPatch = y - (verticalPatch * sizePatch);
@@ -67,8 +75,14 @@ void SegmentPatches (uint3 id : SV_DispatchThreadID)
         outputPatches[outputIndex] = pixelValues;
 
         
-       
-        
+        // only for debug
+        uint4 xs = uint4(x, x, x, x);
+        uint4 ys = uint4(y, y, y, y);
+        int4 patchess = int4(patchIndex, patchIndex, patchIndex, patchIndex);
+        currentPatches[outputIndex] = patchess;
+        x_bytes[outputIndex] = xs;
+        y_bytes[outputIndex] = ys;
+
     }
     
    

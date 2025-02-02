@@ -54,61 +54,16 @@ public class Texturesynthesis : MonoBehaviour
 
         // -----------------------------------------------------------------------------------------------
 
+
         // for segementing all pixel data in the 1d array into patches of indicated size
-        SegmentPatches_CPU(allPixelDataRef, sizeOfRef, patchSize);
+        float[][] patchesCPU = SegmentPatches_CPU(allPixelDataRef, sizeOfRef, patchSize);
+        
 
-       
         // GPU
-
-        // number of items in a patch 
-        int rowItemsPerPatch = patchSize * 4;
-        int totalItemsPerPatch = patchSize * patchSize * 4;
-        Debug.Log("rowItemsPerPatch = " + rowItemsPerPatch);
-
-        // get total number of derived patches 
-        int rowPatches = Mathf.FloorToInt(sizeOfRef.x / patchSize);
-        int colPatches = Mathf.FloorToInt(sizeOfRef.y / patchSize);
-        int totalPatches = rowPatches * colPatches;
-
-        // get total number of items in each row 
-        int rowItemsTotal = rowPatches * rowItemsPerPatch;
-
-        int ignoreItemsWidth = (int)(sizeOfRef.x * 4) - (rowPatches * rowItemsPerPatch); // number of items in each row to ignore
-        Debug.Log("ignoreItemsWidth = " + ignoreItemsWidth);
-        int ignoreItemsHeight = (int)(sizeOfRef.y) - (colPatches * patchSize); // number of items in each column to ignore
-        int totalHeightIgnore = allPixelDataRef.Length - (int)(ignoreItemsHeight * sizeOfRef.x * 4);
-
-        // use data in the pixel array for the shader
-        inputPixelData = new ComputeBuffer(allPixelDataRef.Length, sizeof(float));
-        inputPixelData.SetData(allPixelDataRef);
-
-        // define output patches for storing segmented data
-        outputPatches = new ComputeBuffer(totalPatches * totalItemsPerPatch, colourSize);
-        kernalID = segmentToPatches.FindKernel("SegmentPatches");
-        Debug.Log("kernalID = " + kernalID);
-        segmentToPatches.SetInt("imgHeight", (int)sizeOfRef.y);
-        segmentToPatches.SetInt("imgWidth", (int)sizeOfRef.x);
-        segmentToPatches.SetInt("heightIgnore", totalHeightIgnore);
-        segmentToPatches.SetInt("widthIgnore", ignoreItemsWidth);
-        segmentToPatches.SetInt("numRowPatches", rowPatches);
-        segmentToPatches.SetInt("numColPatches", colPatches);
-        segmentToPatches.SetInt("sizePatch", patchSize);
+        float[] patchesGPU = SegmentPatches_GPU(allPixelDataRef, sizeOfRef, patchSize, texture);
         
-        segmentToPatches.SetBuffer(kernalID, "pixelData", inputPixelData);
 
-
-        segmentToPatches.SetBuffer(kernalID, "outputPatches", outputPatches);
-        segmentToPatches.Dispatch(kernalID, texture.width / 8, texture.height / 8, 1);
-        
-        float[] segmentedPatches = new float[totalPatches * patchSize * patchSize * 4];
-        // get the pixel data of the reference image in RGBA format calculated in shader
-        outputPatches.GetData(segmentedPatches);
-        Debug.Log($"First patch first item GPU = {segmentedPatches[0]} , {segmentedPatches[1]} , {segmentedPatches[2]} , {segmentedPatches[3]}");
-        Debug.Log($"First patch first item GPU = {segmentedPatches[4]} , {segmentedPatches[5]} , {segmentedPatches[6]} , {segmentedPatches[7]}");
-        Debug.Log($"First patch first item GPU = {segmentedPatches[8]} , {segmentedPatches[9]} , {segmentedPatches[10]} , {segmentedPatches[11]}");
-        Debug.Log($"First patch first item GPU = {segmentedPatches[12]} , {segmentedPatches[13]} , {segmentedPatches[14]} , {segmentedPatches[15]}");
-        Debug.Log($"First patch first item GPU = {segmentedPatches[16]} , {segmentedPatches[17]} , {segmentedPatches[18]} , {segmentedPatches[19]}");
-        Debug.Log($"First patch first item GPU = {segmentedPatches[2344]} , {segmentedPatches[2334]} , {segmentedPatches[1305]} , {segmentedPatches[700]}");
+        debugCPU_andGPU(patchesCPU, patchesGPU);
 
     }
     private Vector2 GetRefTextureProperties(Texture2D ref_texture)
@@ -145,7 +100,7 @@ public class Texturesynthesis : MonoBehaviour
 
     // function for segementing the stored pixels into different patches in a format
     // [ [ patch 1 pixels ] , [ patch 2 pixels ] ....... ]
-    private void SegmentPatches_CPU(float[] allPixelDataRef, Vector2 sizeOfRef, int patchSize)
+    private float[][] SegmentPatches_CPU(float[] allPixelDataRef, Vector2 sizeOfRef, int patchSize)
     {
         // R G B A values are items
 
@@ -188,6 +143,7 @@ public class Texturesynthesis : MonoBehaviour
         // segment the pixel data of the reference image into patches
         for (int i = 0; i < allPixelDataRef.Length; i++)
         {
+            //Debug.Log("i = " + i);
             storePatches[currentPatch][currentItem] = allPixelDataRef[i];
             //Debug.Log("storePatches[currentPatch][currentItem] = " + storePatches[currentPatch][currentItem]);
             currentItem++;
@@ -239,17 +195,117 @@ public class Texturesynthesis : MonoBehaviour
             if (i == totalHeightIgnore - 1)
                 break;
         }
-        Debug.Log($"First patch first item CPU = {storePatches[0][0]} , {storePatches[0][1]} , {storePatches[0][2]} , {storePatches[0][3]}");
-        Debug.Log($"First patch second item CPU = {storePatches[0][4]} , {storePatches[0][5]} , {storePatches[0][6]} , {storePatches[0][7]}");
-        Debug.Log($"First patch third item CPU = {storePatches[0][8]} , {storePatches[0][9]} , {storePatches[0][10]} , {storePatches[0][11]}");
-        //Debug.Log($"Last patch last item = {storePatches[][0]} , {storePatches[1][1]} , {storePatches[1][2]} , {storePatches[1][3]}");
+        //Debug.Log($"First patch first item CPU = {storePatches[0][0]} , {storePatches[0][1]} , {storePatches[0][2]} , {storePatches[0][3]}");
+        //Debug.Log($"First patch second item CPU = {storePatches[0][4]} , {storePatches[0][5]} , {storePatches[0][6]} , {storePatches[0][7]}");
+        //Debug.Log($"First patch third item CPU = {storePatches[0][8]} , {storePatches[0][9]} , {storePatches[0][10]} , {storePatches[0][11]}");
+        //Debug.Log($"Last patch last item = {storePatches[3][9996]} , {storePatches[3][9997]} , {storePatches[3][9998]} , {storePatches[3][9999]}");
+
+        return storePatches;
     }
 
-    private void SegmentPatches_GPU()
+    private float[] SegmentPatches_GPU(float[] allPixelDataRef, Vector2 sizeOfRef, int patchSize, Texture2D texture)
     {
+        // number of items in a patch 
+        int rowItemsPerPatch = patchSize * 4;
+        int totalItemsPerPatch = patchSize * patchSize * 4;
+        Debug.Log("rowItemsPerPatch = " + rowItemsPerPatch);
 
+        // get total number of derived patches 
+        int rowPatches = Mathf.FloorToInt(sizeOfRef.x / patchSize);
+        int colPatches = Mathf.FloorToInt(sizeOfRef.y / patchSize);
+        int totalPatches = rowPatches * colPatches;
+
+        // get total number of items in each row 
+        int rowItemsTotal = rowPatches * rowItemsPerPatch;
+
+        int ignoreItemsWidth = (int)(sizeOfRef.x * 4) - (rowPatches * rowItemsPerPatch); // number of items in each row to ignore
+        Debug.Log("ignoreItemsWidth = " + ignoreItemsWidth);
+        int ignoreItemsHeight = (int)(sizeOfRef.y) - (colPatches * patchSize); // number of items in each column to ignore
+        int totalHeightIgnore = allPixelDataRef.Length - (int)(ignoreItemsHeight * sizeOfRef.x * 4);
+
+        Debug.Log($"numRowPatches: {rowPatches}, numColPatches: {colPatches}, sizePatch: {patchSize}");
+
+        // use data in the pixel array for the shader
+        inputPixelData = new ComputeBuffer(allPixelDataRef.Length, sizeof(float));
+        inputPixelData.SetData(allPixelDataRef);
+
+        // compute colour size
+        int colourSize = sizeof(float) * 4;
+
+        // define output patches for storing segmented data
+        outputPatches = new ComputeBuffer(totalPatches * totalItemsPerPatch, colourSize);
+        // solely for debugging
+        ComputeBuffer currentPatches = new ComputeBuffer(totalPatches * totalItemsPerPatch, sizeof(int) * 4);
+        ComputeBuffer x_value = new ComputeBuffer(totalPatches * totalItemsPerPatch, sizeof(uint) * 4);
+        ComputeBuffer y_value = new ComputeBuffer(totalPatches * totalItemsPerPatch, sizeof(uint) * 4);
+        kernalID = segmentToPatches.FindKernel("SegmentPatches");
+        Debug.Log("kernalID = " + kernalID);
+        segmentToPatches.SetInt("imgHeight", (int)sizeOfRef.y);
+        segmentToPatches.SetInt("imgWidth", (int)sizeOfRef.x);
+        segmentToPatches.SetInt("heightIgnore", totalHeightIgnore);
+        segmentToPatches.SetInt("widthIgnore", ignoreItemsWidth);
+        segmentToPatches.SetInt("numRowPatches", rowPatches);
+        segmentToPatches.SetInt("numColPatches", colPatches);
+        segmentToPatches.SetInt("sizePatch", patchSize);
+
+        segmentToPatches.SetBuffer(kernalID, "pixelData", inputPixelData);
+
+
+        segmentToPatches.SetBuffer(kernalID, "outputPatches", outputPatches);
+        // solely for debugging
+        segmentToPatches.SetBuffer(kernalID, "currentPatches", currentPatches);
+        segmentToPatches.SetBuffer(kernalID, "x_bytes", x_value);
+        segmentToPatches.SetBuffer(kernalID, "y_bytes", y_value);
+
+        segmentToPatches.Dispatch(kernalID, texture.width / 8, texture.height / 8, 1);
+
+        float[] segmentedPatches = new float[totalPatches * patchSize * patchSize * 4];
+        // solely for debugging
+        int[] currentPatchNums = new int[totalPatches * patchSize * patchSize * 4];
+        uint[] x_values = new uint[totalPatches * patchSize * patchSize * 4];
+        uint[] y_values = new uint[totalPatches * patchSize * patchSize * 4];
+        // get the pixel data of the reference image in RGBA format calculated in shader
+        outputPatches.GetData(segmentedPatches);
+        // solely for debugging
+        currentPatches.GetData(currentPatchNums);
+        x_value.GetData(x_values);
+        y_value.GetData(y_values);
+
+        Debug.Log("segmentedPatches.Length = " + segmentedPatches.Length);
+        int temp_add = 0;
+        for (int i = 0; i < segmentedPatches.Length; i += 4)
+        {
+            //Debug.Log($"Pixel item GPU = {segmentedPatches[i + 0]} , {segmentedPatches[i + 1]} , {segmentedPatches[i + 2]} , {segmentedPatches[i + 3]}");
+            if (segmentedPatches[i + 0] == 0 && segmentedPatches[i + 1] == 0 && segmentedPatches[i + 2] == 0 && segmentedPatches[i + 3] == 0)
+            {
+                temp_add++;
+            }
+            Debug.Log($"currentPatches value = {currentPatchNums[i]} , {currentPatchNums[i+1]} , {currentPatchNums[i+2]} , {currentPatchNums[i+3]}");
+            Debug.Log($"x value = {x_values[i]} , {x_values[i+1]} , {x_values[i+2]} , {x_values[i+3]}" );
+            Debug.Log($"y value = {y_values[i]} , {y_values[i + 1]} , {y_values[i + 2]} , {y_values[i + 3]}");
+        }
+        Debug.Log("GPU temp_add = " + temp_add);
+
+        return segmentedPatches;
     }
     // Update is called once per frame
+
+    private void debugCPU_andGPU(float[][] patchesCPU, float[] patchesGPU)
+    {
+        for (int i = 0; i < patchesCPU.Length; i++)
+        {
+            for (int j = 0; j < patchesCPU[i].Length; j+= 4)
+            {
+                Debug.Log($"Pixel of GPU in Patch {i} = {patchesGPU[i * patchesCPU[i].Length + j + 0]} , {patchesGPU[i * patchesCPU[i].Length + j + 1]} , {patchesGPU[i * patchesCPU[i].Length + j + 2]} , {patchesGPU[i * patchesCPU[i].Length + j + 3]}");
+                Debug.Log($"Pixel of CPU in Patch {i} = {patchesCPU[i][j + 0]} , {patchesCPU[i][j + 1]} , {patchesCPU[i][j + 2]} , {patchesCPU[i][j + 3]}");
+
+                /*if (patchesCPU[i][j] != patchesGPU[i * patchesCPU[i].Length + j])
+                {
+                    Debug.Log($"Start Diverging at patch {i} in pixel number {(i * patchesCPU[i].Length + j)/4}");
+                }*/
+            }
+        }
+    }
     void Update()
     {
         //StoreRefPixels();
