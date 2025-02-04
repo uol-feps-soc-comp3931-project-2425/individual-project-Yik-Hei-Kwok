@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class Texturesynthesis : MonoBehaviour
@@ -53,17 +54,18 @@ public class Texturesynthesis : MonoBehaviour
         float[] allPixelDataRef = StoreRefPixels(texture);
 
         // -----------------------------------------------------------------------------------------------
-
-
         // for segementing all pixel data in the 1d array into patches of indicated size
         float[][] patchesCPU = SegmentPatches_CPU(allPixelDataRef, sizeOfRef, patchSize);
-        
-
         // GPU
         float[][] patchesGPU = SegmentPatches_GPU(allPixelDataRef, sizeOfRef, patchSize, texture);
         
+        //debugCPU_andGPU(patchesCPU, patchesGPU);
 
-        debugCPU_andGPU(patchesCPU, patchesGPU);
+        // save the patches as images for showing purposes
+        showExtractedPatches(patchesGPU, patchSize);
+
+        // ----------------------------------------------------------------------------------------------
+
 
     }
     private Vector2 GetRefTextureProperties(Texture2D ref_texture)
@@ -79,7 +81,7 @@ public class Texturesynthesis : MonoBehaviour
     private float[] StoreRefPixels(Texture2D ref_texture)
     {
         // size of input image must be at least 8x8 or else thread group will be 0
-        readPixels.Dispatch(kernalID, ref_texture.width / 8, ref_texture.height / 8, 1);
+        readPixels.Dispatch(kernalID, Mathf.CeilToInt(ref_texture.width / 8.0f), Mathf.CeilToInt(ref_texture.height / 8.0f), 1);
         // initiate an array that stores all pixel values
         refPixelsRGB = new float[4 * sizeOfRefImage];
         // get the pixel data of the reference image in RGBA format calculated in shader
@@ -277,6 +279,61 @@ public class Texturesynthesis : MonoBehaviour
 
         return storePatches;
     }
+
+
+    private void showExtractedPatches(float[][] patchesValues, int patchSize)
+    {
+
+
+        int add = 0;
+        Debug.Log("number of patches eeee = " + patchesValues.Length);
+        Debug.Log("number of patches eeee = " + patchesValues.Length);
+
+        for (int i = 0; i < patchesValues.Length; i+=1)
+        {
+            Color[] pixels = new Color[patchSize * patchSize];
+            for (int j = 0; j < patchesValues[i].Length; j += 4)
+            {
+
+
+                float R = patchesValues[i][j + 0];
+                float G = patchesValues[i][j + 1];
+                float B = patchesValues[i][j + 2];
+                float A = patchesValues[i][j + 3];
+
+                pixels[add] = new Color(R, G, B, A);
+
+                add++;
+            }
+            Texture2D patch = new Texture2D(patchSize, patchSize);
+            patch.SetPixels(pixels);
+            patch.Apply();
+
+            byte[] bytes = patch.EncodeToPNG();
+
+            // delete directory contents before appending new patches to the folder
+            //deleteDirContents("Assets/Save_Patches");
+
+            string savePath = $"Assets/Save_Patches/Patch{i}.png";
+
+            
+
+            File.WriteAllBytes(savePath, bytes);
+            add = 0;
+
+        }
+        
+    }
+
+    private void deleteDirContents(string Path)
+    {
+        if (Directory.Exists(Path))
+        {
+            Directory.Delete(Path, true);
+            Directory.CreateDirectory(Path);
+        }
+    }
+
     // Update is called once per frame
 
     private void debugCPU_andGPU(float[][] patchesCPU, float[][] patchesGPU)

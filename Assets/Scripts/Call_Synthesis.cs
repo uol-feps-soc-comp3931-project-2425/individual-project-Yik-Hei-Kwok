@@ -12,7 +12,7 @@ public class Call_Synthesis : MonoBehaviour
     public RawImage ref_texture2;
 
     private int outputSize = 1000;
-    private int patchSize = 12;
+    private int patchSize = 50;
     private int overlapSize = 10;
 
     private void Start()
