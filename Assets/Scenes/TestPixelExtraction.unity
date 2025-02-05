@@ -339,7 +339,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Synthesis: {fileID: 982004078}
-  ref_texture: {fileID: 2800000, guid: a587f94467dda954b912ce88c31cc630, type: 3}
+  ref_texture: {fileID: 2800000, guid: ed92bb8ef4ad95245859680931910cdd, type: 3}
   ref_texture2: {fileID: 0}
 --- !u!4 &611567048
 Transform:
@@ -387,6 +387,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   readPixels: {fileID: 7200000, guid: 36626a36e094c7e43bb4db10aecf050a, type: 3}
   segmentToPatches: {fileID: 7200000, guid: ecd4b773f9e466d44991203f1a59e54f, type: 3}
+  extractOverlays: {fileID: 7200000, guid: d98fa215fc9e92b4e9e7ededbe4bfbdf, type: 3}
   renderTexture: {fileID: 0}
 --- !u!4 &982004079
 Transform:

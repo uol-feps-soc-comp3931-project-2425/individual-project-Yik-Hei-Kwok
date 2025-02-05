@@ -63,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\readPixelsRef.compute" />
+    <None Include="Assets\Scripts\extractOverlays.compute" />
     <None Include="Assets\Scripts\createPatches.compute" />
   </ItemGroup>
   <ItemGroup>
