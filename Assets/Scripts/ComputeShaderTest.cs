@@ -60,6 +60,9 @@ public class Texturesynthesis : MonoBehaviour
         // call function to activate Compute Shader and store pixel data of reference image in array
         float[] allPixelDataRef = StoreRefPixels(texture);
 
+        // save the image for showing purposes
+        debugImage(allPixelDataRef, (int)sizeOfRef.x, (int)sizeOfRef.y);
+
         // -----------------------------------------------------------------------------------------------
         // for segementing all pixel data in the 1d array into patches of indicated size
         float[][] patchesCPU = SegmentPatches_CPU(allPixelDataRef, sizeOfRef, patchSize);
@@ -303,6 +306,36 @@ public class Texturesynthesis : MonoBehaviour
         return storePatches;
     }
 
+    private void debugImage(float[] array, int img_width, int img_height)
+    {
+        int add = 0;
+        Color[] pixels = new Color[img_width * img_height];
+        for (int j = 0; j < array.Length; j += 4)
+        {
+            float R = array[j + 0];
+            float G = array[j + 1];
+            float B = array[j + 2];
+            float A = array[j + 3];
+
+            pixels[add] = new Color(R, G, B, A);
+            add++;
+        }
+
+        Texture2D patch = new Texture2D(img_width, img_height);
+        patch.SetPixels(pixels);
+        patch.Apply();
+
+        byte[] bytes = patch.EncodeToPNG();
+
+        // delete directory contents before appending new patches to the folder
+        //deleteDirContents("Assets/Save_Patches");
+
+        string savePath = $"Assets/image_produced.png";
+
+
+
+        File.WriteAllBytes(savePath, bytes);
+    }
 
     private void showData(float[][] patchesValues, int patchSize, string dir)
     {
@@ -358,6 +391,8 @@ public class Texturesynthesis : MonoBehaviour
         int kernalID = extractOverlays.FindKernel("extractTopOverlays");
         // type = 0 when we extract top overlays
 
+           
+
         float[][] storeTopOverlays = new float[totalPatches][];
         // call GPU on each patch to extract overlays
         for (int i = 0; i < patches.Length; i++ )
@@ -368,18 +403,35 @@ public class Texturesynthesis : MonoBehaviour
             // set the patch data that will be inputted into GPU processing
             extractOverlays.SetBuffer(kernalID, "patchData", inputPatchData);
 
+            
+           
             // data for extracting overlap regions Top
             extractOverlays.SetInt("overlapSize", overlapSize);
             extractOverlays.SetInt("patchSize", patchSize);
+            extractOverlays.SetInt("imgHeight", (int)sizeOfRef.y);
 
             // set output buffer for overlay of patches (each storeTopOverlays[i] will represent all top overlay pixels extracted in the ith row
             outputOverlayData = new ComputeBuffer(patchSize * overlaySize, sizeof(float) * 4);
             extractOverlays.SetBuffer(kernalID, "topOverlayOutput", outputOverlayData);
+            
+            // for debugging
+            ComputeBuffer condition_debug = new ComputeBuffer(patches[i].Length, sizeof(int));
+            extractOverlays.SetBuffer(kernalID, "condition_debug", condition_debug);
+
             extractOverlays.Dispatch(kernalID, Mathf.CeilToInt((float)patchSize / 8), Mathf.CeilToInt((float)patchSize / 8), 1);
             float[] topOverlayOfAPatch = new float[patchSize * overlapSize * 4];
             outputOverlayData.GetData(topOverlayOfAPatch);
 
             storeTopOverlays[i] = topOverlayOfAPatch;
+
+            // for debugging
+            int[] debug = new int[patchSize * patchSize];
+            condition_debug.GetData(debug);
+
+            for (int j = 0; j < debug.Length; j++)
+            {
+                Debug.Log($": ) {debug[j]}");
+            }
         }
         
 

@@ -20,7 +20,7 @@ void ReadPixel (uint3 id : SV_DispatchThreadID)
     
     // flip x to make sure it accommodates to flipped image
     // and calculate index for buffer
-    int flipX = (img_width - 1) - x;
+    int flipX = x;
     int index = y * img_width + flipX;
 
     // Read the pixel colour of referenced image

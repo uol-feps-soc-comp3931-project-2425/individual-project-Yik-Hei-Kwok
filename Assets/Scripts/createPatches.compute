@@ -41,6 +41,7 @@ void SegmentPatches (uint3 id : SV_DispatchThreadID)
     uint globalPositionY = y + currentPatchVertical * sizePatch;
     
     // pixel position in the 1D array of pixels
+    // need to flip x axis
     int pixelInArray = globalPositionY * (imgWidth * 4) + globalPositionX * 4;
     
     // get the pixel from the input array of pixels based on the global position
