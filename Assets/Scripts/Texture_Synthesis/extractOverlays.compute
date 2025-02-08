@@ -1,11 +1,12 @@
 // Each #kernel tells which function to compile; you can have many kernels
 #pragma kernel extractTopOverlays
+#pragma kernel extractLeftOverlays
 
 // Create a RenderTexture with enableRandomWrite flag and set it
 // with cs.SetTexture
 
 RWStructuredBuffer<float4> topOverlayOutput;
-//RWStructuredBuffer<float4> leftOverlayOutput;
+RWStructuredBuffer<float4> leftOverlayOutput;
 
 // input patch data for data processing
 StructuredBuffer<float> patchData;
@@ -25,8 +26,6 @@ void extractTopOverlays (uint3 id : SV_DispatchThreadID)
     uint x = id.x;
     uint y = id.y;
     
-    // for debug
-    
     
     if (patchSize - y <= overlapSize)
     {
@@ -44,6 +43,31 @@ void extractTopOverlays (uint3 id : SV_DispatchThreadID)
         topOverlayOutput[outputIndex] = currentPixel;
         
         
+    }
+}
+
+[numthreads(8,8,1)]
+void extractLeftOverlays(uint3 id : SV_DispatchThreadID)
+{
+    // positions of pixel based on how large a patch is
+    uint x = id.x;
+    uint y = id.y;
+    
+    // only save pixels at the most left side
+    if (x < overlapSize)
+    {
+        // pixel position in the 1D array of pixels
+        int pixelInArray = y * (patchSize * 4) + x * 4;
+        
+        // get the pixel from the input array of pixels based on the global position
+        float4 currentPixel = float4(patchData[pixelInArray + 0], patchData[pixelInArray + 1], patchData[pixelInArray + 2], patchData[pixelInArray + 3]);
+        
+        // get index
+        int outputIndex = y * overlapSize + x;
+        
+        condition_debug[y * patchSize + x] = outputIndex;
+        // save pixel into the output buffer
+        leftOverlayOutput[outputIndex] = currentPixel;
     }
 }
 
