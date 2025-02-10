@@ -58,14 +58,16 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.3.9f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Extracting_Patches_and_Overlaps\ComputeShaderTest.cs" />
     <Compile Include="Assets\Scripts\createBlock.cs" />
-    <Compile Include="Assets\Scripts\Texture_Synthesis\ComputeShaderTest.cs" />
-    <Compile Include="Assets\Scripts\Texture_Synthesis\Call_Synthesis.cs" />
+    <Compile Include="Assets\Scripts\Choosing_Patches\ChoosePatches.cs" />
+    <Compile Include="Assets\Scripts\global.cs" />
+    <Compile Include="Assets\Scripts\Extracting_Patches_and_Overlaps\Call_Synthesis.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Scripts\Texture_Synthesis\readPixelsRef.compute" />
-    <None Include="Assets\Scripts\Texture_Synthesis\extractOverlays.compute" />
-    <None Include="Assets\Scripts\Texture_Synthesis\createPatches.compute" />
+    <None Include="Assets\Scripts\Extracting_Patches_and_Overlaps\readPixelsRef.compute" />
+    <None Include="Assets\Scripts\Extracting_Patches_and_Overlaps\extractOverlays.compute" />
+    <None Include="Assets\Scripts\Extracting_Patches_and_Overlaps\createPatches.compute" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

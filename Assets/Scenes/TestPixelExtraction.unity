@@ -339,7 +339,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Synthesis: {fileID: 982004078}
-  ref_texture: {fileID: 2800000, guid: ed92bb8ef4ad95245859680931910cdd, type: 3}
+  ref_texture: {fileID: 2800000, guid: ee0b8604f98db0941aa214fdb19ed3d6, type: 3}
   ref_texture2: {fileID: 0}
 --- !u!4 &611567048
 Transform:
@@ -389,6 +389,7 @@ MonoBehaviour:
   segmentToPatches: {fileID: 7200000, guid: ecd4b773f9e466d44991203f1a59e54f, type: 3}
   extractOverlays: {fileID: 7200000, guid: d98fa215fc9e92b4e9e7ededbe4bfbdf, type: 3}
   renderTexture: {fileID: 0}
+  choosePatches: {fileID: 1675623649}
 --- !u!4 &982004079
 Transform:
   m_ObjectHideFlags: 0
@@ -404,7 +405,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1688709522
+--- !u!1 &1675623647
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -412,43 +413,43 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1688709523}
-  - component: {fileID: 1688709524}
+  - component: {fileID: 1675623648}
+  - component: {fileID: 1675623649}
   m_Layer: 0
-  m_Name: Create_Block
+  m_Name: Choose_Patches
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1688709523
+--- !u!4 &1675623648
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1688709522}
+  m_GameObject: {fileID: 1675623647}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -5.831891, y: -0.63634443, z: 1.1537061}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1688709524
+--- !u!114 &1675623649
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1688709522}
+  m_GameObject: {fileID: 1675623647}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31b6527537fc03840a3a1a853123134b, type: 3}
+  m_Script: {fileID: 11500000, guid: 8d353ba4a70fd704898b8eed76a9fa6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scaleCube: 5
+  extractOverlays: {fileID: 7200000, guid: d98fa215fc9e92b4e9e7ededbe4bfbdf, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -457,4 +458,4 @@ SceneRoots:
   - {fileID: 578114767}
   - {fileID: 982004079}
   - {fileID: 611567048}
-  - {fileID: 1688709523}
+  - {fileID: 1675623648}

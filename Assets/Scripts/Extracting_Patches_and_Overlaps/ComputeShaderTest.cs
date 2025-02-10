@@ -14,6 +14,9 @@ public class Texturesynthesis : MonoBehaviour
 
     public RenderTexture renderTexture;
 
+    [Header("Get the method for starting the patch choosing algorithm")]
+    public ChoosePatches choosePatches;
+
     // compute buffer for reading pixels of reference image
     private ComputeBuffer outputBuffer;
 
@@ -36,9 +39,19 @@ public class Texturesynthesis : MonoBehaviour
     // total size of the reference image
     private int sizeOfRefImage;
 
+    // to be used in choosing patches to be used on new image
+    float[][] patches;
+    public float[][][] overlayPixels;
 
-    public void startSynthesis(Texture2D texture, int outputSize, int patchSize, int overlapSize)
+    // store all pixels that are in the referenced image
+    private float[] allPixelDataRef;
+
+    public void startSynthesis(Texture2D texture, int outputSize, int patchSize, int overlapSize, bool useGPU)
     {
+        // save data to struct for use in other scripts
+        global.patchData.patchSize = patchSize;
+        global.patchData.overlapSize = overlapSize;
+        
         // -----------------------------------------------------------------------------------------------
         // for reading pixel data of reference image
 
@@ -47,6 +60,12 @@ public class Texturesynthesis : MonoBehaviour
 
         // first argument is number of elements in buffer, second argument is size of each element
         sizeOfRefImage = (int)(sizeOfRef.x * sizeOfRef.y);
+
+        // save data to struct for use in other scripts
+        global.refImgData.refImgSize = sizeOfRefImage;
+        global.refImgData.refImgHeight = (int)sizeOfRef.y;
+        global.refImgData.refImgWidth = (int)sizeOfRef.x;
+
         outputBuffer = new ComputeBuffer(sizeOfRefImage, colourSize);
 
         // Find the compute shader responsible for reading pixel data,
@@ -58,31 +77,37 @@ public class Texturesynthesis : MonoBehaviour
         readPixels.SetBuffer(kernalID, "outputBuffer", outputBuffer);
         Debug.Log($"img_height = {sizeOfRef.y}, img_width = {sizeOfRef.x}");
         // call function to activate Compute Shader and store pixel data of reference image in array
-        float[] allPixelDataRef = StoreRefPixels(texture);
+        allPixelDataRef = StoreRefPixels(texture);
 
         // save the image for showing purposes
         debugImage(allPixelDataRef, (int)sizeOfRef.x, (int)sizeOfRef.y);
 
         // -----------------------------------------------------------------------------------------------
         // for segementing all pixel data in the 1d array into patches of indicated size
-        float[][] patchesCPU = SegmentPatches_CPU(allPixelDataRef, sizeOfRef, patchSize);
-        // GPU
-        float[][] patchesGPU = SegmentPatches_GPU(allPixelDataRef, sizeOfRef, patchSize, texture);
+        // choice of algorithm based on if user wants to use CPU or GPU
+        if (useGPU)
+        {
+            // GPU
+            patches = SegmentPatches_GPU(allPixelDataRef, sizeOfRef, patchSize, texture);
+        }
+        else
+        {
+            // CPU
+            patches = SegmentPatches_CPU(allPixelDataRef, sizeOfRef, patchSize);
+        }
         
-        //debugCPU_andGPU(patchesCPU, patchesGPU);
 
         // save the patches as images for showing purposes
-        showData(patchesGPU, patchSize, "Save_Patches");
+        showData(patches, patchSize, "Saved/Save_Patches");
 
+        choosePatches.placeFirstPatch(patches);
         // ----------------------------------------------------------------------------------------------
         // from each patch, extract top and left overlaps
-        float[][][] overlayPixels;
-
-        overlayPixels = SegmentOverlays_GPU(patchesGPU, overlapSize, sizeOfRef, patchSize,overlapSize);
+        overlayPixels = SegmentOverlays_GPU(patches, overlapSize, sizeOfRef, patchSize,overlapSize);
 
         // save the top overlap as images for showing purposes
-        showData(overlayPixels[0], patchSize, "Save_Overlay_Top");
-        showData_left(overlayPixels[1], patchSize, overlapSize , "Save_Overlay_Left");
+        showData(overlayPixels[0], patchSize, "Saved/Save_Overlay_Top");
+        showData_left(overlayPixels[1], patchSize, overlapSize , "Saved/Save_Overlay_Left");
 
         /*int add = 0;
         for (int i = 0; i < topOverlays.Length; i++)
@@ -339,7 +364,7 @@ public class Texturesynthesis : MonoBehaviour
         File.WriteAllBytes(savePath, bytes);
     }
 
-    private void showData(float[][] patchesValues, int patchSize, string dir)
+    public static void showData(float[][] patchesValues, int patchSize, string dir)
     {
 
 
