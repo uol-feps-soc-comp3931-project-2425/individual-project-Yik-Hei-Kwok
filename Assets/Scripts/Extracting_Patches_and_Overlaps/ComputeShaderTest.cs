@@ -409,7 +409,7 @@ public class Texturesynthesis : MonoBehaviour
     }
 
 
-    private void showData_left(float[][] patchesValues, int patchSize, int overlapSize, string dir)
+    public static void showData_left(float[][] patchesValues, int patchSize, int overlapSize, string dir)
     {
         Debug.Log("Number of patches = " + patchesValues.Length);
 

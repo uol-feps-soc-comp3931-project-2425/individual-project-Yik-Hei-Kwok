@@ -73,13 +73,21 @@ public class ChoosePatches : MonoBehaviour
 
         // for storing the current patch's bottom and right overlaps
         float[] overlapBottom = new float[patchSize * overlapSize * 4];
+        float[] overlapRight = new float[patchSize * overlapSize * 4];
 
-
-        float[][] overlapBottoms = new float[1][];
         // save right and bottom overlays of the chosen patch
-        overlapBottoms[0] = saveBottomOverlay(chosenPatch);
+        overlapBottom = saveBottomOverlay(chosenPatch);
+        overlapRight = saveRightOverlay(chosenPatch);
 
+
+
+        // for debug only
+        float[][] overlapBottoms = new float[1][];
+        float[][] overlapRights = new float[1][];
+        overlapBottoms[0] = saveBottomOverlay(chosenPatch);
+        overlapRights[0] = saveRightOverlay(chosenPatch);
         Texturesynthesis.showData(overlapBottoms, patchSize, "Saved/Save_Overlay_Bottom");
+        Texturesynthesis.showData_left(overlapRights, patchSize, overlapSize, "Saved/Save_Overlay_Right");
 
         return (chosenPatch,ranPatch);
     }
@@ -121,6 +129,36 @@ public class ChoosePatches : MonoBehaviour
 
         outputOverlayData = new ComputeBuffer(patchSize * overlapSize, sizeof(float) * 4);
         extractOverlays.SetBuffer(kernalID, "bottomOverlayOutput", outputOverlayData);
+
+        extractOverlays.Dispatch(kernalID, Mathf.CeilToInt((float)patchSize / 8), Mathf.CeilToInt((float)patchSize / 8), 1);
+        float[] bottomOverlayCurrPatch = new float[patchSize * overlapSize * 4];
+        // store bottom overlap pixel values into the array
+        outputOverlayData.GetData(bottomOverlayCurrPatch);
+
+        return bottomOverlayCurrPatch;
+    }
+
+    private float[] saveRightOverlay(float[] chosenPatch)
+    {
+        int patchSize = global.patchData.patchSize;
+        int overlapSize = global.patchData.overlapSize;
+
+        int kernalID = extractOverlays.FindKernel("extractRightOverlays");
+
+        // use data in the patch array for the shader
+        inputPatchData = new ComputeBuffer(chosenPatch.Length, sizeof(float));
+        inputPatchData.SetData(chosenPatch);
+        // set the patch data that will be inputted into GPU processing
+        extractOverlays.SetBuffer(kernalID, "patchData", inputPatchData);
+
+        // data for extracting overlap regions Top
+        extractOverlays.SetInt("overlapSize", overlapSize);
+        extractOverlays.SetInt("patchSize", patchSize);
+        extractOverlays.SetInt("imgHeight", global.refImgData.refImgHeight);
+
+
+        outputOverlayData = new ComputeBuffer(patchSize * overlapSize, sizeof(float) * 4);
+        extractOverlays.SetBuffer(kernalID, "rightOverlayOutput", outputOverlayData);
 
         extractOverlays.Dispatch(kernalID, Mathf.CeilToInt((float)patchSize / 8), Mathf.CeilToInt((float)patchSize / 8), 1);
         float[] bottomOverlayCurrPatch = new float[patchSize * overlapSize * 4];
