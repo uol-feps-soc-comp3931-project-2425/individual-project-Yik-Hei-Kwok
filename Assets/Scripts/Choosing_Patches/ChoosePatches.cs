@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 public class ChoosePatches : MonoBehaviour
 {
@@ -8,10 +9,14 @@ public class ChoosePatches : MonoBehaviour
     private ComputeBuffer inputPatchData;
     // compute buffer for storing overlay data
     private ComputeBuffer outputOverlayData;
+    // compute buffer for storing patch data without overlapping reigions
+    private ComputeBuffer outputPatchData;
 
     [Header("For extracting overlays of each patch")]
     public ComputeShader extractOverlays;
 
+    [Header("For getting patch data without the overlapping regions")]
+    public ComputeShader getWithoutOverlays;
 
 
 
@@ -19,7 +24,8 @@ public class ChoosePatches : MonoBehaviour
     {
         // determine how many patches are needed to make up result image 
         // ( + 1 used for cases where result image not completely filled by)
-        int totalPatchesNeeded = ((resultImageSize/patchSize) + 1) * 2;
+        // need to subtract overlapSize from patchSize because its the actual size of patch which will be placed into result image 
+        int totalPatchesNeeded = ((resultImageSize/(patchSize-overlapSize)) + 1) * 2;
         // how many patches per row in the result image
         int patchesPerRow = (resultImageSize / patchSize) + 1;
 
@@ -74,21 +80,26 @@ public class ChoosePatches : MonoBehaviour
         // for storing the current patch's bottom and right overlaps
         float[] overlapBottom = new float[patchSize * overlapSize * 4];
         float[] overlapRight = new float[patchSize * overlapSize * 4];
+        float[] toBePlacedPatch = new float[(patchSize - overlapSize)^2 * 4];
 
         // save right and bottom overlays of the chosen patch
         overlapBottom = saveBottomOverlay(chosenPatch);
         overlapRight = saveRightOverlay(chosenPatch);
 
-
+        // need to get the patch pixel data without the overlap areas (this will be the data to be placed in the image)
+        getPatchWithoutOverlap(chosenPatch);
 
         // for debug only
         float[][] overlapBottoms = new float[1][];
         float[][] overlapRights = new float[1][];
+        float[][] patchesWithoutOverlap = new float[1][];
         overlapBottoms[0] = saveBottomOverlay(chosenPatch);
         overlapRights[0] = saveRightOverlay(chosenPatch);
+        patchesWithoutOverlap[0] = getPatchWithoutOverlap(chosenPatch);
         Texturesynthesis.showData(overlapBottoms, patchSize, "Saved/Save_Overlay_Bottom");
         Texturesynthesis.showData_left(overlapRights, patchSize, overlapSize, "Saved/Save_Overlay_Right");
-
+        
+        debugScript(patchSize, overlapSize, patchesWithoutOverlap[0], "Saved");
         return (chosenPatch,ranPatch);
     }
 
@@ -166,5 +177,100 @@ public class ChoosePatches : MonoBehaviour
         outputOverlayData.GetData(bottomOverlayCurrPatch);
 
         return bottomOverlayCurrPatch;
+    }
+
+    private float[] getPatchWithoutOverlap(float[] chosenPatch)
+    {
+        int patchSize = global.patchData.patchSize;
+        int overlapSize = global.patchData.overlapSize;
+
+        int kernalID = getWithoutOverlays.FindKernel("GetPatchWithoutOverlap");
+
+        // use data in the patch array for the shader
+        inputPatchData = new ComputeBuffer(chosenPatch.Length, sizeof(float));
+        inputPatchData.SetData(chosenPatch);
+        // set the patch data that will be inputted into GPU processing
+        getWithoutOverlays.SetBuffer(kernalID, "patchData", inputPatchData);
+
+        getWithoutOverlays.SetInt("overlapSize", overlapSize);
+        getWithoutOverlays.SetInt("patchSize", patchSize);
+
+
+        outputPatchData = new ComputeBuffer((patchSize - overlapSize) * (patchSize - overlapSize), sizeof(float) * 4);
+        getWithoutOverlays.SetBuffer(kernalID, "withoutOverlaps", outputPatchData);
+
+        //debugging
+        ComputeBuffer debug = new ComputeBuffer((patchSize - overlapSize) * (patchSize - overlapSize), sizeof(int));
+        getWithoutOverlays.SetBuffer(kernalID, "x_or_y_values", debug);
+        int[] debugValues = new int[(patchSize - overlapSize) * (patchSize - overlapSize)];
+
+        getWithoutOverlays.Dispatch(kernalID, Mathf.CeilToInt((float)patchSize / 8), Mathf.CeilToInt((float)patchSize / 8), 1);
+        
+        float[] patch = new float[(patchSize - overlapSize) * (patchSize - overlapSize) * 4];
+        // store bottom overlap pixel values into the array
+        outputPatchData.GetData(patch);
+        debug.GetData(debugValues);
+
+
+        /*for (int i = 0; i < debugValues.Length; i ++)
+        {
+            Debug.Log($"debugValues[{i}] = {debugValues[i]}");
+        }
+        int countPixel = 0;
+        for (int i = 0; i < patch.Length; i += 4)
+        {
+            Debug.Log($"no overlay pixel {countPixel}: R = {patch[i + 0]}, G = {patch[i + 1]}, B = {patch[i + 2]}, A = {patch[i + 3]}");
+            Debug.Log($"chosen patch pixel {countPixel}: R = {chosenPatch[i + 0]}, G = {chosenPatch[i + 1]}, B = {chosenPatch[i + 2]}, A = {chosenPatch[i + 3]}");
+            countPixel++;
+        }*/
+
+        return patch;
+
+    }
+
+
+    private void debugScript(int patchSize, int overlay, float[] pixelData, string dir)
+    {
+        // Calculate image size
+        int imageSize = patchSize - overlay;
+
+        // Check if the pixelData array is correctly sized
+        if (pixelData == null || pixelData.Length != imageSize * imageSize * 4)
+        {
+            Debug.LogError("Pixel data size does not match the expected image dimensions!");
+            return;
+        }
+
+        // Create a new texture
+        Texture2D texture = new Texture2D(imageSize, imageSize, TextureFormat.RGBA32, false);
+
+        // Fill the texture with the 1D pixel data
+        Color[] colors = new Color[imageSize * imageSize];
+        for (int i = 0; i < colors.Length; i++)
+        {
+            // Extract RGBA values from the 1D array
+            float r = pixelData[i * 4 + 0];
+            float g = pixelData[i * 4 + 1];
+            float b = pixelData[i * 4 + 2];
+            float a = pixelData[i * 4 + 3];
+
+            // Assign the color
+            colors[i] = new Color(r, g, b, a);
+        }
+
+        // Apply colors to the texture
+        texture.SetPixels(colors);
+        texture.Apply();
+
+        byte[] bytes = texture.EncodeToPNG();
+
+        // delete directory contents before appending new patches to the folder
+        //deleteDirContents("Assets/Save_Patches");
+
+        string savePath = $"Assets/{dir}/withoutOverlays.png";
+
+
+
+        File.WriteAllBytes(savePath, bytes);
     }
 }

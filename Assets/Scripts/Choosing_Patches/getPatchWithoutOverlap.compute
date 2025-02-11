@@ -1,0 +1,38 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel GetPatchWithoutOverlap
+
+RWStructuredBuffer<float4> withoutOverlaps;
+
+// for debugging
+RWStructuredBuffer<uint> x_or_y_values;
+
+// input patch data for data processing
+StructuredBuffer<float> patchData;
+
+int patchSize;
+int overlapSize;
+
+[numthreads(8,8,1)]
+void GetPatchWithoutOverlap(uint3 id : SV_DispatchThreadID)
+{
+    // positions of pixel based on how large a patch is
+    uint x = id.x;
+    uint y = id.y;
+    
+    if (x < (patchSize - overlapSize) && y < (patchSize - overlapSize))
+    {
+        // pixel position in the 1D array of pixels
+        int pixelInArray = y * (patchSize * 4) + x * 4;
+    
+        // get the pixel from the input array of pixels based on the global position
+        float4 currentPixel = float4(patchData[pixelInArray + 0], patchData[pixelInArray + 1], patchData[pixelInArray + 2], patchData[pixelInArray + 3]);
+        
+        // get index
+        int outputIndex = y * (patchSize - overlapSize) + x;
+       
+        // save pixel into the output buffer
+        withoutOverlaps[outputIndex] = currentPixel;
+        x_or_y_values[outputIndex] = pixelInArray;
+
+    }
+}
