@@ -80,7 +80,7 @@ public class Texturesynthesis : MonoBehaviour
         allPixelDataRef = StoreRefPixels(texture);
 
         // save the image for showing purposes
-        debugImage(allPixelDataRef, (int)sizeOfRef.x, (int)sizeOfRef.y);
+        DebugFunctions.debugImage(allPixelDataRef, (int)sizeOfRef.x, (int)sizeOfRef.y);
 
         // -----------------------------------------------------------------------------------------------
         // for segementing all pixel data in the 1d array into patches of indicated size
@@ -95,10 +95,10 @@ public class Texturesynthesis : MonoBehaviour
             // CPU
             patches = SegmentPatches_CPU(allPixelDataRef, sizeOfRef, patchSize);
         }
-        
+
 
         // save the patches as images for showing purposes
-        showData(patches, patchSize, "Saved/Save_Patches");
+        DebugFunctions.showData(patches, patchSize, "Saved/Save_Patches");
 
         choosePatches.placeFirstPatch(patches);
         // ----------------------------------------------------------------------------------------------
@@ -106,8 +106,8 @@ public class Texturesynthesis : MonoBehaviour
         overlayPixels = SegmentOverlays_GPU(patches, overlapSize, sizeOfRef, patchSize,overlapSize);
 
         // save the top overlap as images for showing purposes
-        showData(overlayPixels[0], patchSize, "Saved/Save_Overlay_Top");
-        showData_left(overlayPixels[1], patchSize, overlapSize , "Saved/Save_Overlay_Left");
+        DebugFunctions.showData(overlayPixels[0], patchSize, "Saved/Save_Overlay_Top");
+        DebugFunctions.showData_left(overlayPixels[1], patchSize, overlapSize , "Saved/Save_Overlay_Left");
 
         /*int add = 0;
         for (int i = 0; i < topOverlays.Length; i++)
@@ -333,126 +333,12 @@ public class Texturesynthesis : MonoBehaviour
         return storePatches;
     }
 
-    private void debugImage(float[] array, int img_width, int img_height)
-    {
-        int add = 0;
-        Color[] pixels = new Color[img_width * img_height];
-        for (int j = 0; j < array.Length; j += 4)
-        {
-            float R = array[j + 0];
-            float G = array[j + 1];
-            float B = array[j + 2];
-            float A = array[j + 3];
+    
 
-            pixels[add] = new Color(R, G, B, A);
-            add++;
-        }
-
-        Texture2D patch = new Texture2D(img_width, img_height);
-        patch.SetPixels(pixels);
-        patch.Apply();
-
-        byte[] bytes = patch.EncodeToPNG();
-
-        // delete directory contents before appending new patches to the folder
-        //deleteDirContents("Assets/Save_Patches");
-
-        string savePath = $"Assets/image_produced.png";
+    
 
 
-
-        File.WriteAllBytes(savePath, bytes);
-    }
-
-    public static void showData(float[][] patchesValues, int patchSize, string dir)
-    {
-
-
-        int add = 0;
-        Debug.Log("number of patches eeee = " + patchesValues.Length);
-        Debug.Log("number of patches eeee = " + patchesValues.Length);
-
-        for (int i = 0; i < patchesValues.Length; i+=1)
-        {
-            Color[] pixels = new Color[patchSize * patchSize];
-            for (int j = 0; j < patchesValues[i].Length; j += 4)
-            {
-
-
-                float R = patchesValues[i][j + 0];
-                float G = patchesValues[i][j + 1];
-                float B = patchesValues[i][j + 2];
-                float A = patchesValues[i][j + 3];
-
-                pixels[add] = new Color(R, G, B, A);
-
-                add++;
-            }
-            Texture2D patch = new Texture2D(patchSize, patchSize);
-            patch.SetPixels(pixels);
-            patch.Apply();
-
-            byte[] bytes = patch.EncodeToPNG();
-
-            // delete directory contents before appending new patches to the folder
-            //deleteDirContents("Assets/Save_Patches");
-            
-            string savePath = $"Assets/{dir}/Patch{i}.png";
-
-            
-
-            File.WriteAllBytes(savePath, bytes);
-            add = 0;
-
-        }
-        
-    }
-
-
-    public static void showData_left(float[][] patchesValues, int patchSize, int overlapSize, string dir)
-    {
-        Debug.Log("Number of patches = " + patchesValues.Length);
-
-        // Loop through each patch's left overlay data
-        for (int i = 0; i < patchesValues.Length; i++)
-        {
-            // Create an array for the pixels of the overlay image
-            Color[] pixels = new Color[overlapSize * patchSize];
-
-            // Map the RGBA values from the data to the overlay image
-            for (int y = 0; y < patchSize; y++) // Iterate over rows
-            {
-                for (int x = 0; x < overlapSize; x++) // Iterate over the left overlap columns
-                {
-                    // Calculate the index in the flat array (RGBA values)
-                    int index = (y * overlapSize + x) * 4;
-
-                    // Extract RGBA values
-                    float R = patchesValues[i][index + 0];
-                    float G = patchesValues[i][index + 1];
-                    float B = patchesValues[i][index + 2];
-                    float A = patchesValues[i][index + 3];
-
-                    // Map to the pixel array for the image
-                    pixels[y * overlapSize + x] = new Color(R, G, B, A);
-                }
-            }
-
-            // Create a Texture2D to represent the overlay image
-            Texture2D overlayTexture = new Texture2D(overlapSize, patchSize);
-            overlayTexture.SetPixels(pixels);
-            overlayTexture.Apply();
-
-            // Encode the texture to a PNG file
-            byte[] bytes = overlayTexture.EncodeToPNG();
-
-            // Save the overlay image to the specified directory
-            string savePath = $"Assets/{dir}/LeftOverlay_Patch{i}.png";
-            File.WriteAllBytes(savePath, bytes);
-
-            Debug.Log($"Saved left overlay image for patch {i} at {savePath}");
-        }
-    }
+    
 
 
     private float[][][] SegmentOverlays_GPU(float[][] patches, int overlaySize, Vector2 sizeOfRef, int patchSize, int overlapSize)

@@ -13,7 +13,7 @@ public class Call_Synthesis : MonoBehaviour
 
     private int outputSize = 1000;
     private int patchSize = 100;
-    private int overlapSize = 20;
+    private int overlapSize = 23;
 
     private void Start()
     {

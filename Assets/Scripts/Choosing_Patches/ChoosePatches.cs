@@ -96,10 +96,10 @@ public class ChoosePatches : MonoBehaviour
         overlapBottoms[0] = saveBottomOverlay(chosenPatch);
         overlapRights[0] = saveRightOverlay(chosenPatch);
         patchesWithoutOverlap[0] = getPatchWithoutOverlap(chosenPatch);
-        Texturesynthesis.showData(overlapBottoms, patchSize, "Saved/Save_Overlay_Bottom");
-        Texturesynthesis.showData_left(overlapRights, patchSize, overlapSize, "Saved/Save_Overlay_Right");
-        
-        debugScript(patchSize, overlapSize, patchesWithoutOverlap[0], "Saved");
+        DebugFunctions.showData_CustomizedWH(patchSize, overlapSize, overlapBottoms[0], "Saved/Save_Overlay_Bottom");
+        DebugFunctions.showData_CustomizedWH( overlapSize, patchSize , overlapRights[0], "Saved/Save_Overlay_Right");
+
+        DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, patchSize - overlapSize, patchesWithoutOverlap[0], "Saved");
         return (chosenPatch,ranPatch);
     }
 
@@ -228,49 +228,6 @@ public class ChoosePatches : MonoBehaviour
 
     }
 
-
-    private void debugScript(int patchSize, int overlay, float[] pixelData, string dir)
-    {
-        // Calculate image size
-        int imageSize = patchSize - overlay;
-
-        // Check if the pixelData array is correctly sized
-        if (pixelData == null || pixelData.Length != imageSize * imageSize * 4)
-        {
-            Debug.LogError("Pixel data size does not match the expected image dimensions!");
-            return;
-        }
-
-        // Create a new texture
-        Texture2D texture = new Texture2D(imageSize, imageSize, TextureFormat.RGBA32, false);
-
-        // Fill the texture with the 1D pixel data
-        Color[] colors = new Color[imageSize * imageSize];
-        for (int i = 0; i < colors.Length; i++)
-        {
-            // Extract RGBA values from the 1D array
-            float r = pixelData[i * 4 + 0];
-            float g = pixelData[i * 4 + 1];
-            float b = pixelData[i * 4 + 2];
-            float a = pixelData[i * 4 + 3];
-
-            // Assign the color
-            colors[i] = new Color(r, g, b, a);
-        }
-
-        // Apply colors to the texture
-        texture.SetPixels(colors);
-        texture.Apply();
-
-        byte[] bytes = texture.EncodeToPNG();
-
-        // delete directory contents before appending new patches to the folder
-        //deleteDirContents("Assets/Save_Patches");
-
-        string savePath = $"Assets/{dir}/withoutOverlays.png";
-
-
-
-        File.WriteAllBytes(savePath, bytes);
-    }
+    // int imageSize = patchSize - overlay;
+    
 }
