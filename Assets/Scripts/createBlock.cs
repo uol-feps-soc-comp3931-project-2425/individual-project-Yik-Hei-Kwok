@@ -9,7 +9,7 @@ public class createBlock : MonoBehaviour
     private Bounds cubeBounds;
     void Start()
     {
-        createNewBlock(scaleCube);
+        // createNewBlock(scaleCube);
     }
     
 
@@ -22,7 +22,11 @@ public class createBlock : MonoBehaviour
         Renderer cubeRen = cubeInstance.GetComponent<Renderer>();
     }
 
-    
+    // testing for use of kd-trees
+    private void kdTreeTest()
+    {
+        //alglib.kdtreebuild
+    }
     
 
 }

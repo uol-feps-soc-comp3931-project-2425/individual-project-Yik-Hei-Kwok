@@ -35,6 +35,9 @@ void SegmentPatches (uint3 id : SV_DispatchThreadID)
     uint x = id.x;
     uint y = id.y;
     
+    // prevent out of bounds
+    if (x >= sizePatch || y >= sizePatch)
+        return;
     
     // global position of our pixel
     uint globalPositionX = x + currentPatchHorizontal * sizePatch;

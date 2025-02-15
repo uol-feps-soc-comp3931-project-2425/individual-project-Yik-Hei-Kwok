@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
+
 public class ChoosePatches : MonoBehaviour
 {
     // compute buffer for passing in array data of patches into shader
@@ -18,61 +19,77 @@ public class ChoosePatches : MonoBehaviour
     [Header("For getting patch data without the overlapping regions")]
     public ComputeShader getWithoutOverlays;
 
+    
 
-
-    public void startChoosePatches(float[][] allPatches, float[][][] allOverlaps, int resultImageSize, int patchSize, int overlapSize, float[][] chosenPatches)
+    public void startChoosePatches(float[][] allPatches, float[][][] allOverlaps, int resultImageSize, int patchSize, int overlapSize)
     {
         // determine how many patches are needed to make up result image 
         // ( + 1 used for cases where result image not completely filled by)
         // need to subtract overlapSize from patchSize because its the actual size of patch which will be placed into result image 
-        int totalPatchesNeeded = ((resultImageSize/(patchSize-overlapSize)) + 1) * 2;
+        int totalPatchesNeeded = ((resultImageSize/(patchSize-overlapSize)) + 1) ^ 2;
         // how many patches per row in the result image
-        int patchesPerRow = (resultImageSize / patchSize) + 1;
+        int patchesPerRow = (resultImageSize / (patchSize - overlapSize)) + 1;
 
         // for placing patches onto a new canvas
         int k = 0;
+        // for saving the patch number that is being extracted
+        int currIterationPatchNum = 0;
+
+        // chosen patches wil be placed in this array
+        float[][] chosenPatches = new float[totalPatchesNeeded][];
+        // we only need to save the bottom overlay patches in the long run
+        float[][] previousRowBottomPatches = new float[patchesPerRow][];
+        // we only need to save the left overlay of the previously chosen patch
+        float[] previousRightPatch = new float[patchSize * overlapSize * 4];
 
         // loop through all patches needed
         for (int i = 0;  i < totalPatchesNeeded; i++) {
-            for (int j = 0;  j < patchesPerRow; j++)
-            {
+            (currIterationPatchNum, previousRightPatch, previousRowBottomPatches[k]) = placeNewPatch(k, allPatches, allOverlaps, chosenPatches, patchesPerRow, previousRightPatch);
+            k += 1;
 
-            }
         }
     }
 
     // for placing a new patch at a new position of the result image
-    private (int, int) placeNewPatch(int k, float[][] allPatches, float[][][] allOverlaps, float[][] chosenPatches, int patchesPerRow)
+    private (int, float[], float[]) placeNewPatch(int k, float[][] allPatches, float[][][] allOverlaps, float[][] chosenPatches, int patchesPerRow, float[] prevRightPatch)
     {
+        int patchSize = global.patchData.patchSize;
+        int overlapSize = global.patchData.overlapSize;
+
         // for storing the chosen patch at this iteration
-        int chosenPatch;
+        int chosenPatchNum;
+        // get the right and bottom overlay of the extracted patch, will be used for comparing with next patch
+        float[] chosenRightOverlay = new float[patchSize * overlapSize * 4];
+        float[] chosenBottomOverlay = new float[patchSize * overlapSize * 4];
+
         // chosenPatches array denotes 
         // if k = 0, it means there isn't a single patch placed, place the first patch
         if (k == 0)
         {
             // place the first chosen patch into the chosenPatches array.
-            (chosenPatches[0], chosenPatch) = placeFirstPatch(allPatches);
-            k += 1;
+            (chosenPatches[0], chosenPatchNum, chosenRightOverlay, chosenBottomOverlay) = placeFirstPatch(allPatches, k);
+            
         }
         // if k != 0, then a patch is already placed. Look at previous patch and compare
         // compare
         else
         {
-            (chosenPatches[k], chosenPatch) = placeNextPatch(allPatches, allOverlaps, k, patchesPerRow);
-            k += 1;
+            (chosenPatches[k], chosenPatchNum) = placeNextPatch(allPatches, allOverlaps, k, patchesPerRow, prevRightPatch);
+            
 
         }
-        return (k, chosenPatch);
+        return (chosenPatchNum, chosenRightOverlay, chosenBottomOverlay);
     }
 
 
-    public (float[],int) placeFirstPatch(float[][] allPatches)
+    public (float[],int, float[], float[]) placeFirstPatch(float[][] allPatches, int k)
     {
         int patchSize = global.patchData.patchSize;
         int overlapSize = global.patchData.overlapSize;
 
         // choose a random patch as start patch 
         System.Random ran = new System.Random();
+        // ranPatch describes which patch is chosen
         int ranPatch = ran.Next(allPatches.Length);
         ranPatch = 0;
         float[] chosenPatch = allPatches[ranPatch];
@@ -87,28 +104,24 @@ public class ChoosePatches : MonoBehaviour
         overlapRight = saveRightOverlay(chosenPatch);
 
         // need to get the patch pixel data without the overlap areas (this will be the data to be placed in the image)
-        getPatchWithoutOverlap(chosenPatch);
+        toBePlacedPatch = getPatchWithoutOverlap(chosenPatch);
 
         // for debug only
-        float[][] overlapBottoms = new float[1][];
-        float[][] overlapRights = new float[1][];
-        float[][] patchesWithoutOverlap = new float[1][];
-        overlapBottoms[0] = saveBottomOverlay(chosenPatch);
-        overlapRights[0] = saveRightOverlay(chosenPatch);
-        patchesWithoutOverlap[0] = getPatchWithoutOverlap(chosenPatch);
-        DebugFunctions.showData_CustomizedWH(patchSize, overlapSize, overlapBottoms[0], "Saved/Save_Overlay_Bottom");
-        DebugFunctions.showData_CustomizedWH( overlapSize, patchSize , overlapRights[0], "Saved/Save_Overlay_Right");
-
-        DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, patchSize - overlapSize, patchesWithoutOverlap[0], "Saved");
-        return (chosenPatch,ranPatch);
+        DebugFunctions.showData_CustomizedWH(patchSize, overlapSize, overlapBottom, $"Saved/Save_Overlay_Bottom/bottom_{k}.png");
+        DebugFunctions.showData_CustomizedWH(overlapSize, patchSize, overlapRight, $"Saved/Save_Overlay_Right/right_{k}.png");
+        DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, patchSize - overlapSize, toBePlacedPatch, $"Saved/To_Be_Placed_Patches/to_be_placed_{k}.png");
+        
+        return (toBePlacedPatch, ranPatch, overlapRight, overlapBottom);
     }
 
-    private (float[],int) placeNextPatch(float[][] allPatches, float[][][] allOverlaps, int patchNumber, int patchesPerRow)
+    private (float[],int) placeNextPatch(float[][] allPatches, float[][][] allOverlaps, int patchNumber, int patchesPerRow, float[] prevRightPatch)
     {
         // if we are still at the first row of the result image, we don't need to compare overlap top region
         if (patchNumber < patchesPerRow)
         {
             // function for comparing left overlays
+            
+
         }
         else
         {

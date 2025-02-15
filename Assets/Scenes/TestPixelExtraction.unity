@@ -339,7 +339,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Synthesis: {fileID: 982004078}
-  ref_texture: {fileID: 2800000, guid: de42bd79b506a7d45a1714018d178db9, type: 3}
+  ref_texture: {fileID: 2800000, guid: aa564d78de1200e489394adb096a6977, type: 3}
   ref_texture2: {fileID: 0}
 --- !u!4 &611567048
 Transform:

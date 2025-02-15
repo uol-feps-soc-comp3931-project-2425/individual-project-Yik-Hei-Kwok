@@ -100,7 +100,7 @@ public class Texturesynthesis : MonoBehaviour
         // save the patches as images for showing purposes
         DebugFunctions.showData(patches, patchSize, "Saved/Save_Patches");
 
-        choosePatches.placeFirstPatch(patches);
+        choosePatches.placeFirstPatch(patches, 0);
         // ----------------------------------------------------------------------------------------------
         // from each patch, extract top and left overlaps
         overlayPixels = SegmentOverlays_GPU(patches, overlapSize, sizeOfRef, patchSize,overlapSize);

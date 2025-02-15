@@ -18,6 +18,10 @@ void ReadPixel (uint3 id : SV_DispatchThreadID)
     uint x = id.x;
     uint y = id.y;
     
+    // prevent out of bounds
+    if (x >= img_width || y >= img_height)
+        return;
+    
     // flip x to make sure it accommodates to flipped image
     // and calculate index for buffer
     int flipX = x;

@@ -166,7 +166,7 @@ public class DebugFunctions : MonoBehaviour
         // delete directory contents before appending new patches to the folder
         //deleteDirContents("Assets/Save_Patches");
 
-        string savePath = $"Assets/{dir}/withoutOverlays.png";
+        string savePath = $"Assets/{dir}";
 
 
 
