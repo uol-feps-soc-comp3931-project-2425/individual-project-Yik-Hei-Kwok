@@ -339,7 +339,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Synthesis: {fileID: 982004078}
-  ref_texture: {fileID: 2800000, guid: aa564d78de1200e489394adb096a6977, type: 3}
+  ref_texture: {fileID: 2800000, guid: ed92bb8ef4ad95245859680931910cdd, type: 3}
   ref_texture2: {fileID: 0}
 --- !u!4 &611567048
 Transform:
@@ -451,6 +451,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   extractOverlays: {fileID: 7200000, guid: d98fa215fc9e92b4e9e7ededbe4bfbdf, type: 3}
   getWithoutOverlays: {fileID: 7200000, guid: 0484f564ce540c04699ad16f9ba832a0, type: 3}
+  differenceInOverlays: {fileID: 7200000, guid: 98a2ad5f793ceea45af27965e376dd2a, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

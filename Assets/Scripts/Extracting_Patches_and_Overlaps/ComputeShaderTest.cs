@@ -109,16 +109,8 @@ public class Texturesynthesis : MonoBehaviour
         DebugFunctions.showData(overlayPixels[0], patchSize, "Saved/Save_Overlay_Top");
         DebugFunctions.showData_left(overlayPixels[1], patchSize, overlapSize , "Saved/Save_Overlay_Left");
 
-        /*int add = 0;
-        for (int i = 0; i < topOverlays.Length; i++)
-        {
-            for (int j = 0; j < topOverlays[i].Length; j+=4)
-            {
-                Debug.Log($"ffff Patch {i} pixel {add} = {topOverlays[i][j + 0]},{topOverlays[i][j + 1]},{topOverlays[i][j + 2]},{topOverlays[i][j + 3]}");
-                add++;
-            }
-            
-        }*/
+        // after getting all information needed, call the choose patch function to start choosing patches
+        choosePatches.startChoosePatches(patches, overlayPixels, 1000, patchSize, overlapSize);
 
     }
     private Vector2 GetRefTextureProperties(Texture2D ref_texture)
@@ -268,6 +260,7 @@ public class Texturesynthesis : MonoBehaviour
         int rowPatches = Mathf.FloorToInt(sizeOfRef.x / patchSize);
         int colPatches = Mathf.FloorToInt(sizeOfRef.y / patchSize);
         int totalPatches = rowPatches * colPatches;
+        global.patchData.totalNumPatches = totalPatches;
 
         // get total number of items in each row 
         int rowItemsTotal = rowPatches * rowItemsPerPatch;

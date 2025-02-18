@@ -8,6 +8,7 @@ public class global : MonoBehaviour
     {
         public static int patchSize;
         public static int overlapSize;
+        public static int totalNumPatches;
     }
 
     public struct refImgData

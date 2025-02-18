@@ -1,0 +1,26 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel diffLeftRight
+#pragma kernal maxDifference
+
+
+StructuredBuffer<float> leftOverlayData;
+StructuredBuffer<float> rightOverlayData;
+
+RWStructuredBuffer<float> outputDifference;
+RWStructuredBuffer<float> maxOutputDifference;
+
+[numthreads(8,8,1)]
+void diffLeftRight (uint3 id : SV_DispatchThreadID)
+{
+    uint x = id.x;
+    float vd = rightOverlayData[x] - leftOverlayData[x];
+    outputDifference[x] = vd * vd;
+    
+}
+
+[numthreads(8,8,1)]
+void maxDifference(uint3 id : SV_DispatchThreadID)
+{
+    uint x = id.x;
+    maxOutputDifference[x] = leftOverlayData[x] * leftOverlayData[x];
+}
