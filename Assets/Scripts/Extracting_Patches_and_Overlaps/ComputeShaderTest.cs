@@ -75,7 +75,6 @@ public class Texturesynthesis : MonoBehaviour
         readPixels.SetFloat("img_width", sizeOfRef.x);
         readPixels.SetFloat("img_height", sizeOfRef.y);
         readPixels.SetBuffer(kernalID, "outputBuffer", outputBuffer);
-        Debug.Log($"img_height = {sizeOfRef.y}, img_width = {sizeOfRef.x}");
         // call function to activate Compute Shader and store pixel data of reference image in array
         allPixelDataRef = StoreRefPixels(texture);
 
@@ -131,14 +130,7 @@ public class Texturesynthesis : MonoBehaviour
         refPixelsRGB = new float[4 * sizeOfRefImage];
         // get the pixel data of the reference image in RGBA format calculated in shader
         outputBuffer.GetData(refPixelsRGB);
-
-        int add = 0;
-        for (int i = 0; i < sizeOfRefImage; i++)
-        {
-            Debug.Log($"Pixel colour {i}: R={refPixelsRGB[0 + add]}, G={refPixelsRGB[1 + add]}, B={refPixelsRGB[2 + add]}, A={refPixelsRGB[3 + add]}");
-            add += 4;
-        }
-
+      
         //outputBuffer.Release();
 
         return refPixelsRGB;
@@ -154,7 +146,6 @@ public class Texturesynthesis : MonoBehaviour
         // number of items in a patch 
         int rowItemsPerPatch = patchSize * 4;
         int totalItemsPerPatch = patchSize * patchSize * 4;
-        Debug.Log("rowItemsPerPatch = " + rowItemsPerPatch);
 
         // get total number of derived patches 
         int rowPatches = Mathf.FloorToInt(sizeOfRef.x / patchSize);
@@ -182,10 +173,8 @@ public class Texturesynthesis : MonoBehaviour
         int itemInRow = 0; // track which item are we in, in the row
 
         int ignoreItemsWidth = (int)(sizeOfRef.x * 4) - (rowPatches * rowItemsPerPatch); // number of items in each row to ignore
-        Debug.Log("ignoreItemsWidth = " + ignoreItemsWidth);
         int ignoreItemsHeight = (int)(sizeOfRef.y) - (colPatches * patchSize); // number of items in each column to ignore
         int totalHeightIgnore = allPixelDataRef.Length - (int)(ignoreItemsHeight * sizeOfRef.x * 4);
-        Debug.Log("totalHeightIgnore = " + totalHeightIgnore);
 
         // segment the pixel data of the reference image into patches
         for (int i = 0; i < allPixelDataRef.Length; i++)
@@ -377,11 +366,6 @@ public class Texturesynthesis : MonoBehaviour
             // for debugging
             int[] debug = new int[patchSize * patchSize];
             condition_debug.GetData(debug);
-
-            for (int j = 0; j < debug.Length; j++)
-            {
-                Debug.Log($": ) {debug[j]}");
-            }
         }
         // --------------------------------------------------------------------------------------------------------------------------------------------
         // now deal with left overlays
@@ -418,24 +402,12 @@ public class Texturesynthesis : MonoBehaviour
             int[] debug = new int[patchSize * patchSize];
             condition_debug.GetData(debug);
 
-            for (int j = 0; j < debug.Length; j++)
-            {
-                Debug.Log($": ( {debug[j]}");
-            }
         }
 
         // put it in a single array
         float[][][] topAndLeftOverlays = new float[2][][];
         topAndLeftOverlays[0] = storeTopOverlays; 
         topAndLeftOverlays[1] = storeLeftOverlays;
-
-        for (int i = 0; i < topAndLeftOverlays[1].Length; i++)
-        {
-            for (int j = 0; j < topAndLeftOverlays[1][i].Length; j++)
-            {
-                Debug.Log($"Value of Left Overlaps of Patch {i} Pixel {j} = {topAndLeftOverlays[1][i][j]}");
-            }
-        }
 
         return topAndLeftOverlays;
     }

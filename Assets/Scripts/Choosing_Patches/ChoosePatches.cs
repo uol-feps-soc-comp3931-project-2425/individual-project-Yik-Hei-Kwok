@@ -39,9 +39,15 @@ public class ChoosePatches : MonoBehaviour
         // determine how many patches are needed to make up result image 
         // ( + 1 used for cases where result image not completely filled by)
         // need to subtract overlapSize from patchSize because its the actual size of patch which will be placed into result image 
-        int totalPatchesNeeded = ((resultImageSize/(patchSize-overlapSize)) + 1) ^ 2;
-        // how many patches per row in the result image
-        int patchesPerRow = (resultImageSize / (patchSize - overlapSize)) + 1;
+        int totalPatchesNeeded = (int)Mathf.Ceil(Mathf.Pow((resultImageSize/(patchSize-overlapSize)) + 1,2f));
+        // how many patches per row in the result( image
+        int patchesPerRow = (int)Mathf.Ceil(resultImageSize / (patchSize - overlapSize)) + 1;
+        Debug.Log("D:: this = " + resultImageSize / (patchSize - overlapSize));
+        Debug.Log("D:: resultImageSize = " + resultImageSize);
+        Debug.Log("D:: patchSize = " + patchSize);
+        Debug.Log("D:: overlapSize = " + overlapSize);
+        Debug.Log("D:: totalPatchesNeeded = " + totalPatchesNeeded);
+        Debug.Log("D:: patchesPerRow = " + patchesPerRow);
 
         // for placing patches onto a new canvas
         int k = 0;
@@ -57,14 +63,13 @@ public class ChoosePatches : MonoBehaviour
 
         // loop through all patches needed
         for (int i = 0;  i < totalPatchesNeeded; i++) {
-            (currIterationPatchNum, previousRightPatch, previousRowBottomPatches[k]) = placeNewPatch(k, allPatches, allOverlaps, chosenPatches, patchesPerRow, previousRightPatch);
+            (currIterationPatchNum, previousRightPatch, previousRowBottomPatches[k]) = placeNewPatch(k, allPatches, allOverlaps, chosenPatches, patchesPerRow, previousRightPatch, previousRowBottomPatches);
             k += 1;
-
         }
     }
 
     // for placing a new patch at a new position of the result image
-    private (int, float[], float[]) placeNewPatch(int k, float[][] allPatches, float[][][] allOverlaps, float[][] chosenPatches, int patchesPerRow, float[] prevRightPatch)
+    private (int, float[], float[]) placeNewPatch(int k, float[][] allPatches, float[][][] allOverlaps, float[][] chosenPatches, int patchesPerRow, float[] prevRightPatch, float[][] previousRowBottomPatches)
     {
         int patchSize = global.patchData.patchSize;
         int overlapSize = global.patchData.overlapSize;
@@ -87,9 +92,7 @@ public class ChoosePatches : MonoBehaviour
         // compare
         else
         {
-            (chosenPatches[k], chosenPatchNum, chosenRightOverlay, chosenBottomOverlay) = placeNextPatch(allPatches, allOverlaps, k, patchesPerRow, prevRightPatch);
-            
-
+            (chosenPatches[k], chosenPatchNum, chosenRightOverlay, chosenBottomOverlay) = placeNextPatch(allPatches, allOverlaps, k, patchesPerRow, prevRightPatch, previousRowBottomPatches);
         }
         return (chosenPatchNum, chosenRightOverlay, chosenBottomOverlay);
     }
@@ -127,7 +130,7 @@ public class ChoosePatches : MonoBehaviour
         return (toBePlacedPatch, ranPatch, overlapRight, overlapBottom);
     }
 
-    private (float[],int, float[], float[]) placeNextPatch(float[][] allPatches, float[][][] allOverlaps, int patchNumber, int patchesPerRow, float[] prevRightPatch)
+    private (float[],int, float[], float[]) placeNextPatch(float[][] allPatches, float[][][] allOverlaps, int patchNumber, int patchesPerRow, float[] prevRightPatch, float[][] previousRowBottomPatches)
     {
         int patchSize = global.patchData.patchSize;
         int overlapSize = global.patchData.overlapSize;
@@ -139,12 +142,41 @@ public class ChoosePatches : MonoBehaviour
         float[] overlapBottom = new float[patchSize * overlapSize * 4];
         float[] overlapRight = new float[patchSize * overlapSize * 4];
 
+        Debug.Log("K1 = " + patchNumber);
+        Debug.Log("K12 = " + patchesPerRow);
+
         // if we are still at the first row of the result image, we don't need to compare overlap top region
         if (patchNumber < patchesPerRow)
         {
             // function for comparing left overlays
-            float[][] possiblePatches = compareLeftOverlays(prevRightPatch, allOverlaps[1], global.patchData.totalNumPatches, allPatches);
+            float[][] possiblePatches = compareOneOverlays(prevRightPatch, allOverlaps[1], global.patchData.totalNumPatches, allPatches);
             // choose a random patch from the list
+            System.Random ran = new System.Random();
+            ranPatch = ran.Next(possiblePatches.Length);
+            float[] chosenPatch = possiblePatches[ranPatch];
+           
+
+            // save right and bottom overlays of the chosen patch
+            overlapBottom = saveBottomOverlay(chosenPatch);
+            overlapRight = saveRightOverlay(chosenPatch);
+
+            // need to get the patch pixel data without the overlap areas (this will be the data to be placed in the image)
+            toBePlacedPatch = getPatchWithoutOverlap(chosenPatch);
+
+            DebugFunctions.showData_CustomizedWH(patchSize, overlapSize, overlapBottom, $"Saved/Save_Overlay_Bottom/bottom_{patchNumber}.png");
+            DebugFunctions.showData_CustomizedWH(overlapSize, patchSize, overlapRight, $"Saved/Save_Overlay_Right/right_{patchNumber}.png");
+            DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, patchSize - overlapSize, toBePlacedPatch, $"Saved/To_Be_Placed_Patches/to_be_placed_{patchNumber}.png");
+            
+        }
+        // if we are at the first patch of the row, we don't need to compare left overlays
+        else if (patchNumber % (patchesPerRow) == 0)
+        {
+            Debug.Log($"D:: enter patchNum = {patchNumber}");
+            // get the previous bottom overlay (since we are choosing patch for start of row, always compare with patch chosen at start of previous row)
+            float[] prevBottomPatch = previousRowBottomPatches[0];
+            // function for comparing top overlays
+            float[][] possiblePatches = compareOneOverlays(prevBottomPatch, allOverlaps[0], global.patchData.totalNumPatches, allPatches);
+
             System.Random ran = new System.Random();
             ranPatch = ran.Next(possiblePatches.Length);
             float[] chosenPatch = possiblePatches[ranPatch];
@@ -160,12 +192,22 @@ public class ChoosePatches : MonoBehaviour
             DebugFunctions.showData_CustomizedWH(overlapSize, patchSize, overlapRight, $"Saved/Save_Overlay_Right/right_{patchNumber}.png");
             DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, patchSize - overlapSize, toBePlacedPatch, $"Saved/To_Be_Placed_Patches/to_be_placed_{patchNumber}.png");
 
+
+            //float possiblePatches = compareTopOverlays();
+
+
         }
+        // otherwise, both left and bottom have to be compared with right and up respectively
         else
         {
-            // function for comparing left overlays
-
+            // get current bottomPatch
+            float[] prevBottomPatch = previousRowBottomPatches[patchNumber % (patchesPerRow)];
             // function for comparing top overlays
+            //float[][] possiblePatchesTop = compareLeftOverlays(prevBottomPatch, allOverlaps[0], global.patchData.totalNumPatches, allPatches);
+            // function for  comparing left overlays
+            //float[][] possiblePatchesLeft = compareLeftOverlays(prevRightPatch, allOverlaps[1], global.patchData.totalNumPatches, allPatches);
+
+
         }
         //Debug.Log("patch number = " +  patchNumber);
         //Debug.Log("actual patch number = " + allPatches.Length);
@@ -173,86 +215,122 @@ public class ChoosePatches : MonoBehaviour
     }
 
     // for comparing difference values of each patch left overlay with the previous patch right overlay 
-    private float[][] compareLeftOverlays(float[] previousRightOverlay, float[][] allLeftOverlays, int totalPatches, float[][] allPatches)
+    private float[][] compareOneOverlays(float[] previousOverlay, float[][] allOverlays, int totalPatches, float[][] allPatches)
     {
         int patchSize = global.patchData.patchSize;
         int overlapSize = global.patchData.overlapSize;
-        float[] distanceMetrics = new float[totalPatches];
+
         // loop through each patch
-        for (int i = 0; i < allLeftOverlays.Length; i++)
-        {
-            
-            int kernalID = differenceInOverlays.FindKernel("diffLeftRight");
-            // pass in pixel data of previous right overlap to the shader
-            rightOverlapData = new ComputeBuffer(patchSize * overlapSize * 4, sizeof(float));
-            rightOverlapData.SetData(previousRightOverlay);
-            differenceInOverlays.SetBuffer(kernalID, "rightOverlayData", rightOverlapData);
-            
-            // pass in pixel data of each left overlay to the shader
-            leftOverlapData = new ComputeBuffer(patchSize * overlapSize * 4, sizeof(float));
-            leftOverlapData.SetData(allLeftOverlays[i]);
-            differenceInOverlays.SetBuffer(kernalID, "leftOverlayData", leftOverlapData);
-            
-            // store the difference in an array
-            // for distance metric
-            float[] pixelDifferences = new float[patchSize * overlapSize * 4];
-            differenceOverlapData = new ComputeBuffer(patchSize * overlapSize * 4, sizeof(float));
-            differenceInOverlays.SetBuffer(kernalID, "outputDifference", differenceOverlapData);
+        float[] distanceMetrics = compareOverlaysGPU(allOverlays, previousOverlay, patchSize, overlapSize, totalPatches);
+        // calculate distance tolerance (dmax)
+        int kernalID_max = differenceInOverlays.FindKernel("maxDifference");
 
-            // for distance tolerance (dmax)
-            float[] maxDifference = new float[patchSize * overlapSize * 4];
-            maxDiffOverlapData = new ComputeBuffer(patchSize * overlapSize * 4, sizeof(float));
-            differenceInOverlays.SetBuffer(kernalID, "maxOutputDifference", maxDiffOverlapData);
+        rightOverlapData = new ComputeBuffer(patchSize * overlapSize * 4, sizeof(float));
+        rightOverlapData.SetData(previousOverlay);
+        differenceInOverlays.SetBuffer(kernalID_max, "rightOverlayData", rightOverlapData);
 
-            differenceInOverlays.Dispatch(kernalID, Mathf.CeilToInt((float)(patchSize * overlapSize) / 64), 1, 1);
-            differenceOverlapData.GetData(pixelDifferences);
-            
+        float[] maxDifferences = new float[patchSize * overlapSize * 4];
+        maxDiffOverlapData = new ComputeBuffer(patchSize * overlapSize * 4, sizeof(float));
+        differenceInOverlays.SetBuffer(kernalID_max, "maxOutputDifference", maxDiffOverlapData);
+        differenceInOverlays.Dispatch(kernalID_max, Mathf.CeilToInt((float)(patchSize * overlapSize) / 64), 1, 1);
+        maxDiffOverlapData.GetData(maxDifferences);
 
-            // now we have the difference in pixel values, we now apply Distance Matrics given by the paper
-            float sum = 0;
-            int debug = 0;
-            int maindebug = 0;
-            for (int j = 0; j < pixelDifferences.Length; j++)
-            {
-                sum += pixelDifferences[j];
-                
-                debug += 1;
-                if(debug == 4)
-                {
-                    Debug.Log($"pixelDifference value of patch {i} in pixel{maindebug} = R {pixelDifferences[j-3]}, G {pixelDifferences[j - 2]}, B {pixelDifferences[j - 1]}, A {pixelDifferences[j]}");
-                    debug = 0;
-                    maindebug += 1;
-                }
-            }
-            float distanceMetric = Mathf.Pow(((1 / patchSize * overlapSize) * sum), 1 / 2);
-            
-            distanceMetrics[i] = distanceMetric;
-        }
+        float maxDifference = 0;
 
+        for (int j = 0;  j < maxDifferences.Length; j++)
+            maxDifference += maxDifferences[j];
+
+        float maxTolerance = 0.2f * Mathf.Pow(((1f / patchSize * overlapSize) * maxDifference), 1f / 2);
+        Debug.Log(":DF maxTolerance = " + maxTolerance);
         // store patches that fit the distance metric
         int numPossible = 0;
         for (int i = 0; i < distanceMetrics.Length; i++)
-            if (distanceMetrics[i] > 0)
-            numPossible ++;
+        {
+            Debug.Log(":DF distanceMetrics = " + distanceMetrics[i]);
+            if (distanceMetrics[i] < maxTolerance)
+            {
+                numPossible++;
+            }
+            
+        }
 
         float[][] possiblePatches = new float[numPossible][];
         int increment = 0;
         for (int i = 0; i < distanceMetrics.Length; i++)
         {
-            if (distanceMetrics[i] > 0)
+            if (distanceMetrics[i] < maxTolerance)
             {
                 possiblePatches[increment] = allPatches[increment];
                 increment++;
             }
             
         }
+        // if the set is empty (no patch meets the distance tolerance criteria)
 
         // return all possible patches that can be used
         return possiblePatches;
-
-
     }
 
+
+    /*private float[][] compareTopOverlays(float[] previousBottomOverlay, float[][] allTopOverlays, int totalPatches, float[][] allPatches)
+    {
+        int patchSize = global.patchData.patchSize;
+        int overlapSize = global.patchData.overlapSize;
+        float[] distanceMetrics = new float[totalPatches];
+
+        for (int i = 0; i < allTopOverlays.Length; i++)
+        {
+
+        }
+    }*/
+
+    private float[] compareOverlaysGPU(float[][] allLeftOverlays, float[] previousRightOverlay, int patchSize, int overlapSize, int totalPatches)
+    {
+
+        float[] distanceMetrics = new float[totalPatches];
+
+        for (int i = 0; i < allLeftOverlays.Length; i++)
+        {
+
+            int kernalID = differenceInOverlays.FindKernel("diffLeftRight");
+            // pass in pixel data of previous right overlap to the shader
+            rightOverlapData = new ComputeBuffer(patchSize * overlapSize * 4, sizeof(float));
+            rightOverlapData.SetData(previousRightOverlay);
+            differenceInOverlays.SetBuffer(kernalID, "rightOverlayData", rightOverlapData);
+
+            // pass in pixel data of each left overlay to the shader
+            leftOverlapData = new ComputeBuffer(patchSize * overlapSize * 4, sizeof(float));
+            leftOverlapData.SetData(allLeftOverlays[i]);
+            differenceInOverlays.SetBuffer(kernalID, "leftOverlayData", leftOverlapData);
+
+            // store the difference in an array
+            // for distance metric
+            float[] pixelDifferences = new float[patchSize * overlapSize * 4];
+            differenceOverlapData = new ComputeBuffer(patchSize * overlapSize * 4, sizeof(float));
+            differenceInOverlays.SetBuffer(kernalID, "outputDifference", differenceOverlapData);
+
+
+
+            differenceInOverlays.Dispatch(kernalID, Mathf.CeilToInt((float)(patchSize * overlapSize) / 64), 1, 1);
+            differenceOverlapData.GetData(pixelDifferences);
+
+
+
+            // now we have the difference in pixel values, we now apply Distance Matrics and the distance tolerance (dmax)
+            // given by the paper 
+            float sumDifference = 0;
+
+
+            for (int j = 0; j < pixelDifferences.Length; j++)
+                sumDifference += pixelDifferences[j];
+
+
+            float distanceMetric = Mathf.Pow(((1f / patchSize * overlapSize) * sumDifference), 1f / 2);
+            distanceMetrics[i] = distanceMetric;
+
+        }
+        return distanceMetrics;
+    }
 
 
     private float[] saveBottomOverlay(float[] chosenPatch)
