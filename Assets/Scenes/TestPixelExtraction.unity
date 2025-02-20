@@ -452,6 +452,7 @@ MonoBehaviour:
   extractOverlays: {fileID: 7200000, guid: d98fa215fc9e92b4e9e7ededbe4bfbdf, type: 3}
   getWithoutOverlays: {fileID: 7200000, guid: 0484f564ce540c04699ad16f9ba832a0, type: 3}
   differenceInOverlays: {fileID: 7200000, guid: 98a2ad5f793ceea45af27965e376dd2a, type: 3}
+  combinePatches: {fileID: 7200000, guid: ecd4b773f9e466d44991203f1a59e54f, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

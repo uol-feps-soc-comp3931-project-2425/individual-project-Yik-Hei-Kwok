@@ -1,9 +1,12 @@
 // Each #kernel tells which function to compile; you can have many kernels
 #pragma kernel SegmentPatches
+#pragma kernel CombinePatches
 
 // Create a RenderTexture with enableRandomWrite flag and set it
 // with cs.SetTexture
 
+
+// for segmenting patches
 RWStructuredBuffer<float4> outputPatches;
 
 float imgHeight;
@@ -24,6 +27,23 @@ int currentPatchHorizontal;
 int currentPatchVertical;
 
 StructuredBuffer<float> pixelData;
+
+
+// for combining patches
+// -------------------------------------------------------------
+
+// the patch data
+StructuredBuffer<float> patchData;
+// size of a patch
+int patchSize;
+// number of patches in a row
+int numPatchesPerRow;
+// height/width of the final image
+int lengthImage;
+
+
+
+RWStructuredBuffer<float> outputRowOfPatchPixels;
 
 
 
@@ -57,6 +77,107 @@ void SegmentPatches (uint3 id : SV_DispatchThreadID)
     outputPatches[outputIndex] = currentPixel;
    
 }
+
+
+[numthreads(8, 8, 1)]
+void CombinePatches(uint3 id : SV_DispatchThreadID)
+{
+    // we are processing all pixels from all patches in a row 
+    int patchIndex = id.x;
+    
+    
+    
+    // do not process the pixels that are out of bounds to the bottom
+    //if ()
+    
+    // get the pixel value of our processing pixel
+    float4 currentPixel = patchData[patchIndex];
+    
+    // which patch does the current pixel belong to
+    uint patchNumber = patchIndex / (patchSize * patchSize * 4);
+    // where does the pixel reside in the patch
+    uint pixelPositionInPatch = patchIndex % (patchSize * patchSize * 4);
+    // calculate row of the current pixel in the patch
+    uint rowInPatch = pixelPositionInPatch / (patchSize * 4); 
+    uint xInRow = pixelPositionInPatch % (patchSize * 4); 
+    
+    // do not process the pixels that are out of bounds to the right
+    if (xInRow + patchSize * patchNumber * 4 <= lengthImage * 4)
+    {
+        // patchNumber * patchSize * 4 determines the x offset
+        // rowInPatch * lengthImage * 4 determines the y offset 
+        int outputIndex = (patchNumber * patchSize * 4) + (rowInPatch * lengthImage * 4) + xInRow;
+        outputRowOfPatchPixels[outputIndex] = currentPixel;
+    }
+}
+
+
+/*
+
+
+// current processing row
+int currentRow;
+// current row of pixel processing inside the processed patch
+int currentRowInPatch;
+// number of pixels in a row of a single patch
+int numPixelsInRowPatch;
+// height/width of the final image
+int lengthImage;
+// current processing patch in the row
+int currentPatch;
+// size of a patch
+int patchSize;
+// total number of patches in a row
+int numPatchesInRow;
+
+----------------------------------------------------------------
+// current row starts with 0
+    // if current row in the patch is too low (out of bounds)
+    if (currentRow * patchSize + currentRowInPatch > lengthImage)
+        return;
+    
+    // currentPatch starts at 0
+    // ignore pixels which are too right of the image (out of bounds)
+    if (currentPatch * patchSize + x > numPatchesInRow * patchSize)
+        return;
+    
+    // currentPatch starts at 0
+    uint globalPositionX = x + currentPatch * patchSize;
+    // currentRow starts at 0
+    uint globalPositionY = y + currentRow * patchSize;
+    
+    int pixelInArray = globalPositionY * (patchSize * 4) + globalPositionX * 4;
+    
+    // get the pixel from the input array of pixels based on the global position
+    float4 currentPixel = float4(patchData[pixelInArray + 0], patchData[pixelInArray + 1], patchData[pixelInArray + 2], patchData[pixelInArray + 3]);
+
+---------------------------------------------------------------
+
+// current row starts with 0
+    // if current row in the patch is too low (out of bounds)
+    if (currentRow * sizePatch + currentRowInPatch > lengthImage)
+        return;
+    
+    // currentPatch starts at 0
+    // ignore pixels which are too right of the image (out of bounds)
+    if (currentPatch * patchSize + x > numPatchesInRow * patchSize)
+        return;
+    
+    // only process pixel if its in the current row
+    if (x < numPixelsInRowPatch)
+    {
+        // get position of which pixel we need to process in the patch
+        uint globalPositionX = x + currentRowInPatch * numPixelsInRowPatch;
+        // get the pixel from the input array of pixels based on the global position
+        float4 currentPixel = float4(pixelData[globalPositionX + 0], pixelData[globalPositionX + 1], pixelData[globalPositionX + 2], pixelData[globalPositionX + 3]);
+        
+        
+        
+    }
+*/
+
+
+
 
 
 // for my reference
