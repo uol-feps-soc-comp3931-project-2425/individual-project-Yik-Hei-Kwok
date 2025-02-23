@@ -139,11 +139,54 @@ public class ChoosePatches : MonoBehaviour
         }
         for (int j = 0; j < finalImage.Length; j++)
         {
-            DebugFunctions.showData_CustomizedWH(resultImageSize, truePatchSize, finalImage[j], $"Saved/Final_Image/patch_row_{j}.png");
+            DebugFunctions.showData_CustomizedWH(resultImageSize, truePatchSize, finalImage[j], $"Saved/Final_Image_Per_Row/patch_row_{j}.png");
         }
+
         
+        createFinalImage(resultImageSize, finalImage, numOfRows, truePatchSize , $"Saved/Final_Image/Final_Image.png");
 
 
+    }
+
+    // create final image which is a combination of all patches
+    private void createFinalImage (int resultImageSize, float[][] finalImage, int numOfRows, int patchSize, string saveLocation)
+    {
+        // create new texture 
+        Texture2D texture = new Texture2D(resultImageSize, resultImageSize, TextureFormat.RGBA32, false);
+        // store all pixel colours of the final image
+        Color[] allPixelRGBAs = new Color[resultImageSize * resultImageSize];
+        // process the pixels per row of patches
+
+        int pixelIndent = 0;
+        int totalPixelsAccumulated = 0;
+        for (int i = numOfRows - 1; i >= 0; i--)
+        {
+            for(int j = 0; j < finalImage[i].Length; j+=4)
+            {
+                // create the colour
+                float R = finalImage[i][j];
+                float G = finalImage[i][j + 1];
+                float B = finalImage[i][j + 2];
+                float A = finalImage[i][j + 3];
+
+
+                allPixelRGBAs[pixelIndent] = new Color(R, G, B, A);
+
+                pixelIndent++;
+                totalPixelsAccumulated++;
+                if (totalPixelsAccumulated >= resultImageSize * resultImageSize)
+                    break;
+            }
+        }
+        // Apply colors to the texture
+        texture.SetPixels(allPixelRGBAs);
+        texture.Apply();
+
+        // encode and save the texture
+        byte[] bytes = texture.EncodeToPNG();
+        string savePath = $"Assets/{saveLocation}";
+
+        File.WriteAllBytes(savePath, bytes);
     }
 
     // for placing a new patch at a new position of the result image

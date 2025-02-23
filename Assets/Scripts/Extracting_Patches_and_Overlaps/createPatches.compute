@@ -85,11 +85,6 @@ void CombinePatches(uint3 id : SV_DispatchThreadID)
     // we are processing all pixels from all patches in a row 
     int patchIndex = id.x;
     
-    
-    
-    // do not process the pixels that are out of bounds to the bottom
-    //if ()
-    
     // get the pixel value of our processing pixel
     float4 currentPixel = patchData[patchIndex];
     
