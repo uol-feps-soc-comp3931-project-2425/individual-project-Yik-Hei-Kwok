@@ -66,6 +66,7 @@
     <Compile Include="Assets\Scripts\global.cs" />
     <Compile Include="Assets\Scripts\Extracting_Patches_and_Overlaps\Call_Synthesis.cs" />
     <Compile Include="Assets\Scripts\Create_New_Cube\New_Mesh.cs" />
+    <Compile Include="Assets\Scripts\Player\PC_Choose_Textures.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

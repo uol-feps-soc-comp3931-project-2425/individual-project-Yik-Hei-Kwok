@@ -272,7 +272,7 @@ GameObject:
   - component: {fileID: 185774159}
   - component: {fileID: 185774158}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Button_Side1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -501,6 +501,57 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 271926552}
   m_CullTransparentMesh: 1
+--- !u!1 &353158212
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 353158213}
+  - component: {fileID: 353158214}
+  m_Layer: 0
+  m_Name: Player_Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &353158213
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 353158212}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 918.3108, y: 744.03467, z: -5.2829742}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &353158214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 353158212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6041a1ab1b8f06e4aa66d52af63d6702, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  topButton: {fileID: 639315310}
+  bottomButton: {fileID: 1829136294}
+  Side1Button: {fileID: 185774158}
+  Side2Button: {fileID: 1504729402}
+  Side3Button: {fileID: 1515887871}
+  Side4Button: {fileID: 363392062}
+  newMesh: {fileID: 472014932}
 --- !u!1 &359990101
 GameObject:
   m_ObjectHideFlags: 0
@@ -648,7 +699,7 @@ GameObject:
   - component: {fileID: 363392063}
   - component: {fileID: 363392062}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Button_Side4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -756,6 +807,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 363392060}
   m_CullTransparentMesh: 1
+--- !u!1 &472014931
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 472014933}
+  - component: {fileID: 472014932}
+  m_Layer: 0
+  m_Name: MeshFunctions
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &472014932
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 472014931}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53323639deb2d3f48b9808eb55b9b917, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &472014933
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 472014931}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 738.0256, y: 760.47424, z: -5.0457544}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &492449427
 GameObject:
   m_ObjectHideFlags: 0
@@ -861,7 +956,7 @@ GameObject:
   - component: {fileID: 639315311}
   - component: {fileID: 639315310}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Button_Top
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -930,7 +1025,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 639315311}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: New_Mesh, Assembly-CSharp
+        m_MethodName: 
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &639315311
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2104,7 +2211,7 @@ GameObject:
   - component: {fileID: 1504729403}
   - component: {fileID: 1504729402}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Button_Side2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2225,7 +2332,7 @@ GameObject:
   - component: {fileID: 1515887872}
   - component: {fileID: 1515887871}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Button_Side3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2420,7 +2527,7 @@ GameObject:
   - component: {fileID: 1829136295}
   - component: {fileID: 1829136294}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Button_Bottom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2781,5 +2888,7 @@ SceneRoots:
   - {fileID: 752836527}
   - {fileID: 938141047}
   - {fileID: 204007226}
+  - {fileID: 353158213}
   - {fileID: 1264243978}
   - {fileID: 804538504}
+  - {fileID: 472014933}
