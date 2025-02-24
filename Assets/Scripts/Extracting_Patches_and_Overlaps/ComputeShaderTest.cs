@@ -109,7 +109,7 @@ public class Texturesynthesis : MonoBehaviour
         DebugFunctions.showData_left(overlayPixels[1], patchSize, overlapSize , "Saved/Save_Overlay_Left");
 
         // after getting all information needed, call the choose patch function to start choosing patches
-        choosePatches.startChoosePatches(patches, overlayPixels, 1000, patchSize, overlapSize, finalImageLocation);
+        choosePatches.startChoosePatches(patches, overlayPixels, outputSize, patchSize, overlapSize, finalImageLocation);
 
     }
     private Vector2 GetRefTextureProperties(Texture2D ref_texture)

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class PC_Choose_Textures : MonoBehaviour
 {
-    public Button topButton, bottomButton, Side1Button, Side2Button, Side3Button, Side4Button;
+    public Button topButton, bottomButton, Side1Button, Side2Button, Side3Button, Side4Button, viewButton;
     public New_Mesh newMesh;
 
     
@@ -19,6 +19,8 @@ public class PC_Choose_Textures : MonoBehaviour
         Side2Button.onClick.AddListener(delegate { newMesh.Apply("Side2");  });
         Side3Button.onClick.AddListener(delegate { newMesh.Apply("Side3");  });
         Side4Button.onClick.AddListener(delegate { newMesh.Apply("Side4");  });
+
+        viewButton.onClick.AddListener(delegate { newMesh.viewCubeResult(); });
     }
 
     

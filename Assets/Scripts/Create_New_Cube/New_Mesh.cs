@@ -36,7 +36,7 @@ public class New_Mesh : MonoBehaviour
         // get the slider object and get its value
         GameObject sliderObject = GameObject.Find("Size_Slider");
         sizeFinalImage = (int)sliderObject.GetComponent<Slider>().value;
-
+        Debug.Log("GOT VALUE = " + sizeFinalImage);
         // disable the sizing menu
         enableOrDisableChildren("Size_Input", false);
         chooseSizeController.enabled = false;
@@ -111,6 +111,12 @@ public class New_Mesh : MonoBehaviour
         }
     }
 
+    // for allowing user to view how the cube looks like, and confirm if that is what they want
+    public void viewCubeResult()
+    {
+        // disable all other stuff in the screen
+        enableOrDisableChildren("Screen_1", false);
+    }
     
 
     /*public void outputSizeCancel()
