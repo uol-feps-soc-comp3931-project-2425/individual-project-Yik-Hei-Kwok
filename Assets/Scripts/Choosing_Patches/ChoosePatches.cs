@@ -96,7 +96,7 @@ public class ChoosePatches : MonoBehaviour
         // denote which row we are on
         int processingRow = 0;
 
-        
+        Debug.Log("cacbaicvba = " + (patchesPerRow * truePatchSize * truePatchSize * 4));
         // loop through each row of patches
         for (int i = 0; i < numOfRows; i++)
         {
@@ -129,7 +129,7 @@ public class ChoosePatches : MonoBehaviour
             outputPixelData = new ComputeBuffer(resultImageSize * truePatchSize * 4, sizeof(float));
             combinePatches.SetBuffer(kernalID, "outputRowOfPatchPixels", outputPixelData);
 
-            combinePatches.Dispatch(kernalID, Mathf.CeilToInt((float)(patchesPerRow * truePatchSize * truePatchSize * 4) / 8), 1, 1);
+            combinePatches.Dispatch(kernalID, Mathf.CeilToInt((float)(patchesPerRow * truePatchSize * truePatchSize * 4) / 64), 1, 1);
 
             outputPixelData.GetData(finalImage[processingRow]);
 

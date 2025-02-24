@@ -14,6 +14,7 @@ public class New_Mesh : MonoBehaviour
     private string textureLocation;
     private int sourceImageWidth;
     private int sourceImageHeight;
+    private int sizeFinalImage;
 
     // for switching controls
     private PC_ChooseSize chooseSizeController;
@@ -27,19 +28,25 @@ public class New_Mesh : MonoBehaviour
 
     }
 
-    public void loadImage(string filename)
-    {
-        // open prompt for inputing image and save image to path
-        Apply(filename);
+    
 
+    // for setting size of final image
+    public void outputSizeConfirm()
+    {
+        // get the slider object and get its value
+        GameObject sliderObject = GameObject.Find("Size_Slider");
+        sizeFinalImage = (int)sliderObject.GetComponent<Slider>().value;
+
+        // disable the sizing menu
+        enableOrDisableChildren("Size_Input", false);
+        chooseSizeController.enabled = false;
+        chooseTexController.enabled = true;
     }
 
-
-    // button functions
-    // ------------------------------------------------------------------------------------------
-    // for importing the image from user's computer
-    private void Apply(string filename)
+    // for importing the image from user's computer and running the synthesis algorithm
+    public void Apply(string filename)
     {
+        // open prompt for inputing image and save image to path
         string path = EditorUtility.OpenFilePanel("Overwrite with png", "", "png");
         if (path.Length != 0)
         {
@@ -64,14 +71,13 @@ public class New_Mesh : MonoBehaviour
             chooseSizeController.enabled = true;
             chooseTexController.enabled = false;
 
-            // disable the sizing menu
-            enableOrDisableChildren("Size_Input", true);
+            // run the synthesis algorithm
+            runSynthesis(filename);
         }
     }
-    
 
-    // for setting size
-    public void outputSizeConfirm()
+
+    private void runSynthesis(string filename)
     {
         // patch size is preset
         // delta is suggested to be between 0.25 and 0.5
@@ -79,35 +85,43 @@ public class New_Mesh : MonoBehaviour
         // set overlap size as 1/6 of patch size
         int overlapSize = patchSize / 6;
 
-        Debug.Log("New sourceImageWidth = " + sourceImageWidth);
-        Debug.Log("New Patch Size = " + patchSize);
-        Debug.Log("New Overlap Size = " + overlapSize);
-
-        // get the slider object and get its value
-        GameObject sliderObject = GameObject.Find("Size_Slider");
-        int size_value = (int)sliderObject.GetComponent<Slider>().value;
-
         // set loading animation
 
         // check if the image is saved
-        if (textureLocation !=  null)
+        if (textureLocation != null)
         {
             Texture2D texture = new Texture2D(2, 2);
             var fileContent = File.ReadAllBytes(textureLocation);
             texture.LoadImage(fileContent);
             // run the synthesis algorithm
-            Synthesis.startSynthesis(texture, size_value, patchSize, overlapSize, true,$"{global.blockCount}/{chooseTexController.processing_side}");
+            Synthesis.startSynthesis(texture, sizeFinalImage, patchSize, overlapSize, true, $"{global.blockCount}/{filename}");
 
-            // switch controls
-            chooseSizeController.enabled = false;
-            chooseTexController.enabled = true;
+            // update the displayed texture
 
-            // disable the sizing menu
-            enableOrDisableChildren("Size_Input", false);
+
+
+            Debug.Log("chooseTexController.processing_side = " + filename);
+            // encode the texture
+            var createdTexture = File.ReadAllBytes($"Assets/Saved/Final_Image/{global.blockCount}/{filename}.png");
+            Texture2D newTexture = new Texture2D(2, 2);
+            newTexture.LoadImage(createdTexture);
+
+            // find the raw texture display and update it
+            GameObject.Find(filename).GetComponentInChildren<RawImage>().texture = newTexture;
         }
-        
-
     }
+
+    
+
+    /*public void outputSizeCancel()
+    {
+        // switch controls
+        chooseSizeController.enabled = false;
+        chooseTexController.enabled = true;
+
+        // disable the sizing menu
+        enableOrDisableChildren("Size_Input", false);
+    }*/
 
     private void enableOrDisableChildren(string objectName, bool active)
     {
