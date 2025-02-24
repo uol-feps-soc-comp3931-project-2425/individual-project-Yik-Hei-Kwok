@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using UnityEngine.Rendering;
+using System.Linq;
+using System;
 
 
 public class ChoosePatches : MonoBehaviour
@@ -42,7 +44,7 @@ public class ChoosePatches : MonoBehaviour
 
     
 
-    public void startChoosePatches(float[][] allPatches, float[][][] allOverlaps, int resultImageSize, int patchSize, int overlapSize)
+    public void startChoosePatches(float[][] allPatches, float[][][] allOverlaps, int resultImageSize, int patchSize, int overlapSize, string finalImageLocation)
     {
         // determine how many patches are needed to make up result image 
         // ( + 1 used for cases where result image not completely filled by)
@@ -142,14 +144,14 @@ public class ChoosePatches : MonoBehaviour
             DebugFunctions.showData_CustomizedWH(resultImageSize, truePatchSize, finalImage[j], $"Saved/Final_Image_Per_Row/patch_row_{j}.png");
         }
 
-        
-        createFinalImage(resultImageSize, finalImage, numOfRows, truePatchSize , $"Saved/Final_Image/Final_Image.png");
+        string fileName = finalImageLocation.Split('/')[1];
+        createFinalImage(resultImageSize, finalImage, numOfRows, truePatchSize , fileName, finalImageLocation);
 
 
     }
 
     // create final image which is a combination of all patches
-    private void createFinalImage (int resultImageSize, float[][] finalImage, int numOfRows, int patchSize, string saveLocation)
+    private void createFinalImage (int resultImageSize, float[][] finalImage, int numOfRows, int patchSize, string fileName, string checkLocation)
     {
         // create new texture 
         Texture2D texture = new Texture2D(resultImageSize, resultImageSize, TextureFormat.RGBA32, false);
@@ -184,9 +186,13 @@ public class ChoosePatches : MonoBehaviour
 
         // encode and save the texture
         byte[] bytes = texture.EncodeToPNG();
-        string savePath = $"Assets/{saveLocation}";
 
-        File.WriteAllBytes(savePath, bytes);
+        string checkPath = checkLocation.Split('/')[0];
+        // check if the path exist, if not, create the path
+        bool exists = System.IO.Directory.Exists($"Assets/Saved/Final_Image/{checkPath}");
+        if (!exists)
+            System.IO.Directory.CreateDirectory($"Assets/Saved/Final_Image/{checkPath}");
+            File.WriteAllBytes($"Assets/Saved/Final_Image/{checkPath}/{fileName}.png", bytes);
     }
 
     // for placing a new patch at a new position of the result image
@@ -228,7 +234,6 @@ public class ChoosePatches : MonoBehaviour
         System.Random ran = new System.Random();
         // ranPatch describes which patch is chosen
         int ranPatch = ran.Next(allPatches.Length);
-        ranPatch = 0;
         float[] chosenPatch = allPatches[ranPatch];
 
         // for storing the current patch's bottom and right overlaps
@@ -375,22 +380,40 @@ public class ChoosePatches : MonoBehaviour
             }
             
         }
-
-        float[][] possiblePatches = new float[numPossible][];
-        int increment = 0;
-        for (int i = 0; i < distanceMetrics.Length; i++)
-        {
-            if (distanceMetrics[i] < maxTolerance)
-            {
-                possiblePatches[increment] = allPatches[increment];
-                increment++;
-            }
-            
-        }
+        
         // if the set is empty (no patch meets the distance tolerance criteria)
+        // get the closest one to the maximum tolerance
+        if (numPossible == 0)
+        {
+            // make sure numPossible isn't zero because we need to choose at least one patch regardless
+            float[][] possiblePatches = new float[numPossible + 1][];
 
-        // return all possible patches that can be used
-        return possiblePatches;
+            int smallestIndex = Array.IndexOf(distanceMetrics, distanceMetrics.Min());
+            Debug.Log("Smallest Index = " + smallestIndex);
+            possiblePatches[0] = allPatches[smallestIndex];
+
+            // return all possible patches that can be used
+            return possiblePatches;
+        }
+        else
+        {
+            float[][] possiblePatches = new float[numPossible][];
+            int increment = 0;
+            for (int i = 0; i < distanceMetrics.Length; i++)
+            {
+                if (distanceMetrics[i] < maxTolerance)
+                {
+                    possiblePatches[increment] = allPatches[increment];
+                    increment++;
+                }
+
+            }
+            // return all possible patches that can be used
+            return possiblePatches;
+        }
+
+        
+        
     }
 
     private float[][] compareBothOverlays(float[] previousRightOverlay, float[] previousBottOverlay, float[][] overlaysTop, float[][] overlaysLeft , int totalPatches, float[][] allPatches)
@@ -437,20 +460,34 @@ public class ChoosePatches : MonoBehaviour
 
         }
 
-        float[][] possiblePatches = new float[numPossible][];
-        int increment = 0;
-        for (int i = 0; i < distanceMetricsLeft.Length; i++)
+        // if the set is empty (no patch meets the distance tolerance criteria)
+        // get the closest one to the maximum tolerance
+        if (numPossible == 0)
         {
-            if (distanceMetricsLeft[i] < maxToleranceLeft && distanceMetricsTop[i] < maxToleranceTop)
+            // make sure numPossible isn't zero because we need to choose at least one patch regardless
+            float[][] possiblePatches = new float[numPossible + 1][];
+
+            int smallestIndex = Array.IndexOf(distanceMetricsLeft, distanceMetricsLeft.Min());
+            possiblePatches[0] = allPatches[smallestIndex];
+
+            return possiblePatches;
+        }
+        else
+        {
+            float[][] possiblePatches = new float[numPossible][];
+            int increment = 0;
+
+            for (int i = 0; i < distanceMetricsLeft.Length; i++)
             {
-                possiblePatches[increment] = allPatches[increment];
-                increment++;
+                if (distanceMetricsLeft[i] < maxToleranceLeft && distanceMetricsTop[i] < maxToleranceTop)
+                {
+                    possiblePatches[increment] = allPatches[increment];
+                    increment++;
+                }
             }
 
+            return possiblePatches;
         }
-
-        return possiblePatches;
-
     }
 
 

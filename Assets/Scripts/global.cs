@@ -17,4 +17,7 @@ public class global : MonoBehaviour
         public static int refImgWidth;
         public static int refImgHeight;
     }
+
+    // number of unique blocks made by the player
+    public static int blockCount = 0;
 }

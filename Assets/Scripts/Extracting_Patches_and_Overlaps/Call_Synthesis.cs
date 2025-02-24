@@ -17,7 +17,7 @@ public class Call_Synthesis : MonoBehaviour
 
     private void Start()
     {
-        Synthesis.startSynthesis(ref_texture, outputSize, patchSize, overlapSize,true);
+        Synthesis.startSynthesis(ref_texture, outputSize, patchSize, overlapSize,true,"finalImage");
     }
 
 
