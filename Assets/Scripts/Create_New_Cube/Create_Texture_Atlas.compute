@@ -1,0 +1,43 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel textureAtlas
+
+// six sides in this order
+/*
+xxxyyyzzz
+xxxyyyzzz
+xxxyyyzzz
+kkktttsss
+kkktttsss
+kkktttsss
+
+Bottom Left Right
+Front Top Back
+*/
+
+// the patch data
+StructuredBuffer<float> faceData;
+int imageLength;
+int faceSize;
+RWStructuredBuffer<float> outputOrder;
+
+[numthreads(64,1,1)]
+void textureAtlas(uint3 id : SV_DispatchThreadID)
+{
+    // we are processing 3 sides at a time
+    int patchIndex = id.x;
+    // get the pixel value of our processing pixel
+    float4 currentPixel = faceData[patchIndex];
+    // which face does the pixel correspond to (either 0, 1 or 2 since we are processing data 3 faces a time)
+    uint patchNumber = patchIndex / (faceSize * faceSize * 4);
+    // where does the pixel reside on the determined face
+    uint pixelPositionInFace = patchIndex % (faceSize * faceSize * 4);
+    // calculate row of the current pixel in the patch
+    uint rowInPatch = pixelPositionInFace / (faceSize * 4); //0.3
+    uint xInRow = pixelPositionInFace % (faceSize * 4);
+    
+    // patchNumber * patchSize * 4 determines the x offset
+    // rowInPatch * lengthImage * 4 determines the y offset 
+    int outputIndex = (patchNumber * faceSize * 4) + (rowInPatch * imageLength * 4) + xInRow;
+    outputOrder[outputIndex] = currentPixel;
+    
+}
