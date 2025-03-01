@@ -18,9 +18,11 @@ public class DebugFunctions : MonoBehaviour
 
             pixels[add] = new Color(R, G, B, A);
             add++;
+           
         }
 
         Texture2D patch = new Texture2D(img_width, img_height);
+        
         patch.SetPixels(pixels);
         patch.Apply();
 
@@ -60,6 +62,7 @@ public class DebugFunctions : MonoBehaviour
                 pixels[add] = new Color(R, G, B, A);
 
                 add++;
+                Debug.Log(":F Pixels in overlay patch = " + patchesValues[i].Length);
             }
             Texture2D patch = new Texture2D(patchSize, patchSize);
             patch.SetPixels(pixels);

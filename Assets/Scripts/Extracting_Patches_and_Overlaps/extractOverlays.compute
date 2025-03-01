@@ -19,6 +19,8 @@ StructuredBuffer<float> patchData;
 int overlapSize;
 // patch size
 int patchSize;
+// patch size - overlap size
+int truePatchSize;
 
 // debug for condition
 RWStructuredBuffer<int> condition_debug;
@@ -34,7 +36,7 @@ void extractTopOverlays (uint3 id : SV_DispatchThreadID)
         return;
     
     
-    if (patchSize - y <= overlapSize)
+    if (patchSize - y <= overlapSize && x >= overlapSize)
     {
         
         // pixel position in the 1D array of pixels
@@ -44,7 +46,7 @@ void extractTopOverlays (uint3 id : SV_DispatchThreadID)
         float4 currentPixel = float4(patchData[pixelInArray + 0], patchData[pixelInArray + 1], patchData[pixelInArray + 2], patchData[pixelInArray + 3]);
         
         // get index
-        int outputIndex = (y - (patchSize - overlapSize)) * patchSize + x;
+        int outputIndex = (y - (patchSize - overlapSize)) * truePatchSize + (x - overlapSize);
         condition_debug[y * patchSize + x] = outputIndex;
         // save pixel into the output buffer
         topOverlayOutput[outputIndex] = currentPixel;
@@ -91,7 +93,7 @@ void extractBottOverlays(uint3 id : SV_DispatchThreadID)
     if (x >= patchSize || y >= patchSize)
         return;
     
-    if (y <= overlapSize)
+    if (y <= overlapSize && x >= overlapSize)
     {
         // pixel position in the 1D array of pixels
         int pixelInArray = y * (patchSize * 4) + x * 4;
@@ -100,7 +102,7 @@ void extractBottOverlays(uint3 id : SV_DispatchThreadID)
         float4 currentPixel = float4(patchData[pixelInArray + 0], patchData[pixelInArray + 1], patchData[pixelInArray + 2], patchData[pixelInArray + 3]);
         
         // get index
-        int outputIndex = y * patchSize + x;
+        int outputIndex = y * truePatchSize + (x - overlapSize);
         
         // save pixel into the output buffer
         bottomOverlayOutput[outputIndex] = currentPixel;
@@ -120,7 +122,7 @@ void extractRightOverlays(uint3 id : SV_DispatchThreadID)
         return;
     
     // only save pixels at the most left side
-    if (patchSize - x <= overlapSize)
+    if (patchSize - x <= overlapSize && y <= patchSize - overlapSize)
     {
         // pixel position in the 1D array of pixels
         int pixelInArray = y * (patchSize * 4) + x * 4;
@@ -129,7 +131,7 @@ void extractRightOverlays(uint3 id : SV_DispatchThreadID)
         float4 currentPixel = float4(patchData[pixelInArray + 0], patchData[pixelInArray + 1], patchData[pixelInArray + 2], patchData[pixelInArray + 3]);
         
         // get index
-        int outputIndex = y * overlapSize + overlapSize - (patchSize - x);
+        int outputIndex = y * overlapSize + overlapSize - (truePatchSize - x);
        
         // save pixel into the output buffer
         rightOverlayOutput[outputIndex] = currentPixel;
