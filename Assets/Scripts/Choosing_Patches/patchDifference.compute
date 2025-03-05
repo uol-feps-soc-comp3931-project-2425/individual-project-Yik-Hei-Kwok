@@ -2,6 +2,8 @@
 #pragma kernel diffLeftRight
 #pragma kernel maxDifference
 
+#pragma kernel flattenValues
+
 
 StructuredBuffer<float> leftOverlayData;
 StructuredBuffer<float> rightOverlayData;
@@ -9,7 +11,7 @@ StructuredBuffer<float> rightOverlayData;
 RWStructuredBuffer<float> outputDifference;
 RWStructuredBuffer<float> maxOutputDifference;
 
-[numthreads(8,8,1)]
+[numthreads(64,1,1)]
 void diffLeftRight (uint3 id : SV_DispatchThreadID)
 {
     uint x = id.x;
@@ -19,10 +21,30 @@ void diffLeftRight (uint3 id : SV_DispatchThreadID)
     
 }
 
-[numthreads(8,8,1)]
+[numthreads(64,1,1)]
 void maxDifference(uint3 id : SV_DispatchThreadID)
 {
     uint x = id.x;
     maxOutputDifference[x] = rightOverlayData[x] * rightOverlayData[x];
    
+}
+
+
+StructuredBuffer<float> overlayData;
+RWStructuredBuffer<float> flattenedData;
+
+[numthreads(64, 1, 1)]
+void flattenValues(uint3 id : SV_DispatchThreadID)
+{
+    uint x = id.x;
+    uint index = id.x * 4;
+    float R = overlayData[index];
+    float G = overlayData[index + 1];
+    float B = overlayData[index + 2];
+    float A = overlayData[index + 3];
+    
+    float flattenedValue = (R + G + B + A) / 4;
+    
+    flattenedData[x] = flattenedValue;
+
 }

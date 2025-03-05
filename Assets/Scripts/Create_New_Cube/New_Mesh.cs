@@ -89,7 +89,7 @@ public class New_Mesh : MonoBehaviour
     {
         // patch size is preset
         // delta is suggested to be between 0.25 and 0.5
-        int patchSize = (int)(0.5 * Mathf.Min(sourceImageWidth, sourceImageHeight));
+        int patchSize = (int)(0.3 * Mathf.Min(sourceImageWidth, sourceImageHeight));
         // set overlap size as 1/6 of patch size
         int overlapSize = patchSize / 6;
 

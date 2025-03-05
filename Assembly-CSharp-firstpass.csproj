@@ -58,30 +58,22 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.3.9f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Plugins\alglib-csharp\lib-csharp-core\src\specialfunctions.cs" />
-    <Compile Include="Assets\Plugins\alglib-csharp\lib-csharp-core\src\interpolation.cs" />
-    <Compile Include="Assets\Plugins\alglib-csharp\lib-csharp-core\src\diffequations.cs" />
-    <Compile Include="Assets\Plugins\alglib-csharp\lib-csharp-core\src\alglibmisc.cs" />
-    <Compile Include="Assets\Plugins\alglib-csharp\lib-csharp-core\src\alglibinternal.cs" />
-    <Compile Include="Assets\Plugins\alglib-csharp\lib-csharp-core\src\statistics.cs" />
-    <Compile Include="Assets\Plugins\alglib-csharp\lib-csharp-core\src\linalg.cs" />
-    <Compile Include="Assets\Plugins\alglib-csharp\tests\test_x.cs" />
-    <Compile Include="Assets\Plugins\alglib-csharp\lib-csharp-core\src\solvers.cs" />
-    <Compile Include="Assets\Plugins\alglib-csharp\lib-csharp-core\src\ap.cs" />
-    <Compile Include="Assets\Plugins\alglib-csharp\lib-csharp-core\src\dataanalysis.cs" />
-    <Compile Include="Assets\Plugins\alglib-csharp\lib-csharp-core\src\alglib_info.cs" />
-    <Compile Include="Assets\Plugins\alglib-csharp\lib-csharp-core\src\fasttransforms.cs" />
-    <Compile Include="Assets\Plugins\alglib-csharp\tests\test_c.cs" />
-    <Compile Include="Assets\Plugins\alglib-csharp\lib-csharp-core\src\optimization.cs" />
-    <Compile Include="Assets\Plugins\alglib-csharp\tests\test_i.cs" />
-    <Compile Include="Assets\Plugins\alglib-csharp\lib-csharp-core\src\integration.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Assets\Plugins\alglib-csharp\lib-csharp-core\alglib404gpl_net2.dll" />
-    <None Include="Assets\Plugins\alglib-csharp\gpl3.txt" />
-    <None Include="Assets\Plugins\alglib-csharp\lib-csharp-core\alglib404gpl_net5.dll" />
-    <None Include="Assets\Plugins\alglib-csharp\gpl2.txt" />
-    <None Include="Assets\Plugins\alglib-csharp\lib-csharp-core\alglib404gpl_net5simd.dll" />
+    <Compile Include="Assets\Plugins\KdTreeLib\IKdTree.cs" />
+    <Compile Include="Assets\Plugins\KdTreeLib\KdTreeNode.cs" />
+    <Compile Include="Assets\Plugins\KdTreeLib\Math\ITypeMath.cs" />
+    <Compile Include="Assets\Plugins\KdTreeLib\Math\GeoMath.cs" />
+    <Compile Include="Assets\Plugins\KdTreeLib\Math\GeoUtils.cs" />
+    <Compile Include="Assets\Plugins\KdTreeLib\IPriorityQueue.cs" />
+    <Compile Include="Assets\Plugins\KdTreeLib\Math\DoubleMath.cs" />
+    <Compile Include="Assets\Plugins\KdTreeLib\Math\FloatMath.cs" />
+    <Compile Include="Assets\Plugins\KdTreeLib\KdTree.cs" />
+    <Compile Include="Assets\Plugins\KdTreeLib\HyperRect.cs" />
+    <Compile Include="Assets\Plugins\KdTreeLib\NearestNeighbourList.cs" />
+    <Compile Include="Assets\Plugins\KdTreeLib\PriorityQueue.cs" />
+    <Compile Include="Assets\Plugins\KdTreeTestsLib\PriorityQueueTests.cs" />
+    <Compile Include="Assets\Plugins\KdTreeTestsLib\NearestNeighbourListTests.cs" />
+    <Compile Include="Assets\Plugins\KdTreeTestsLib\KdTreeTests.cs" />
+    <Compile Include="Assets\Plugins\KdTreeLib\Math\TypeMath.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -333,20 +325,11 @@
     <Reference Include="UnityEditor.UnityConnectModule">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2022.3.9f1\Editor\Data\Managed\UnityEngine\UnityEditor.UnityConnectModule.dll</HintPath>
     </Reference>
-    <Reference Include="alglib404gpl_net2">
-      <HintPath>Assets\Plugins\alglib-csharp\lib-csharp-core\alglib404gpl_net2.dll</HintPath>
-    </Reference>
     <Reference Include="ReportGeneratorMerged">
       <HintPath>Library\PackageCache\com.unity.testtools.codecoverage@1.2.4\lib\ReportGenerator\ReportGeneratorMerged.dll</HintPath>
     </Reference>
-    <Reference Include="alglib404gpl_net5">
-      <HintPath>Assets\Plugins\alglib-csharp\lib-csharp-core\alglib404gpl_net5.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
       <HintPath>Library\PackageCache\com.unity.visualscripting@1.9.0\Runtime\VisualScripting.Flow\Dependencies\NCalc\Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="alglib404gpl_net5simd">
-      <HintPath>Assets\Plugins\alglib-csharp\lib-csharp-core\alglib404gpl_net5simd.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2022.3.9f1\Editor\Data\NetStandard\ref\2.1.0\netstandard.dll</HintPath>
