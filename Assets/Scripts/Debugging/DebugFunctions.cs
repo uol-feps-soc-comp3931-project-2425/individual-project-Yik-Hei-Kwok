@@ -44,8 +44,6 @@ public class DebugFunctions : MonoBehaviour
 
 
         int add = 0;
-        Debug.Log("number of patches eeee = " + patchesValues.Length);
-        Debug.Log("number of patches eeee = " + patchesValues.Length);
 
         for (int i = 0; i < patchesValues.Length; i += 1)
         {
@@ -62,7 +60,6 @@ public class DebugFunctions : MonoBehaviour
                 pixels[add] = new Color(R, G, B, A);
 
                 add++;
-                Debug.Log(":F Pixels in overlay patch = " + patchesValues[i].Length);
             }
             Texture2D patch = new Texture2D(patchSize, patchSize);
             patch.SetPixels(pixels);
@@ -87,7 +84,6 @@ public class DebugFunctions : MonoBehaviour
 
     public static void showData_left(float[][] patchesValues, int patchSize, int overlapSize, string dir)
     {
-        Debug.Log("Number of patches = " + patchesValues.Length);
 
         // Loop through each patch's left overlay data
         for (int i = 0; i < patchesValues.Length; i++)
@@ -125,8 +121,6 @@ public class DebugFunctions : MonoBehaviour
             // Save the overlay image to the specified directory
             string savePath = $"Assets/{dir}/LeftOverlay_Patch{i}.png";
             File.WriteAllBytes(savePath, bytes);
-
-            Debug.Log($"Saved left overlay image for patch {i} at {savePath}");
         }
     }
 

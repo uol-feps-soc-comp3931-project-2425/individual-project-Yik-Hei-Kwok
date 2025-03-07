@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class PC_ChooseSize : MonoBehaviour
 {
     public Button confirmButton; //, discardButton;
-    public New_Mesh newMesh;
+    public createNewCube newMesh;
     // Start is called before the first frame update
     void Start()
     {

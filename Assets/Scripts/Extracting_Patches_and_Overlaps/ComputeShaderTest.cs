@@ -46,7 +46,7 @@ public class Texturesynthesis : MonoBehaviour
     // store all pixels that are in the referenced image
     private float[] allPixelDataRef;
 
-    public void startSynthesis(Texture2D texture, int outputSize, int patchSize, int overlapSize, bool useGPU, string finalImageLocation)
+    public void startSynthesis(Texture2D texture, int outputSize, int patchSize, int overlapSize, bool useGPU, string finalImageLocation, float lambdaValue)
     {
         // save data to struct for use in other scripts
         global.patchData.patchSize = patchSize;
@@ -111,7 +111,7 @@ public class Texturesynthesis : MonoBehaviour
         DebugFunctions.showData_CustomizedWH(overlapSize, patchSize - overlapSize, overlayPixels[1][0], "Saved/Save_Overlay_Left/overlapPatch0.png");
 
         // after getting all information needed, call the choose patch function to start choosing patches
-        choosePatches.startChoosePatches(patches, overlayPixels, outputSize, patchSize, overlapSize, finalImageLocation);
+        choosePatches.startChoosePatches(patches, overlayPixels, outputSize, patchSize, overlapSize, finalImageLocation, lambdaValue);
 
     }
     private Vector2 GetRefTextureProperties(Texture2D ref_texture)

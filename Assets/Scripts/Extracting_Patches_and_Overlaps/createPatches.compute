@@ -79,7 +79,7 @@ void SegmentPatches (uint3 id : SV_DispatchThreadID)
 }
 
 
-[numthreads(64, 1, 1)]
+[numthreads(256, 1, 1)]
 void CombinePatches(uint3 id : SV_DispatchThreadID)
 {
     // we are processing all pixels from all patches in a row 

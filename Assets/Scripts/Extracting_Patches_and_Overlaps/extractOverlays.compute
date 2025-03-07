@@ -131,7 +131,8 @@ void extractRightOverlays(uint3 id : SV_DispatchThreadID)
         float4 currentPixel = float4(patchData[pixelInArray + 0], patchData[pixelInArray + 1], patchData[pixelInArray + 2], patchData[pixelInArray + 3]);
         
         // get index
-        int outputIndex = y * overlapSize + overlapSize - (truePatchSize - x);
+        int outputIndex = y * overlapSize + (x - (truePatchSize));
+
        
         // save pixel into the output buffer
         rightOverlayOutput[outputIndex] = currentPixel;

@@ -11,13 +11,14 @@ StructuredBuffer<float> rightOverlayData;
 RWStructuredBuffer<float> outputDifference;
 RWStructuredBuffer<float> maxOutputDifference;
 
+
 [numthreads(64,1,1)]
 void diffLeftRight (uint3 id : SV_DispatchThreadID)
 {
     uint x = id.x;
+    
     float vd = leftOverlayData[x] - rightOverlayData[x];
     outputDifference[x] = vd * vd;
-    
     
 }
 

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class PC_Choose_Textures : MonoBehaviour
 {
     public Button topButton, bottomButton, Side1Button, Side2Button, Side3Button, Side4Button, viewButton;
-    public New_Mesh newMesh;
+    public createNewCube newMesh;
 
     
     // Start is called before the first frame update

@@ -2,23 +2,44 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 
 public class Call_Synthesis : MonoBehaviour
 {
     public Texturesynthesis Synthesis;
 
-    public Texture2D ref_texture;
-
-    public RawImage ref_texture2;
-
-    private int outputSize = 1000;
-    private int patchSize = 100;
-    private int overlapSize = 5;
-
-    private void Start()
+    public void runSynthesis(string filename, int sourceImageWidth, int sourceImageHeight, string textureLocation, int sizeFinalImage, float lambdaValue)
     {
-        Synthesis.startSynthesis(ref_texture, outputSize, patchSize, overlapSize,true,"finalImage");
-    }
+        // patch size is preset
+        // delta is suggested to be between 0.25 and 0.5
+        int patchSize = (int)(0.3 * Mathf.Min(sourceImageWidth, sourceImageHeight));
+        // set overlap size as 1/6 of patch size
+        int overlapSize = patchSize / 6;
 
+        // set loading animation
+
+        // check if the image is saved
+        if (textureLocation != null)
+        {
+            Texture2D texture = new Texture2D(2, 2);
+            var fileContent = File.ReadAllBytes(textureLocation);
+            texture.LoadImage(fileContent);
+            // run the synthesis algorithm
+            Synthesis.startSynthesis(texture, sizeFinalImage, patchSize, overlapSize, true, $"{global.blockCount}/{filename}", lambdaValue);
+
+            // update the displayed texture
+
+
+
+            Debug.Log("chooseTexController.processing_side = " + filename);
+            // encode the texture
+            var createdTexture = File.ReadAllBytes($"Assets/Saved/Final_Image/{global.blockCount}/{filename}.png");
+            Texture2D newTexture = new Texture2D(2, 2);
+            newTexture.LoadImage(createdTexture);
+
+            // find the raw texture display and update it
+            GameObject.Find(filename).GetComponentInChildren<RawImage>().texture = newTexture;
+        }
+    }
 
 }
