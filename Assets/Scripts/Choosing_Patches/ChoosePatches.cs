@@ -161,26 +161,27 @@ public class ChoosePatches : MonoBehaviour
         // store all pixel colours of the final image
         Color[] allPixelRGBAs = new Color[resultImageSize * resultImageSize];
         // process the pixels per row of patches
-
+        
         int pixelIndent = 0;
         int totalPixelsAccumulated = 0;
         for (int i = numOfRows - 1; i >= 0; i--)
         {
             for(int j = 0; j < finalImage[i].Length; j+=4)
             {
+                
+                totalPixelsAccumulated++;
+                if (totalPixelsAccumulated >= resultImageSize * resultImageSize)
+                    break;
+
                 // create the colour
                 float R = finalImage[i][j];
                 float G = finalImage[i][j + 1];
                 float B = finalImage[i][j + 2];
                 float A = finalImage[i][j + 3];
 
-                
                 allPixelRGBAs[pixelIndent] = new Color(R, G, B, A);
-
                 pixelIndent++;
-                totalPixelsAccumulated++;
-                if (totalPixelsAccumulated >= resultImageSize * resultImageSize)
-                    break;
+
             }
         }
         // Apply colors to the texture
@@ -381,22 +382,9 @@ public class ChoosePatches : MonoBehaviour
         int overlapSize = global.patchData.overlapSize;
         // loop through each patch
         float[] distanceMetrics = ProcessPatch.compareOverlaysGPU(allOverlays, previousOverlay, patchSize, overlapSize, totalPatches);
-        string debugDistance = ":DF distanceMetrics = ";
-        for (int i = 0; i < distanceMetrics.Length; i++)
-        {
-            debugDistance += " ," + distanceMetrics[i].ToString();
-        }
-        Debug.Log(debugDistance);
         
         // calculate distance tolerance (dmax)
         float[] maxDifferences = ProcessPatch.computeMaxTolerance(previousOverlay,patchSize, overlapSize);
-
-        string debugMaxDistance = ":DF maxDifferences = ";
-        for (int i = 0; i < maxDifferences.Length; i++)
-        {
-            debugMaxDistance += " ," + maxDifferences[i].ToString();
-        }
-        Debug.Log(debugMaxDistance);
 
         // filter out the patches which overlap distance doesn't exceed max tolerance
         float[][] possiblePatches = ProcessPatch.filterPatchMaxToleranceOne(maxDifferences, distanceMetrics,patchSize,overlapSize,allPatches, lambda);

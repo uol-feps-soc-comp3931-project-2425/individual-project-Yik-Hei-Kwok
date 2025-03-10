@@ -20,7 +20,7 @@ int imageLength;
 int faceSize;
 RWStructuredBuffer<float> outputOrder;
 
-[numthreads(64,1,1)]
+[numthreads(256,1,1)]
 void textureAtlas(uint3 id : SV_DispatchThreadID)
 {
     // we are processing 3 sides at a time

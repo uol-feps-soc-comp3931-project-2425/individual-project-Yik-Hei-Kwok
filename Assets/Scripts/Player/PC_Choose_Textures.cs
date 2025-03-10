@@ -19,8 +19,8 @@ public class PC_Choose_Textures : MonoBehaviour
         Side2Button.onClick.AddListener(delegate { newMesh.Apply("Side2");  });
         Side3Button.onClick.AddListener(delegate { newMesh.Apply("Side3");  });
         Side4Button.onClick.AddListener(delegate { newMesh.Apply("Side4");  });
-
-        viewButton.onClick.AddListener(delegate { newMesh.viewCubeResult(); });
+        // switch state to look at cube
+        viewButton.onClick.AddListener(delegate { global.current_state = State_List.States.cube_preview; });
     }
 
     

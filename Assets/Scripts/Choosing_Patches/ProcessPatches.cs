@@ -166,12 +166,6 @@ public class ProcessPatches : MonoBehaviour
         differenceInOverlays.Dispatch(kernalID_max, Mathf.CeilToInt((float)(truePatchSize * overlapSize) / 64), 1, 1);
         maxDiffOverlapData.GetData(maxDifferences);
 
-        Debug.Log(":GH First 100 R/G/B/A values");
-        for(int i = 0; i < 100; i++)
-        {
-            Debug.Log(":GH maxDifferences = " + maxDifferences[i]);
-        }
-
 
 
         return maxDifferences;

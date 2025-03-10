@@ -20,4 +20,13 @@ public class global : MonoBehaviour
 
     // number of unique blocks made by the player
     public static int blockCount = 0;
+
+
+    // for indicating if user is holding down the mouse
+    public static bool mouseHoldLeft = false;
+    public static bool mouseHoldRight = false;
+
+    // keep track which state we are in
+    public static State_List.States current_state;
+
 }
