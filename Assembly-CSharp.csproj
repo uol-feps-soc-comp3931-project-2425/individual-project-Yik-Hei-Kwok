@@ -75,6 +75,7 @@
     <Compile Include="Assets\Scripts\Game_States\Choose_Texture_State.cs" />
     <Compile Include="Assets\PlayerControls.cs" />
     <Compile Include="Assets\Scripts\Game_States\Base_State.cs" />
+    <Compile Include="Assets\Scripts\Performance_Benchmarking\Benchmarking.cs" />
     <Compile Include="Assets\Scripts\Extracting_Patches_and_Overlaps\Call_Synthesis.cs" />
     <Compile Include="Assets\Scripts\Game_States\State_List.cs" />
     <Compile Include="Assets\Scripts\Player\PC_Choose_Size.cs" />

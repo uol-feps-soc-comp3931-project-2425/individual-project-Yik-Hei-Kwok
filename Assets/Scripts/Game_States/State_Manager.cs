@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class State_Manager : MonoBehaviour
 {
@@ -17,7 +19,12 @@ public class State_Manager : MonoBehaviour
     public PC_ChooseSize PC_ChooseSize;
     public PC_Choose_Textures PC_ChooseTextures;
 
+    // for screen 0 (start screen)
+    public CreateNewTerrain Create_Terrain;
+    public TMP_InputField input_x_terrain;
+    public TMP_InputField input_y_terrain;
 
+    // for screen 2
     public previewCube prevCubeFunc;
     public GameObject previewCubeObject;
 
@@ -25,7 +32,7 @@ public class State_Manager : MonoBehaviour
 
     private void Start()
     {
-        current_state = start_menu_state;
+        current_state = choose_texture_state;
 
         current_state.EnterState(this);
     }

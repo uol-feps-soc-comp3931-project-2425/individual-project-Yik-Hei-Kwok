@@ -136,6 +136,8 @@ public class Merge_Textures : MonoBehaviour
         // get the pixel data of the reference image in RGBA format calculated in shader
         outputBuffer.GetData(pixelValues);
 
+        outputBuffer.Release();
+
         return pixelValues;
     }
 
@@ -159,6 +161,9 @@ public class Merge_Textures : MonoBehaviour
         createAtlas.Dispatch(kernalID, Mathf.CeilToInt((float)(sizeFinalImage * sizeFinalImage * 3 * 4) / 256), 1, 1);
 
         outputOrdered.GetData(pixelValuesInRow);
+
+        inputPixelData.Release();
+        outputOrdered.Release();
 
         return pixelValuesInRow;
     }

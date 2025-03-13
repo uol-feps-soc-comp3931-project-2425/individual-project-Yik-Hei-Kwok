@@ -46,7 +46,7 @@ public class Texturesynthesis : MonoBehaviour
     // store all pixels that are in the referenced image
     private float[] allPixelDataRef;
 
-    public void startSynthesis(Texture2D texture, int outputSize, int patchSize, int overlapSize, bool useGPU, string finalImageLocation, float lambdaValue)
+    public void startSynthesis(Texture2D texture, int outputSize, int patchSize, int overlapSize, bool useGPU, bool useKD, string finalImageLocation, float lambdaValue)
     {
         // save data to struct for use in other scripts
         global.patchData.patchSize = patchSize;
@@ -78,6 +78,8 @@ public class Texturesynthesis : MonoBehaviour
         // call function to activate Compute Shader and store pixel data of reference image in array
         allPixelDataRef = StoreRefPixels(texture);
 
+        outputBuffer.Release();
+
         // save the image for showing purposes
         DebugFunctions.debugImage(allPixelDataRef, (int)sizeOfRef.x, (int)sizeOfRef.y);
 
@@ -97,7 +99,7 @@ public class Texturesynthesis : MonoBehaviour
 
 
         // save the patches as images for showing purposes
-        DebugFunctions.showData(patches, patchSize, "Saved/Save_Patches");
+        //DebugFunctions.showData(patches, patchSize, "Saved/Save_Patches");
 
         //choosePatches.placeFirstPatch(patches, 0);
         // ----------------------------------------------------------------------------------------------
@@ -105,13 +107,13 @@ public class Texturesynthesis : MonoBehaviour
         overlayPixels = SegmentOverlays_GPU(patches, overlapSize, sizeOfRef, patchSize,overlapSize);
 
         // save the top overlap as images for showing purposes
-        DebugFunctions.showData(overlayPixels[0], patchSize-overlapSize, "Saved/Save_Overlay_Top");
-        DebugFunctions.showData_left(overlayPixels[1], patchSize-overlapSize, overlapSize , "Saved/Save_Overlay_Left");
-        DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, overlapSize, overlayPixels[0][0], "Saved/Save_Overlay_Top/overlapPatch0.png");
-        DebugFunctions.showData_CustomizedWH(overlapSize, patchSize - overlapSize, overlayPixels[1][0], "Saved/Save_Overlay_Left/overlapPatch0.png");
+        //DebugFunctions.showData(overlayPixels[0], patchSize-overlapSize, "Saved/Save_Overlay_Top");
+        //DebugFunctions.showData_left(overlayPixels[1], patchSize-overlapSize, overlapSize , "Saved/Save_Overlay_Left");
+        //DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, overlapSize, overlayPixels[0][0], "Saved/Save_Overlay_Top/overlapPatch0.png");
+        //DebugFunctions.showData_CustomizedWH(overlapSize, patchSize - overlapSize, overlayPixels[1][0], "Saved/Save_Overlay_Left/overlapPatch0.png");
 
         // after getting all information needed, call the choose patch function to start choosing patches
-        choosePatches.startChoosePatches(patches, overlayPixels, outputSize, patchSize, overlapSize, finalImageLocation, lambdaValue);
+        choosePatches.startChoosePatches(patches, overlayPixels, outputSize, patchSize, overlapSize, finalImageLocation, lambdaValue, useKD);
 
     }
     private Vector2 GetRefTextureProperties(Texture2D ref_texture)
@@ -133,7 +135,7 @@ public class Texturesynthesis : MonoBehaviour
         // get the pixel data of the reference image in RGBA format calculated in shader
         outputBuffer.GetData(refPixelsRGB);
       
-        //outputBuffer.Release();
+        outputBuffer.Release();
 
         return refPixelsRGB;
     }
@@ -309,6 +311,9 @@ public class Texturesynthesis : MonoBehaviour
                 // get the pixel data of the reference image in RGBA format calculated in shader
                 outputPatches.GetData(segmentedPatch);
 
+                inputPixelData.Release();
+                outputPatches.Release();
+
                 // store the segment
                 storePatches[rowPatches * y + x] = segmentedPatch;
             }
@@ -369,6 +374,9 @@ public class Texturesynthesis : MonoBehaviour
             // for debugging
             int[] debug = new int[patchSize * patchSize];
             condition_debug.GetData(debug);
+
+            inputPatchData.Release();
+            outputOverlayData.Release();
         }
         // --------------------------------------------------------------------------------------------------------------------------------------------
         // now deal with left overlays
@@ -407,6 +415,9 @@ public class Texturesynthesis : MonoBehaviour
             int[] debug = new int[patchSize * patchSize];
             condition_debug.GetData(debug);
 
+            inputPatchData.Release();
+            outputOverlayData.Release();
+            condition_debug.Release();
         }
 
         // put it in a single array

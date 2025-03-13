@@ -12,7 +12,7 @@ public class Call_Synthesis : MonoBehaviour
     {
         // patch size is preset
         // delta is suggested to be between 0.25 and 0.5
-        int patchSize = (int)(0.3 * Mathf.Min(sourceImageWidth, sourceImageHeight));
+        int patchSize = (int)(0.2f * Mathf.Min(sourceImageWidth, sourceImageHeight));
         // set overlap size as 1/6 of patch size
         int overlapSize = patchSize / 6;
 
@@ -25,7 +25,7 @@ public class Call_Synthesis : MonoBehaviour
             var fileContent = File.ReadAllBytes(textureLocation);
             texture.LoadImage(fileContent);
             // run the synthesis algorithm
-            Synthesis.startSynthesis(texture, sizeFinalImage, patchSize, overlapSize, true, $"{global.blockCount}/{filename}", lambdaValue);
+            Synthesis.startSynthesis(texture, sizeFinalImage, patchSize, overlapSize, true,false, $"{global.blockCount}/{filename}", lambdaValue);
 
             // update the displayed texture
 

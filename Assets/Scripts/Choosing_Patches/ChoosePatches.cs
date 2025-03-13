@@ -7,6 +7,7 @@ using System.Linq;
 using System;
 using Supercluster.KDTree;
 using UnityEngine.UIElements;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 
 public class ChoosePatches : MonoBehaviour
@@ -49,7 +50,7 @@ public class ChoosePatches : MonoBehaviour
     // lower if want more regular textures, higher if want more randomness
     private float lambda;
 
-    public void startChoosePatches(float[][] allPatches, float[][][] allOverlaps, int resultImageSize, int patchSize, int overlapSize, string finalImageLocation, float lambdaValue)
+    public void startChoosePatches(float[][] allPatches, float[][][] allOverlaps, int resultImageSize, int patchSize, int overlapSize, string finalImageLocation, float lambdaValue, bool useKD)
     {
         // determine how many patches are needed to make up result image 
         // ( + 1 used for cases where result image not completely filled by)
@@ -82,15 +83,20 @@ public class ChoosePatches : MonoBehaviour
         // which patch of the row we are on
         int patchNumInRow = 0;
 
+        // for timing the time used to choose patches (compare KD and non-KD methods)
+        var watch = System.Diagnostics.Stopwatch.StartNew();
         // loop through all patches needed
         for (int i = 0;  i < totalPatchesNeeded; i++) {
-            (currIterationPatchNum, previousRightPatch, previousRowBottomPatches[patchNumInRow]) = placeNewPatch(k, allPatches, allOverlaps, chosenPatches, patchesPerRow, previousRightPatch, previousRowBottomPatches);
+            (currIterationPatchNum, previousRightPatch, previousRowBottomPatches[patchNumInRow]) = placeNewPatch(k, allPatches, allOverlaps, chosenPatches, patchesPerRow, previousRightPatch, previousRowBottomPatches, useKD);
             k += 1;
             patchNumInRow += 1;
             // reset patch count when we processed the final patch of the row
             if (patchNumInRow == patchesPerRow)
                 patchNumInRow = 0;
         }
+        watch.Stop();
+        var elapsedMs = watch.ElapsedMilliseconds;
+        Debug.Log($"Time used = {elapsedMs} ms");
 
         // actual patch size (the size of patch when placed into the result)
         int truePatchSize = patchSize - overlapSize;
@@ -139,6 +145,9 @@ public class ChoosePatches : MonoBehaviour
             combinePatches.Dispatch(kernalID, Mathf.CeilToInt((float)(patchesPerRow * truePatchSize * truePatchSize * 4) / 256), 1, 1);
 
             outputPixelData.GetData(finalImage[processingRow]);
+
+            inputPixelData.Release();
+            outputPixelData.Release();
 
             processingRow++;
         }
@@ -200,7 +209,7 @@ public class ChoosePatches : MonoBehaviour
     }
 
     // for placing a new patch at a new position of the result image
-    private (int, float[], float[]) placeNewPatch(int k, float[][] allPatches, float[][][] allOverlaps, float[][] chosenPatches, int patchesPerRow, float[] prevRightPatch, float[][] previousRowBottomPatches)
+    private (int, float[], float[]) placeNewPatch(int k, float[][] allPatches, float[][][] allOverlaps, float[][] chosenPatches, int patchesPerRow, float[] prevRightPatch, float[][] previousRowBottomPatches, bool useKD)
     {
         int patchSize = global.patchData.patchSize;
         int overlapSize = global.patchData.overlapSize;
@@ -223,7 +232,7 @@ public class ChoosePatches : MonoBehaviour
         // compare
         else
         {
-            (chosenPatches[k], chosenPatchNum, chosenRightOverlay, chosenBottomOverlay) = placeNextPatch(allPatches, allOverlaps, k, patchesPerRow, prevRightPatch, previousRowBottomPatches);
+            (chosenPatches[k], chosenPatchNum, chosenRightOverlay, chosenBottomOverlay) = placeNextPatch(allPatches, allOverlaps, k, patchesPerRow, prevRightPatch, previousRowBottomPatches, useKD);
         }
         return (chosenPatchNum, chosenRightOverlay, chosenBottomOverlay);
     }
@@ -238,7 +247,7 @@ public class ChoosePatches : MonoBehaviour
         System.Random ran = new System.Random();
         // ranPatch describes which patch is chosen
         int ranPatch = ran.Next(allPatches.Length);
-        ranPatch = 7;
+        ranPatch = 0;
         Debug.Log(":DF ranPatch = " + ranPatch);
         float[] chosenPatch = allPatches[ranPatch];
 
@@ -258,19 +267,19 @@ public class ChoosePatches : MonoBehaviour
         toBePlacedPatch = getPatchWithoutOverlap(chosenPatch);
 
         // for debug only
-        DebugFunctions.showData_CustomizedWH(patchSize-overlapSize, overlapSize, overlapBottom, $"Saved/Save_Overlay_Bottom/bottom_{k}.png");
-        DebugFunctions.showData_CustomizedWH(overlapSize, patchSize - overlapSize, overlapRight, $"Saved/Save_Overlay_Right/right_{k}.png");
-        DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, patchSize - overlapSize, toBePlacedPatch, $"Saved/To_Be_Placed_Patches/to_be_placed_{k}.png");
+        //DebugFunctions.showData_CustomizedWH(patchSize-overlapSize, overlapSize, overlapBottom, $"Saved/Save_Overlay_Bottom/bottom_{k}.png");
+        //DebugFunctions.showData_CustomizedWH(overlapSize, patchSize - overlapSize, overlapRight, $"Saved/Save_Overlay_Right/right_{k}.png");
+        //DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, patchSize - overlapSize, toBePlacedPatch, $"Saved/To_Be_Placed_Patches/to_be_placed_{k}.png");
         
         return (toBePlacedPatch, ranPatch, overlapRight, overlapBottom);
     }
 
-    private (float[],int, float[], float[]) placeNextPatch(float[][] allPatches, float[][][] allOverlaps, int patchNumber, int patchesPerRow, float[] prevRightPatch, float[][] previousRowBottomPatches)
+    private (float[],int, float[], float[]) placeNextPatch(float[][] allPatches, float[][][] allOverlaps, int patchNumber, int patchesPerRow, float[] prevRightPatch, float[][] previousRowBottomPatches, bool useKD)
     {
         int patchSize = global.patchData.patchSize;
         int overlapSize = global.patchData.overlapSize;
 
-        bool useKD = false;
+        //bool useKD = true;
         // to be returned chosen patch
         float[] toBePlacedPatch;
         int ranPatch = 0;
@@ -301,9 +310,9 @@ public class ChoosePatches : MonoBehaviour
             // need to get the patch pixel data without the overlap areas (this will be the data to be placed in the image)
             toBePlacedPatch = getPatchWithoutOverlap(chosenPatch);
 
-            DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, overlapSize, overlapBottom, $"Saved/Save_Overlay_Bottom/bottom_{patchNumber}.png");
-            DebugFunctions.showData_CustomizedWH(overlapSize, patchSize - overlapSize, overlapRight, $"Saved/Save_Overlay_Right/right_{patchNumber}.png");
-            DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, patchSize - overlapSize, toBePlacedPatch, $"Saved/To_Be_Placed_Patches/to_be_placed_{patchNumber}.png");
+            //DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, overlapSize, overlapBottom, $"Saved/Save_Overlay_Bottom/bottom_{patchNumber}.png");
+            //DebugFunctions.showData_CustomizedWH(overlapSize, patchSize - overlapSize, overlapRight, $"Saved/Save_Overlay_Right/right_{patchNumber}.png");
+            //DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, patchSize - overlapSize, toBePlacedPatch, $"Saved/To_Be_Placed_Patches/to_be_placed_{patchNumber}.png");
             
         }
         // if we are at the first patch of the row, we don't need to compare left overlays
@@ -329,9 +338,9 @@ public class ChoosePatches : MonoBehaviour
             // need to get the patch pixel data without the overlap areas (this will be the data to be placed in the image)
             toBePlacedPatch = getPatchWithoutOverlap(chosenPatch);
 
-            DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, overlapSize, overlapBottom, $"Saved/Save_Overlay_Bottom/bottom_{patchNumber}.png");
-            DebugFunctions.showData_CustomizedWH(overlapSize, patchSize - overlapSize, overlapRight, $"Saved/Save_Overlay_Right/right_{patchNumber}.png");
-            DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, patchSize - overlapSize, toBePlacedPatch, $"Saved/To_Be_Placed_Patches/to_be_placed_{patchNumber}.png");
+            //DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, overlapSize, overlapBottom, $"Saved/Save_Overlay_Bottom/bottom_{patchNumber}.png");
+            //DebugFunctions.showData_CustomizedWH(overlapSize, patchSize - overlapSize, overlapRight, $"Saved/Save_Overlay_Right/right_{patchNumber}.png");
+            //DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, patchSize - overlapSize, toBePlacedPatch, $"Saved/To_Be_Placed_Patches/to_be_placed_{patchNumber}.png");
 
 
             //float possiblePatches = compareTopOverlays();
@@ -363,9 +372,9 @@ public class ChoosePatches : MonoBehaviour
             // need to get the patch pixel data without the overlap areas (this will be the data to be placed in the image)
             toBePlacedPatch = getPatchWithoutOverlap(chosenPatch);
 
-            DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, overlapSize, overlapBottom, $"Saved/Save_Overlay_Bottom/bottom_{patchNumber}.png");
-            DebugFunctions.showData_CustomizedWH(overlapSize, patchSize - overlapSize, overlapRight, $"Saved/Save_Overlay_Right/right_{patchNumber}.png");
-            DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, patchSize - overlapSize, toBePlacedPatch, $"Saved/To_Be_Placed_Patches/to_be_placed_{patchNumber}.png");
+            //DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, overlapSize, overlapBottom, $"Saved/Save_Overlay_Bottom/bottom_{patchNumber}.png");
+            //DebugFunctions.showData_CustomizedWH(overlapSize, patchSize - overlapSize, overlapRight, $"Saved/Save_Overlay_Right/right_{patchNumber}.png");
+            //DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, patchSize - overlapSize, toBePlacedPatch, $"Saved/To_Be_Placed_Patches/to_be_placed_{patchNumber}.png");
 
         }
         //Debug.Log("patch number = " +  patchNumber);
@@ -436,14 +445,15 @@ public class ChoosePatches : MonoBehaviour
         Debug.Log(":P allFlattened[0].Length = " + allFlattened[0].Length);*/
 
         // choose the 10 nearest patches if possible
-        if (allFlattened.Length > 4)
+        if (allFlattened.Length > 3)
         {
-            var test = tree.NearestNeighbors(targetFlattenedAverage, 4);
+            int number_of_patches_queried = (int)(allPatches.Length / 3);
+            var test = tree.NearestNeighbors(targetFlattenedAverage, number_of_patches_queried);
             int patchSize = global.patchData.patchSize;
             int overlapSize = global.patchData.overlapSize;
 
             // store each chosen overlap into an array
-            float[][] filteredOverlaps = new float[4][];
+            float[][] filteredOverlaps = new float[number_of_patches_queried][];
             int inc = 0;
             for (int i = 0; i < filteredOverlaps.Length; i++)
             {
@@ -501,15 +511,17 @@ public class ChoosePatches : MonoBehaviour
         
 
         // choose the 10 nearest patches if possible
-        if (allFlattened.Length > 4)
+        if (allFlattened.Length > 3)
         {
-            var test = tree.NearestNeighbors(targetFlattenedAverage, 4);
+            int number_of_patches_queried = (int)(allPatches.Length / 3);
+
+            var test = tree.NearestNeighbors(targetFlattenedAverage, number_of_patches_queried);
             int patchSize = global.patchData.patchSize;
             int overlapSize = global.patchData.overlapSize;
 
             // store each chosen overlap into an array
-            float[][] filteredOverlapsLeft = new float[4][];
-            float[][] filteredOverlapsTop = new float[4][];
+            float[][] filteredOverlapsLeft = new float[number_of_patches_queried][];
+            float[][] filteredOverlapsTop = new float[number_of_patches_queried][];
             int inc = 0;
             for (int i = 0; i < filteredOverlapsLeft.Length; i++)
             {
@@ -665,17 +677,9 @@ public class ChoosePatches : MonoBehaviour
         debug.GetData(debugValues);
 
 
-        /*for (int i = 0; i < debugValues.Length; i ++)
-        {
-            Debug.Log($"debugValues[{i}] = {debugValues[i]}");
-        }
-        int countPixel = 0;
-        for (int i = 0; i < patch.Length; i += 4)
-        {
-            Debug.Log($"no overlay pixel {countPixel}: R = {patch[i + 0]}, G = {patch[i + 1]}, B = {patch[i + 2]}, A = {patch[i + 3]}");
-            Debug.Log($"chosen patch pixel {countPixel}: R = {chosenPatch[i + 0]}, G = {chosenPatch[i + 1]}, B = {chosenPatch[i + 2]}, A = {chosenPatch[i + 3]}");
-            countPixel++;
-        }*/
+        inputPatchData.Release();
+        outputPatchData.Release();
+        debug.Release();
 
         return patch;
 

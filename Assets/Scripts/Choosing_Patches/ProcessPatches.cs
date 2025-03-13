@@ -58,6 +58,9 @@ public class ProcessPatches : MonoBehaviour
         // store bottom overlap pixel values into the array
         outputOverlayData.GetData(bottomOverlayCurrPatch);
 
+        inputPatchData.Release();
+        outputOverlayData.Release();
+
         return bottomOverlayCurrPatch;
     }
 
@@ -90,7 +93,8 @@ public class ProcessPatches : MonoBehaviour
         // store bottom overlap pixel values into the array
         outputOverlayData.GetData(bottomOverlayCurrPatch);
 
-        
+        inputPatchData.Release();
+        outputOverlayData.Release();
 
         return bottomOverlayCurrPatch;
     }
@@ -129,10 +133,12 @@ public class ProcessPatches : MonoBehaviour
             differenceOverlapData = new ComputeBuffer(truePatchSize * overlapSize * 4, sizeof(float));
             differenceInOverlays.SetBuffer(kernalID, "outputDifference", differenceOverlapData);
 
-
             differenceInOverlays.Dispatch(kernalID, Mathf.CeilToInt((float)(truePatchSize * overlapSize * 4) / 64), 1, 1);
             differenceOverlapData.GetData(pixelDifferences);
 
+            rightOverlapData.Release();
+            leftOverlapData.Release();
+            differenceOverlapData.Release();
 
             // now we have the difference in pixel values, we now apply Distance Matrics and the distance tolerance (dmax)
             // given by the paper 
@@ -166,7 +172,8 @@ public class ProcessPatches : MonoBehaviour
         differenceInOverlays.Dispatch(kernalID_max, Mathf.CeilToInt((float)(truePatchSize * overlapSize) / 64), 1, 1);
         maxDiffOverlapData.GetData(maxDifferences);
 
-
+        rightOverlapData.Release();
+        maxDiffOverlapData.Release();
 
         return maxDifferences;
     }
@@ -182,13 +189,13 @@ public class ProcessPatches : MonoBehaviour
         float truePatchSize = patchSize - overlapSize;
         float maxTolerance = lamda * Mathf.Pow(((1f / truePatchSize * overlapSize) * maxDifference), 0.5f);
 
-        Debug.Log(":DF maxTolerance = " + maxTolerance);
+        //Debug.Log(":DF maxTolerance = " + maxTolerance);
         // store patches that fit the distance metric
         int numPossible = 0;
         for (int i = 0; i < distanceMetrics.Length; i++)
         {
-            /*Debug.Log(":DF distanceMetrics = " + distanceMetrics[i]);
-            Debug.Log(":DF maxTolerance = " + maxTolerance);*/
+            //Debug.Log(":DF distanceMetrics = " + distanceMetrics[i]);
+            //Debug.Log(":DF maxTolerance = " + maxTolerance);
             if (distanceMetrics[i] < maxTolerance)
             {
                 numPossible++;
@@ -200,15 +207,26 @@ public class ProcessPatches : MonoBehaviour
         // get the closest one to the maximum tolerance
         if (numPossible == 0)
         {
-            Debug.Log(":DF numPossible = None possible, chose closest one");
+            //Debug.Log(":DF numPossible = None possible, chose closest one");
 
             // make sure numPossible isn't zero because we need to choose at least one patch regardless
             float[][] possiblePatches = new float[numPossible + 1][];
 
             int smallestIndex = Array.IndexOf(distanceMetrics, distanceMetrics.Min());
+            
+            float[] tempArray = (float[])distanceMetrics.Clone();
+            int secondIndex = Array.IndexOf(tempArray, tempArray.Min());
+
+            tempArray[secondIndex] = float.MaxValue;
+            int thirdIndex = Array.IndexOf(tempArray, tempArray.Min());
+
+
+
             //Debug.Log("Smallest Index = " + smallestIndex);
             possiblePatches[0] = allPatches[smallestIndex];
-            Debug.Log(":DF Patch chosen = " + smallestIndex);
+            //possiblePatches[1] = allPatches[secondIndex];
+            //possiblePatches[2] = allPatches[thirdIndex];
+
             // return all possible patches that can be used
             return possiblePatches;
         }
@@ -233,8 +251,8 @@ public class ProcessPatches : MonoBehaviour
             {
                 debug += (" ," + debugStore[i].ToString());
             }
-            Debug.Log(":DF numPossible = " + numPossible);
-            Debug.Log(":DF Patches to be considered = " + debug);
+            //Debug.Log(":DF numPossible = " + numPossible);
+            //Debug.Log(":DF Patches to be considered = " + debug);
 
             // return all possible patches that can be used
             return possiblePatches;
@@ -260,29 +278,39 @@ public class ProcessPatches : MonoBehaviour
         int numPossible = 0;
         for (int i = 0; i < distanceMetricsLeft.Length; i++)
         {
-            /*Debug.Log(":DF distanceMetrics Left = " + distanceMetricsLeft[i]);
-            Debug.Log(":DF distanceMetrics Top = " + distanceMetricsTop[i]);
-            Debug.Log($":DF Averaged Left and Top = {(distanceMetricsLeft[i] + distanceMetricsTop[i]) / 2}");
-            Debug.Log($":DF Averaged max Left and max Top = {(maxToleranceLeft + maxToleranceTop) / 2}");*/
             if ((distanceMetricsLeft[i] + distanceMetricsTop[i]) / 2 < (maxToleranceLeft + maxToleranceTop) / 2)
             {
                 numPossible++;
             }
-            Debug.Log(":DF numPossible = " + numPossible);
+
+            /*if (distanceMetricsLeft[i] < maxToleranceLeft && distanceMetricsTop[i] < maxToleranceTop)
+            {
+                numPossible++;
+            }*/
 
         }
+        //Debug.Log(":DF numPossible = " + numPossible);
 
         // if the set is empty (no patch meets the distance tolerance criteria)
         // get the closest one to the maximum tolerance
         if (numPossible == 0)
         {
-            Debug.Log(":DF numPossible = None possible, chose closest one");
+            //Debug.Log(":DF numPossible = None possible, chose closest one");
             // make sure numPossible isn't zero because we need to choose at least one patch regardless
             float[][] possiblePatches = new float[numPossible + 1][];
 
             int smallestIndex = Array.IndexOf(distanceMetricsLeft, distanceMetricsLeft.Min());
+            
+            float[] tempArray = (float[])distanceMetricsLeft.Clone();
+            int secondIndex = Array.IndexOf(tempArray, tempArray.Min());
+            
+            tempArray[secondIndex] = float.MaxValue; 
+            int thirdIndex = Array.IndexOf(tempArray, tempArray.Min());
+
             possiblePatches[0] = allPatches[smallestIndex];
-            Debug.Log(":DF Patch chosen = " + smallestIndex);
+            //possiblePatches[1] = allPatches[secondIndex];
+            //possiblePatches[2] = allPatches[thirdIndex];
+            //Debug.Log(":DF Patch chosen = " + smallestIndex);
             return possiblePatches;
         }
         else
@@ -299,14 +327,21 @@ public class ProcessPatches : MonoBehaviour
                     possiblePatches[increment] = allPatches[i];
                     increment++;
                 }
+
+                /*if (distanceMetricsLeft[i] < maxToleranceLeft && distanceMetricsTop[i] < maxToleranceTop)
+                {
+                    debugStore[increment] = i;
+                    possiblePatches[increment] = allPatches[i];
+                    increment++;
+                }*/
             }
             string debug = "";
             for (int i = 1; i < debugStore.Length; i++)
             {
                 debug += (" ," + debugStore[i].ToString());
             }
-            Debug.Log(":DF numPossible = " + numPossible);
-            Debug.Log(":DF Patches to be considered = " + debug);
+            //Debug.Log(":DF numPossible = " + numPossible);
+            //Debug.Log(":DF Patches to be considered = " + debug);
 
             return possiblePatches;
         }
