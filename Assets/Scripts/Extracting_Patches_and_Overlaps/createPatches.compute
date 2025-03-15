@@ -35,7 +35,7 @@ StructuredBuffer<float> pixelData;
 // the patch data
 StructuredBuffer<float> patchData;
 // size of a patch
-int patchSize;
+uint patchSize;
 // number of patches in a row
 int numPatchesPerRow;
 // height/width of the final image
@@ -83,7 +83,7 @@ void SegmentPatches (uint3 id : SV_DispatchThreadID)
 void CombinePatches(uint3 id : SV_DispatchThreadID)
 {
     // we are processing all pixels from all patches in a row 
-    int patchIndex = id.x;
+    uint patchIndex = id.x;
     
     // get the pixel value of our processing pixel
     float4 currentPixel = patchData[patchIndex];

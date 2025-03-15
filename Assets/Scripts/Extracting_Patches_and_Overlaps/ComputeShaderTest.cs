@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class Texturesynthesis : MonoBehaviour
 {
@@ -89,7 +90,10 @@ public class Texturesynthesis : MonoBehaviour
         if (useGPU)
         {
             // GPU
+            var watch2 = System.Diagnostics.Stopwatch.StartNew();
             patches = SegmentPatches_GPU(allPixelDataRef, sizeOfRef, patchSize, texture);
+            watch2.Stop();
+            Debug.Log("Time: Segmenting Patches = " + watch2.ElapsedMilliseconds);
         }
         else
         {
@@ -104,7 +108,10 @@ public class Texturesynthesis : MonoBehaviour
         //choosePatches.placeFirstPatch(patches, 0);
         // ----------------------------------------------------------------------------------------------
         // from each patch, extract top and left overlaps
+        var watch = System.Diagnostics.Stopwatch.StartNew();
         overlayPixels = SegmentOverlays_GPU(patches, overlapSize, sizeOfRef, patchSize,overlapSize);
+        watch.Stop();
+        Debug.Log("Time: Segmenting Overlays = " + watch.ElapsedMilliseconds);
 
         // save the top overlap as images for showing purposes
         //DebugFunctions.showData(overlayPixels[0], patchSize-overlapSize, "Saved/Save_Overlay_Top");

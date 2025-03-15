@@ -5,13 +5,15 @@ using UnityEngine.UI;
 
 public class PC_ChooseSize : MonoBehaviour
 {
-    public Button confirmButton; //, discardButton;
+    public Button confirmButtonSettings; 
+    public Button confirmButtonSize;
     public createNewCube newMesh;
     // Start is called before the first frame update
     void Start()
     {
-        confirmButton.onClick.AddListener(delegate { newMesh.outputSizeConfirm(); });
+        confirmButtonSettings.onClick.AddListener(delegate { newMesh.settingsConfirm(); });
+        confirmButtonSize.onClick.AddListener(delegate { newMesh.sizeConfirm(); });
         //discardButton.onClick.AddListener(delegate { newMesh.outputSizeCancel(); });
-        
+
     }
 }

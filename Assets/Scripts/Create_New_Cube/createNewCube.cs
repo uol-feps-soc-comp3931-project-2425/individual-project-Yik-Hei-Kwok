@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using static System.Net.Mime.MediaTypeNames;
 using UnityEngine.Playables;
 using UnityEngine.InputSystem;
+using TMPro;
 
 public class createNewCube : MonoBehaviour
 {
@@ -17,11 +18,13 @@ public class createNewCube : MonoBehaviour
     private string textureLocation;
     private int sourceImageWidth;
     private int sourceImageHeight;
-    
-
     private string currentProcessingName;
-
     private bool showingSizingMenu = false;
+    // denoting which menu is being shown
+    private bool sizeMenu = false;
+    private bool settingsMenu = false;
+    // get text value of the slider
+    private TextMeshProUGUI size_text;
 
     // for switching controls
     private PC_ChooseSize chooseSizeController;
@@ -30,6 +33,8 @@ public class createNewCube : MonoBehaviour
     // the sliders to control parameters of texture synthesised 
     public Slider sizeSlider;
     public Slider lambdaSlider;
+    public Slider patchSlider;
+    public Slider boundarySlider;
 
     public GameObject cubeView;
 
@@ -38,34 +43,62 @@ public class createNewCube : MonoBehaviour
         GameObject player_controls = GameObject.Find("Player_Controller");
         chooseSizeController = player_controls.GetComponent<PC_ChooseSize>();
         chooseTexController = player_controls.GetComponent<PC_Choose_Textures>();
+        
+        size_text = sizeSlider.gameObject.transform.Find("Slider_Value").Find("Value").gameObject.GetComponent<TextMeshProUGUI>();
+
+
+        setSize();
 
     }
     private void Update()
     {
-
+        // update the text value of size slider
+        if(sizeMenu == true)
+        {
+            size_text.text = sizeSlider.value;
+        }
     }
 
-    // for setting size of final image
-    public void outputSizeConfirm()
+    public void setSize()
     {
-        // get the slider objects and get its value
-        
+        // show the sizing menu
+        showSizingMenu(true);
+    }
+    public void sizeConfirm()
+    {
+        // get the size 
         sizeFinalImage = (int)sizeSlider.value;
-        float lambda = lambdaSlider.value;
         Debug.Log("GOT VALUE = " + sizeFinalImage);
-        // disable the sizing menu
+        // unshow the menu
         showSizingMenu(false);
+    }
+    // for setting size of final image
+    public void settingsConfirm()
+    {
+        float lambda = lambdaSlider.value;
+        float PS_point = patchSlider.value;
+        int BS_point = (int)boundarySlider.value;
+        // disable the sizing menu
+        showSettingsMenu(false);
 
         // run the synthesis algorithm
-        invokeSynthesis.runSynthesis(currentProcessingName, sourceImageWidth, sourceImageHeight, textureLocation, sizeFinalImage, lambda);
+        invokeSynthesis.runSynthesis(currentProcessingName, sourceImageWidth, sourceImageHeight, textureLocation, sizeFinalImage, lambda, PS_point, BS_point);
+    }
+
+    private void showSettingsMenu(bool show)
+    {
+        enableOrDisableChildren("Settings_Input", show);
+        chooseSizeController.enabled = show;
+        chooseTexController.enabled = !show;
     }
 
     private void showSizingMenu(bool show)
     {
-        enableOrDisableChildren("Size_Input", show);
+        enableOrDisableChildren("Actual Size Input", show);
         chooseSizeController.enabled = show;
         chooseTexController.enabled = !show;
     }
+
 
     // for importing the image from user's computer and running the synthesis algorithm
     public void Apply(string filename)
@@ -96,7 +129,7 @@ public class createNewCube : MonoBehaviour
             chooseTexController.enabled = false;
 
             // Show the menu indicating 
-            showSizingMenu(true);
+            showSettingsMenu(true);
 
             currentProcessingName = filename;
 
