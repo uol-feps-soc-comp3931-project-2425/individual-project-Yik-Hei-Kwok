@@ -18,8 +18,26 @@ void GetPatchWithoutOverlap(uint3 id : SV_DispatchThreadID)
     // positions of pixel based on how large a patch is
     uint x = id.x;
     uint y = id.y;
+ 
+    if (x >= overlapSize && y < (patchSize - overlapSize))
+    {
+        // pixel position in the 1D array of pixels
+        int pixelInArray = y * (patchSize * 4) + x * 4;
     
-    if (x < (patchSize - overlapSize) && y >= overlapSize)
+        // get the pixel from the input array of pixels based on the global position
+        float4 currentPixel = float4(patchData[pixelInArray + 0], patchData[pixelInArray + 1], patchData[pixelInArray + 2], patchData[pixelInArray + 3]);
+        
+        // get index
+        //int outputIndex = (y - overlapSize) * (patchSize - overlapSize) + x;
+        int outputIndex = y * (patchSize - overlapSize) + (x - overlapSize);
+       
+        // save pixel into the output buffer
+        withoutOverlaps[outputIndex] = currentPixel;
+        x_or_y_values[outputIndex] = pixelInArray;
+
+    }
+    
+    /*if (x < (patchSize - overlapSize) && y >= overlapSize)
     {
         // pixel position in the 1D array of pixels
         int pixelInArray = y * (patchSize * 4) + x * 4;
@@ -34,5 +52,6 @@ void GetPatchWithoutOverlap(uint3 id : SV_DispatchThreadID)
         withoutOverlaps[outputIndex] = currentPixel;
         x_or_y_values[outputIndex] = pixelInArray;
 
-    }
+    }*/
+    
 }

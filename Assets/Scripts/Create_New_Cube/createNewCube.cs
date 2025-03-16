@@ -25,6 +25,9 @@ public class createNewCube : MonoBehaviour
     private bool settingsMenu = false;
     // get text value of the slider
     private TextMeshProUGUI size_text;
+    private TextMeshProUGUI randomness_text;
+    private TextMeshProUGUI patchSize_text;
+    private TextMeshProUGUI boundary_text;
 
     // for switching controls
     private PC_ChooseSize chooseSizeController;
@@ -45,23 +48,39 @@ public class createNewCube : MonoBehaviour
         chooseTexController = player_controls.GetComponent<PC_Choose_Textures>();
         
         size_text = sizeSlider.gameObject.transform.Find("Slider_Value").Find("Value").gameObject.GetComponent<TextMeshProUGUI>();
-
+        randomness_text = lambdaSlider.gameObject.transform.Find("Slider_Value").Find("Value").gameObject.GetComponent<TextMeshProUGUI>();
+        patchSize_text = patchSlider.gameObject.transform.Find("Slider_Value").Find("Value").gameObject.GetComponent<TextMeshProUGUI>();
+        boundary_text = boundarySlider.gameObject.transform.Find("Slider_Value").Find("Value").gameObject.GetComponent<TextMeshProUGUI>();
 
         setSize();
 
     }
     private void Update()
     {
+
         // update the text value of size slider
         if(sizeMenu == true)
         {
-            size_text.text = sizeSlider.value;
+            size_text.text = sizeSlider.value.ToString();
+        }else if(settingsMenu == true)
+        {
+            randomness_text.text = lambdaSlider.value.ToString();
+
+            float PS = patchSlider.value;
+            int actualPatchSize = (int)(PS * Mathf.Min(sourceImageWidth, sourceImageHeight));
+            patchSize_text.text = actualPatchSize.ToString();
+
+            int OS = (int)boundarySlider.value;
+            int overlapSize = actualPatchSize / OS;
+            boundary_text.text = overlapSize.ToString();
+
         }
     }
 
     public void setSize()
     {
         // show the sizing menu
+        sizeMenu = true;
         showSizingMenu(true);
     }
     public void sizeConfirm()
@@ -70,6 +89,7 @@ public class createNewCube : MonoBehaviour
         sizeFinalImage = (int)sizeSlider.value;
         Debug.Log("GOT VALUE = " + sizeFinalImage);
         // unshow the menu
+        sizeMenu = false;
         showSizingMenu(false);
     }
     // for setting size of final image
@@ -79,6 +99,7 @@ public class createNewCube : MonoBehaviour
         float PS_point = patchSlider.value;
         int BS_point = (int)boundarySlider.value;
         // disable the sizing menu
+        settingsMenu = false;
         showSettingsMenu(false);
 
         // run the synthesis algorithm
@@ -129,7 +150,9 @@ public class createNewCube : MonoBehaviour
             chooseTexController.enabled = false;
 
             // Show the menu indicating 
+            settingsMenu = true;
             showSettingsMenu(true);
+
 
             currentProcessingName = filename;
 

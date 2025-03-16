@@ -90,10 +90,7 @@ public class Texturesynthesis : MonoBehaviour
         if (useGPU)
         {
             // GPU
-            var watch2 = System.Diagnostics.Stopwatch.StartNew();
             patches = SegmentPatches_GPU(allPixelDataRef, sizeOfRef, patchSize, texture);
-            watch2.Stop();
-            Debug.Log("Time: Segmenting Patches = " + watch2.ElapsedMilliseconds);
         }
         else
         {
@@ -103,19 +100,16 @@ public class Texturesynthesis : MonoBehaviour
 
 
         // save the patches as images for showing purposes
-        //DebugFunctions.showData(patches, patchSize, "Saved/Save_Patches");
+        DebugFunctions.showData(patches, patchSize, "Saved/Save_Patches");
 
         //choosePatches.placeFirstPatch(patches, 0);
         // ----------------------------------------------------------------------------------------------
         // from each patch, extract top and left overlaps
-        var watch = System.Diagnostics.Stopwatch.StartNew();
         overlayPixels = SegmentOverlays_GPU(patches, overlapSize, sizeOfRef, patchSize,overlapSize);
-        watch.Stop();
-        Debug.Log("Time: Segmenting Overlays = " + watch.ElapsedMilliseconds);
-
+        
         // save the top overlap as images for showing purposes
-        //DebugFunctions.showData(overlayPixels[0], patchSize-overlapSize, "Saved/Save_Overlay_Top");
-        //DebugFunctions.showData_left(overlayPixels[1], patchSize-overlapSize, overlapSize , "Saved/Save_Overlay_Left");
+        DebugFunctions.showData(overlayPixels[0], patchSize-overlapSize, "Saved/Save_Overlay_Top");
+        DebugFunctions.showData_left(overlayPixels[1], patchSize-overlapSize, overlapSize , "Saved/Save_Overlay_Left");
         //DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, overlapSize, overlayPixels[0][0], "Saved/Save_Overlay_Top/overlapPatch0.png");
         //DebugFunctions.showData_CustomizedWH(overlapSize, patchSize - overlapSize, overlayPixels[1][0], "Saved/Save_Overlay_Left/overlapPatch0.png");
 

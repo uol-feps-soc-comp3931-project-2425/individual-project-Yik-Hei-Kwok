@@ -29,4 +29,12 @@ public class global : MonoBehaviour
     // keep track which state we are in
     public static State_List.States current_state;
 
+
+    // track if we want to debug
+    public struct debugKD
+    {
+        public static bool debug;
+        public static float[] time_KD = new float[10];
+        public static float[] time_NoKD = new float[10];
+    }
 }

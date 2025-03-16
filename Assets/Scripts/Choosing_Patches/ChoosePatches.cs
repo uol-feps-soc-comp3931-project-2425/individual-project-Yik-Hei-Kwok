@@ -9,6 +9,7 @@ using Supercluster.KDTree;
 using UnityEngine.UIElements;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
 using Unity.VisualScripting;
+using static global;
 
 
 public class ChoosePatches : MonoBehaviour
@@ -84,8 +85,14 @@ public class ChoosePatches : MonoBehaviour
         // which patch of the row we are on
         int patchNumInRow = 0;
 
+        // calculate time needed for choosing patches if debug is set to true
+        if (debugKD.debug == true)
+        {
+            var watchKD = System.Diagnostics.Stopwatch.StartNew();
+        }
+            
+
         // for timing the time used to choose patches (compare KD and non-KD methods)
-        var watch = System.Diagnostics.Stopwatch.StartNew();
         // loop through all patches needed
         for (int i = 0;  i < totalPatchesNeeded; i++) {
             (currIterationPatchNum, previousRightPatch, previousRowBottomPatches[patchNumInRow]) = placeNewPatch(k, allPatches, allOverlaps, chosenPatches, patchesPerRow, previousRightPatch, previousRowBottomPatches, useKD);
@@ -95,10 +102,7 @@ public class ChoosePatches : MonoBehaviour
             if (patchNumInRow == patchesPerRow)
                 patchNumInRow = 0;
         }
-        watch.Stop();
-        var elapsedMs = watch.ElapsedMilliseconds;
-        Debug.Log($"Time: Placing Patches = {elapsedMs} ms");
-
+       
         // actual patch size (the size of patch when placed into the result)
         int truePatchSize = patchSize - overlapSize;
 
@@ -157,11 +161,7 @@ public class ChoosePatches : MonoBehaviour
         }
 
         string fileName = finalImageLocation.Split('/')[1];
-        var watch3 = System.Diagnostics.Stopwatch.StartNew();
         createFinalImage(resultImageSize, finalImage, numOfRows, truePatchSize , fileName, finalImageLocation);
-        watch3.Stop();
-        Debug.Log("Time: Creating Final Image = " + watch3.ElapsedMilliseconds);
-
 
     }
 
@@ -235,10 +235,7 @@ public class ChoosePatches : MonoBehaviour
         // compare
         else
         {
-            var watch35 = System.Diagnostics.Stopwatch.StartNew();
             (chosenPatches[k], chosenPatchNum, chosenRightOverlay, chosenBottomOverlay) = placeNextPatch(allPatches, allOverlaps, k, patchesPerRow, prevRightPatch, previousRowBottomPatches, useKD);
-            watch35.Stop();
-            Debug.Log($"Time: full process of choosing patch {k} = " + watch35.ElapsedMilliseconds);
         }
         return (chosenPatchNum, chosenRightOverlay, chosenBottomOverlay);
     }
@@ -253,8 +250,8 @@ public class ChoosePatches : MonoBehaviour
         System.Random ran = new System.Random();
         // ranPatch describes which patch is chosen
         int ranPatch = ran.Next(allPatches.Length);
-        ranPatch = 0;
-        Debug.Log(":DF ranPatch = " + ranPatch);
+        ranPatch = 3;
+        //Debug.Log(":DF ranPatch = " + ranPatch);
         float[] chosenPatch = allPatches[ranPatch];
 
         // for storing the current patch's bottom and right overlaps
@@ -273,9 +270,9 @@ public class ChoosePatches : MonoBehaviour
         toBePlacedPatch = getPatchWithoutOverlap(chosenPatch);
 
         // for debug only
-        //DebugFunctions.showData_CustomizedWH(patchSize-overlapSize, overlapSize, overlapBottom, $"Saved/Save_Overlay_Bottom/bottom_{k}.png");
-        //DebugFunctions.showData_CustomizedWH(overlapSize, patchSize - overlapSize, overlapRight, $"Saved/Save_Overlay_Right/right_{k}.png");
-        //DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, patchSize - overlapSize, toBePlacedPatch, $"Saved/To_Be_Placed_Patches/to_be_placed_{k}.png");
+        DebugFunctions.showData_CustomizedWH(patchSize-overlapSize, overlapSize, overlapBottom, $"Saved/Save_Overlay_Bottom/bottom_{k}.png");
+        DebugFunctions.showData_CustomizedWH(overlapSize, patchSize - overlapSize, overlapRight, $"Saved/Save_Overlay_Right/right_{k}.png");
+        DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, patchSize - overlapSize, toBePlacedPatch, $"Saved/To_Be_Placed_Patches/to_be_placed_{k}.png");
         
         return (toBePlacedPatch, ranPatch, overlapRight, overlapBottom);
     }
@@ -310,12 +307,9 @@ public class ChoosePatches : MonoBehaviour
            
             if(patchNumber == 1)
             {
-                var watch4 = System.Diagnostics.Stopwatch.StartNew();
                 // save right and bottom overlays of the chosen patch
                 overlapBottom = ProcessPatch.saveBottomOverlay(chosenPatch);
                 overlapRight = ProcessPatch.saveRightOverlay(chosenPatch);
-                watch4.Stop();
-                Debug.Log("Time: Getting Bottom and Right Overlays = " + watch4.ElapsedMilliseconds);
             }
             else
             {
@@ -408,44 +402,16 @@ public class ChoosePatches : MonoBehaviour
         int patchSize = global.patchData.patchSize;
         int overlapSize = global.patchData.overlapSize;
 
-        if(patchNumber == 1)
-        {
-            var watch = System.Diagnostics.Stopwatch.StartNew();
-            // loop through each patch
-            float[] distanceMetrics = ProcessPatch.compareOverlaysGPU(allOverlays, previousOverlay, patchSize, overlapSize, totalPatches);
-            watch.Stop();
-            Debug.Log("Time: Comparing Overlays = " + watch.ElapsedMilliseconds);
+        // loop through each patch
+        float[] distanceMetrics = ProcessPatch.compareOverlaysGPU(allOverlays, previousOverlay, patchSize, overlapSize, totalPatches);
 
-            var watch2 = System.Diagnostics.Stopwatch.StartNew();
-            // calculate distance tolerance (dmax)
-            float[] maxDifferences = ProcessPatch.computeMaxTolerance(previousOverlay, patchSize, overlapSize);
-            watch2.Stop();
-            Debug.Log("Time: Computing Max tolerance = " + watch2.ElapsedMilliseconds);
+        // calculate distance tolerance (dmax)
+        float[] maxDifferences = ProcessPatch.computeMaxTolerance(previousOverlay, patchSize, overlapSize);
 
-            var watch3 = System.Diagnostics.Stopwatch.StartNew();
-            // filter out the patches which overlap distance doesn't exceed max tolerance
-            float[][] possiblePatches = ProcessPatch.filterPatchMaxToleranceOne(maxDifferences, distanceMetrics, patchSize, overlapSize, allPatches, lambda);
-            watch3.Stop();
-            Debug.Log("Time: Filtering patches = " + watch3.ElapsedMilliseconds);
+        // filter out the patches which overlap distance doesn't exceed max tolerance
+        float[][] possiblePatches = ProcessPatch.filterPatchMaxToleranceOne(maxDifferences, distanceMetrics, patchSize, overlapSize, allPatches, lambda);
 
-            return possiblePatches;
-        }
-        else
-        {
-            // loop through each patch
-            float[] distanceMetrics = ProcessPatch.compareOverlaysGPU(allOverlays, previousOverlay, patchSize, overlapSize, totalPatches);
-
-            // calculate distance tolerance (dmax)
-            float[] maxDifferences = ProcessPatch.computeMaxTolerance(previousOverlay, patchSize, overlapSize);
-
-            // filter out the patches which overlap distance doesn't exceed max tolerance
-            float[][] possiblePatches = ProcessPatch.filterPatchMaxToleranceOne(maxDifferences, distanceMetrics, patchSize, overlapSize, allPatches, lambda);
-
-            return possiblePatches;
-        }
-        
-
-
+        return possiblePatches;
         
     }
 
@@ -464,21 +430,10 @@ public class ChoosePatches : MonoBehaviour
         float[] distanceMetricsTop = ProcessPatch.compareOverlaysGPU(overlaysTop, previousBottOverlay, patchSize, overlapSize, totalPatches);
         // calculate distance tolerance (dmax) for bottom overlays
         float[] maxDifferencesTop = ProcessPatch.computeMaxTolerance(previousBottOverlay, patchSize, overlapSize);
-        if(patchNumber == 45)
-        {
-            var watch52 = System.Diagnostics.Stopwatch.StartNew();
-            float[][] possiblePatches = ProcessPatch.filterPatchMaxToleranceBoth(maxDifferencesLeft, maxDifferencesTop, distanceMetricsLeft, distanceMetricsTop, patchSize, overlapSize, allPatches, lambda);
-            watch52.Stop();
-            Debug.Log("Time: Filtering Patches for two dimensions  = " + watch52.ElapsedMilliseconds);
-            return possiblePatches;
-        }
-        else
-        {
-            float[][] possiblePatches = ProcessPatch.filterPatchMaxToleranceBoth(maxDifferencesLeft, maxDifferencesTop, distanceMetricsLeft, distanceMetricsTop, patchSize, overlapSize, allPatches, lambda);
-            return possiblePatches;
-        }
         
-
+        
+        float[][] possiblePatches = ProcessPatch.filterPatchMaxToleranceBoth(maxDifferencesLeft, maxDifferencesTop, distanceMetricsLeft, distanceMetricsTop, patchSize, overlapSize, allPatches, lambda);
+        return possiblePatches;
         
     }
 

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class ProcessPatches : MonoBehaviour
 {
@@ -194,7 +195,7 @@ public class ProcessPatches : MonoBehaviour
         int numPossible = 0;
         for (int i = 0; i < distanceMetrics.Length; i++)
         {
-            //Debug.Log(":DF distanceMetrics = " + distanceMetrics[i]);
+            //Debug.Log($":DF patch {i} distanceMetrics = " + distanceMetrics[i]);
             //Debug.Log(":DF maxTolerance = " + maxTolerance);
             if (distanceMetrics[i] < maxTolerance)
             {

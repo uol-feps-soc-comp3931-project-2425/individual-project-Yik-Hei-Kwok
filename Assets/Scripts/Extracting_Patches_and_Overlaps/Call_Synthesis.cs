@@ -27,7 +27,7 @@ public class Call_Synthesis : MonoBehaviour
             var fileContent = File.ReadAllBytes(textureLocation);
             texture.LoadImage(fileContent);
             // run the synthesis algorithm
-            Synthesis.startSynthesis(texture, sizeFinalImage, patchSize, overlapSize, true,true, $"{global.blockCount}/{filename}", lambdaValue);
+            Synthesis.startSynthesis(texture, sizeFinalImage, patchSize, overlapSize, true,false, $"{global.blockCount}/{filename}", lambdaValue);
 
             // update the displayed texture
 

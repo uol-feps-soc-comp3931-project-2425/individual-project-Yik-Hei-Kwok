@@ -19,22 +19,25 @@ public class Benchmarking : MonoBehaviour
     {
         // test for time used with and without using KD for different output sizes
 
-        /*
-        int[] finalSizeValue = new int[6];
-        finalSizeValue[0] = 580;
-        finalSizeValue[1] = 780;
-        finalSizeValue[2] = 1000;
-        finalSizeValue[3] = 1500;
-        finalSizeValue[4] = 2000;
-        finalSizeValue[5] = 3000;
-        */
+        
+        int[] finalSizeValue = new int[10];
+        finalSizeValue[0] = 100;
+        finalSizeValue[1] = 200;
+        finalSizeValue[2] = 300;
+        finalSizeValue[3] = 400;
+        finalSizeValue[4] = 500;
+        finalSizeValue[5] = 600;
+        finalSizeValue[6] = 700;
+        finalSizeValue[7] = 800;
+        finalSizeValue[8] = 900;
+        finalSizeValue[9] = 1000;
 
-        int[] finalSizeValue = new int[2];
+        /*int[] finalSizeValue = new int[2];
         finalSizeValue[0] = 2000;
-        finalSizeValue[1] = 3000;
+        finalSizeValue[1] = 3000;*/
 
-
-        int patchSize = (int)(0.2f * Mathf.Min(texture.width, texture.height));
+        // for texture 2, patch size = 40 and boundary size = 6
+        int patchSize = (int)(0.27f * Mathf.Min(texture.width, texture.height));
         // set overlap size as 1/6 of patch size
         int overlapSize = patchSize / 6;
 
