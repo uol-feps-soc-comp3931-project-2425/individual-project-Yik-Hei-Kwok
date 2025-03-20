@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Text;
 using System.IO;
+using static global;
 
 public class Benchmarking : MonoBehaviour
 {
@@ -18,8 +19,9 @@ public class Benchmarking : MonoBehaviour
     void Start()
     {
         // test for time used with and without using KD for different output sizes
+        debugKD.debug = true;
 
-        
+
         int[] finalSizeValue = new int[10];
         finalSizeValue[0] = 100;
         finalSizeValue[1] = 200;
@@ -32,9 +34,6 @@ public class Benchmarking : MonoBehaviour
         finalSizeValue[8] = 900;
         finalSizeValue[9] = 1000;
 
-        /*int[] finalSizeValue = new int[2];
-        finalSizeValue[0] = 2000;
-        finalSizeValue[1] = 3000;*/
 
         // for texture 2, patch size = 40 and boundary size = 6
         int patchSize = (int)(0.27f * Mathf.Min(texture.width, texture.height));
@@ -43,10 +42,8 @@ public class Benchmarking : MonoBehaviour
 
         float lambdaValue = 0.4f;
 
-        int numIncrements = 10;
-
-        float[] saveKDTime = new float[finalSizeValue.Length];
-        float[] saveNoKDTime = new float[finalSizeValue.Length];
+        //float[] saveKDTime = new float[finalSizeValue.Length];
+        //float[] saveNoKDTime = new float[finalSizeValue.Length];
 
         for (int i  = 0; i < finalSizeValue.Length; i++)
         {
@@ -54,24 +51,16 @@ public class Benchmarking : MonoBehaviour
             string filename_KD = $"KD_Benchmark_Size{finalSizeValue[i]}";
 
             // benchmark the execution time for using KD
-            var watchKD = System.Diagnostics.Stopwatch.StartNew();
             Synthesis.startSynthesis(texture, finalSizeValue[i], patchSize, overlapSize, true, true, $"Benchmark_Saved/{filename_KD}", lambdaValue);
-            watchKD.Stop();
-            var elapsedMs_KD = watchKD.ElapsedMilliseconds;
-            saveKDTime[i] = elapsedMs_KD;
 
             // benchmark the execution time for not using KD
-            var watchNoKD = System.Diagnostics.Stopwatch.StartNew();
             Synthesis.startSynthesis(texture, finalSizeValue[i], patchSize, overlapSize, true, false, $"Benchmark_Saved/{filename_noKD}", lambdaValue);
-            watchNoKD.Stop();
-            var elapsedMs_noKD = watchNoKD.ElapsedMilliseconds;
-            saveNoKDTime[i] = elapsedMs_noKD;
         }
 
-        saveToCSV(finalSizeValue.Length, saveKDTime, saveNoKDTime, "Assets/Saved/Final_Image/Benchmark_Saved/KD_Compare.csv");
-        
+        saveToCSV(finalSizeValue.Length, debugKD.time_NoKD, debugKD.time_KD, "Assets/Saved/Final_Image/Benchmark_Saved/KD_Compare.csv");
 
 
+        debugKD.debug = false;
         //var watch = System.Diagnostics.Stopwatch.StartNew();
     }
 

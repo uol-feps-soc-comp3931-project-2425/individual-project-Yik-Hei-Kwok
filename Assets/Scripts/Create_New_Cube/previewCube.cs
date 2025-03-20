@@ -2,18 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using UnityEngine.UI;
 public class previewCube : MonoBehaviour
 {
     public GameObject cubeView;
     public Merge_Textures mergeTextures;
+    public CreateNewTerrain createTerrain;
+
+    
     // for allowing user to view how the cube looks like, and confirm if that is what they want
-    public void viewCubeResult()
+    public void viewCubeResult(bool isTerrain)
     {
         int sizeFinalImage = FindObjectOfType<createNewCube>().sizeFinalImage;
         
 
         // all pixels will end up being in this array (3 rows, row 1 is empty, row 2 and 3 each have three faces)
-        mergeTextures.createNewAtlas(sizeFinalImage);
+        mergeTextures.createNewAtlas(sizeFinalImage, isTerrain);
 
         // modify the texture UV mapping
         Mesh meshCube = GameObject.Find("Screen_2").GetComponentInChildren<MeshFilter>().mesh;
@@ -21,8 +25,18 @@ public class previewCube : MonoBehaviour
         Vector2[] UVs = setUVMapping(meshCube);
 
         meshCube.uv = UVs;
+        string path;
+        if (isTerrain)
+        {
+            path = "Terrain";
+            
+        }
+        else
+        {
+            path = $"{global.blockCount}";
+        }
 
-        var createdTexture = File.ReadAllBytes($"Assets/Saved/Final_Image/{global.blockCount}/atlas.png");
+        var createdTexture = File.ReadAllBytes($"Assets/Saved/Final_Image/{path}/atlas.png");
         Texture2D newTexture = new Texture2D(2, 2);
         newTexture.LoadImage(createdTexture);
 
@@ -34,6 +48,11 @@ public class previewCube : MonoBehaviour
         //AssetDatabase.SaveAssets();
         cubeView.GetComponent<Renderer>().material = material;
 
+    }
+
+    private void confirmTerrainTexture()
+    {
+        createTerrain.terrainTextureSelected = true;
     }
 
 

@@ -7,6 +7,8 @@ public class Choose_Texture_State : Base_State
     public override void EnterState(State_Manager state)
     {
         state.switchScreens(state.Screens, 1);
+        state.new_cube.initializeCubeMenu(state.isTerrain, state.cancelPressed);
+        state.cancelPressed = false;
     }
 
 

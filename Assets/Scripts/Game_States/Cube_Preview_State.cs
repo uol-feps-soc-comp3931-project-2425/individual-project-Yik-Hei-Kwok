@@ -16,7 +16,14 @@ public class Cube_Preview_State : Base_State
         // enable all stuff in the second screen
         state.enableOrDisableChildren("Screen_2", true);
         // show the preview cube
-        state.prevCubeFunc.viewCubeResult();
+        state.prevCubeFunc.viewCubeResult(state.isTerrain);
+        // confirm button leads user back to main page if setting up terrain texture
+        if (state.isTerrain)
+        {
+            // start listening to the buttons for Terrain Texture choosing
+            state.texture_confirmButton.onClick.AddListener(delegate { confirmTerrainTexture(state); });
+            state.texture_cancelButton.onClick.AddListener(delegate { cancelTerrainTexture(state); });
+        }
     }
 
 
@@ -43,5 +50,21 @@ public class Cube_Preview_State : Base_State
             // Update the previous mouse position when the right mouse button is not held
             prevMousePosition = currentMousePosition;
         }
+    }
+
+    // when confirm button is pressed when creating texture for terrain
+    private void confirmTerrainTexture(State_Manager state)
+    {
+        // reset isTerrain to false
+        state.isTerrain = false;
+        state.Create_Terrain.terrainTextureSelected = true;
+        state.switchState(state.start_menu_state);
+    }
+    private void cancelTerrainTexture(State_Manager state)
+    {
+        state.Create_Terrain.terrainTextureSelected = false;
+        global.current_state = State_List.States.choose_textures;
+        state.cancelPressed = true;
+        state.switchState(state.choose_texture_state);
     }
 }

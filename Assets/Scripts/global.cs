@@ -33,7 +33,9 @@ public class global : MonoBehaviour
     // track if we want to debug
     public struct debugKD
     {
-        public static bool debug;
+        public static bool debug = false;
+        public static int index_KD = 0;
+        public static int index_NoKD = 0;
         public static float[] time_KD = new float[10];
         public static float[] time_NoKD = new float[10];
     }

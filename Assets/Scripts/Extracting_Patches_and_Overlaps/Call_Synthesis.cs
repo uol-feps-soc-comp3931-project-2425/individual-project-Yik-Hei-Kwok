@@ -8,7 +8,7 @@ public class Call_Synthesis : MonoBehaviour
 {
     public Texturesynthesis Synthesis;
 
-    public void runSynthesis(string filename, int sourceImageWidth, int sourceImageHeight, string textureLocation, int sizeFinalImage, float lambdaValue, float PS, int OS)
+    public void runSynthesis(string filename, int sourceImageWidth, int sourceImageHeight, string textureLocation, int sizeFinalImage, float lambdaValue, float PS, int OS, bool isTerrain)
     {
         // patch size is preset
         // delta is suggested to be between 0.25 and 0.5
@@ -26,16 +26,20 @@ public class Call_Synthesis : MonoBehaviour
             Texture2D texture = new Texture2D(2, 2);
             var fileContent = File.ReadAllBytes(textureLocation);
             texture.LoadImage(fileContent);
+            
+            string path;
+            if (isTerrain)
+                path = $"Terrain/{filename}";
+            else
+                path = $"{global.blockCount}/{filename}";
+
             // run the synthesis algorithm
-            Synthesis.startSynthesis(texture, sizeFinalImage, patchSize, overlapSize, true,false, $"{global.blockCount}/{filename}", lambdaValue);
+            Synthesis.startSynthesis(texture, sizeFinalImage, patchSize, overlapSize, true, false, path, lambdaValue);
 
             // update the displayed texture
-
-
-
             Debug.Log("chooseTexController.processing_side = " + filename);
             // encode the texture
-            var createdTexture = File.ReadAllBytes($"Assets/Saved/Final_Image/{global.blockCount}/{filename}.png");
+            var createdTexture = File.ReadAllBytes($"Assets/Saved/Final_Image/{path}.png");
             Texture2D newTexture = new Texture2D(2, 2);
             newTexture.LoadImage(createdTexture);
 

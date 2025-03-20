@@ -25,6 +25,9 @@ public class Start_Menu_State : Base_State
         state.input_x_terrain.onEndEdit.AddListener(Terrain_X_Dimensions);
         state.input_y_terrain.onEndEdit.AddListener(Terrain_Y_Dimensions);
 
+        // listen to button press regarding changing terrain texture
+        state.chooseTexture.onClick.AddListener(delegate { chooseTerrainTexture(state); });
+
         generateButton = state.Screens.transform.Find("Screen_0/Terrain_Button").gameObject.GetComponent<Button>();
 
         warningText = state.Screens.transform.Find("Screen_0/Warning").gameObject.GetComponent<TextMeshProUGUI>();
@@ -40,21 +43,30 @@ public class Start_Menu_State : Base_State
 
             generateButton.interactable = false;
         }
-        // only activate the generate terrain button if input values are acceptable
-        if (!invalidX &&  !invalidY)
+        else if (state.Create_Terrain.terrainTextureSelected == false)
         {
+            warningText.text = "Texture for Terrain not selected";
+            generateButton.interactable = false;
+        }
+        else
+        {
+            // only activate the generate terrain button if input values are acceptable and texture is chosen
             warningText.text = "";
 
             generateButton.interactable = true;
         }
+        // if (!invalidX &&  !invalidY)
+
+        // if the select texture button is pressed, move user to create texture scene
+        
     }
-    
+
 
     private void Terrain_X_Dimensions(string arg0)
     {
         int num_x;
         bool canConvert = Int32.TryParse(arg0, out num_x);
-        if (canConvert == false || num_x < 15 || num_x > 100)
+        if (canConvert == false || num_x < 5 || num_x > 100)
         {
             invalidX = true;
 
@@ -78,5 +90,11 @@ public class Start_Menu_State : Base_State
         {
             invalidY = false;
         }
+    }
+
+    private void chooseTerrainTexture(State_Manager state)
+    {
+        state.isTerrain = true;
+        state.switchState(state.choose_texture_state);
     }
 }

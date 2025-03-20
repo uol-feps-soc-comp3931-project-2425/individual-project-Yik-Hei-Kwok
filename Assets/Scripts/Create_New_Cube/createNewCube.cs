@@ -41,20 +41,34 @@ public class createNewCube : MonoBehaviour
 
     public GameObject cubeView;
 
-    public void Start()
+    // determine if we are creating a new cube as a block, or creating a new cube for terrain
+    private bool isTerrain = false;
+
+    public void initializeCubeMenu(bool terrain, bool cancelPressed)
     {
         GameObject player_controls = GameObject.Find("Player_Controller");
         chooseSizeController = player_controls.GetComponent<PC_ChooseSize>();
         chooseTexController = player_controls.GetComponent<PC_Choose_Textures>();
-        
+
         size_text = sizeSlider.gameObject.transform.Find("Slider_Value").Find("Value").gameObject.GetComponent<TextMeshProUGUI>();
         randomness_text = lambdaSlider.gameObject.transform.Find("Slider_Value").Find("Value").gameObject.GetComponent<TextMeshProUGUI>();
         patchSize_text = patchSlider.gameObject.transform.Find("Slider_Value").Find("Value").gameObject.GetComponent<TextMeshProUGUI>();
         boundary_text = boundarySlider.gameObject.transform.Find("Slider_Value").Find("Value").gameObject.GetComponent<TextMeshProUGUI>();
 
-        setSize();
+        isTerrain = terrain;
+
+        if(cancelPressed == false)
+        {
+            setSize();
+        }
+        else
+        {
+            sizeConfirm();
+        }
 
     }
+
+
     private void Update()
     {
 
@@ -103,7 +117,7 @@ public class createNewCube : MonoBehaviour
         showSettingsMenu(false);
 
         // run the synthesis algorithm
-        invokeSynthesis.runSynthesis(currentProcessingName, sourceImageWidth, sourceImageHeight, textureLocation, sizeFinalImage, lambda, PS_point, BS_point);
+        invokeSynthesis.runSynthesis(currentProcessingName, sourceImageWidth, sourceImageHeight, textureLocation, sizeFinalImage, lambda, PS_point, BS_point,isTerrain);
     }
 
     private void showSettingsMenu(bool show)

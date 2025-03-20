@@ -20,19 +20,27 @@ public class State_Manager : MonoBehaviour
     public PC_Choose_Textures PC_ChooseTextures;
 
     // for screen 0 (start screen)
+    public createNewCube new_cube;
     public CreateNewTerrain Create_Terrain;
     public TMP_InputField input_x_terrain;
     public TMP_InputField input_y_terrain;
+    public Button chooseTexture;
+
+    // for screen  1
+    public bool isTerrain = false;
 
     // for screen 2
     public previewCube prevCubeFunc;
     public GameObject previewCubeObject;
+    public Button texture_confirmButton;
+    public Button texture_cancelButton;
+    public bool cancelPressed = false;
 
 
 
     private void Start()
     {
-        current_state = choose_texture_state;
+        current_state = start_menu_state;
 
         current_state.EnterState(this);
     }

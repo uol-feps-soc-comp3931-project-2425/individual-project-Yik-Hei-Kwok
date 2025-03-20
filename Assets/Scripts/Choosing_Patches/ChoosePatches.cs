@@ -10,6 +10,7 @@ using UnityEngine.UIElements;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
 using Unity.VisualScripting;
 using static global;
+using System.Diagnostics;
 
 
 public class ChoosePatches : MonoBehaviour
@@ -52,6 +53,8 @@ public class ChoosePatches : MonoBehaviour
     // lower if want more regular textures, higher if want more randomness
     private float lambda;
 
+
+    private Stopwatch watchKD;
     public void startChoosePatches(float[][] allPatches, float[][][] allOverlaps, int resultImageSize, int patchSize, int overlapSize, string finalImageLocation, float lambdaValue, bool useKD)
     {
         // determine how many patches are needed to make up result image 
@@ -60,12 +63,12 @@ public class ChoosePatches : MonoBehaviour
         int totalPatchesNeeded = (int)Mathf.Ceil(Mathf.Pow((resultImageSize/(patchSize-overlapSize)) + 1,2f));
         // how many patches per row in the result( image
         int patchesPerRow = (int)Mathf.Ceil(resultImageSize / (patchSize - overlapSize)) + 1;
-        Debug.Log("D:: this = " + resultImageSize / (patchSize - overlapSize));
-        Debug.Log("D:: resultImageSize = " + resultImageSize);
-        Debug.Log("D:: patchSize = " + patchSize);
-        Debug.Log("D:: overlapSize = " + overlapSize);
-        Debug.Log("D:: totalPatchesNeeded = " + totalPatchesNeeded);
-        Debug.Log("D:: patchesPerRow = " + patchesPerRow);
+        UnityEngine.Debug.Log("D:: this = " + resultImageSize / (patchSize - overlapSize));
+        UnityEngine.Debug.Log("D:: resultImageSize = " + resultImageSize);
+        UnityEngine.Debug.Log("D:: patchSize = " + patchSize);
+        UnityEngine.Debug.Log("D:: overlapSize = " + overlapSize);
+        UnityEngine.Debug.Log("D:: totalPatchesNeeded = " + totalPatchesNeeded);
+        UnityEngine.Debug.Log("D:: patchesPerRow = " + patchesPerRow);
 
         // set the  lamda value
         lambda = lambdaValue;
@@ -88,10 +91,8 @@ public class ChoosePatches : MonoBehaviour
         // calculate time needed for choosing patches if debug is set to true
         if (debugKD.debug == true)
         {
-            var watchKD = System.Diagnostics.Stopwatch.StartNew();
+            watchKD = System.Diagnostics.Stopwatch.StartNew();
         }
-            
-
         // for timing the time used to choose patches (compare KD and non-KD methods)
         // loop through all patches needed
         for (int i = 0;  i < totalPatchesNeeded; i++) {
@@ -102,7 +103,24 @@ public class ChoosePatches : MonoBehaviour
             if (patchNumInRow == patchesPerRow)
                 patchNumInRow = 0;
         }
-       
+        if (debugKD.debug == true)
+        {
+            watchKD.Stop();
+            var elapsedMs = watchKD.ElapsedMilliseconds;
+            if (useKD == true)
+            {
+                debugKD.time_KD[debugKD.index_KD] = elapsedMs;
+                debugKD.index_KD++;
+            }
+            else
+            {
+                debugKD.time_NoKD[debugKD.index_NoKD] = elapsedMs;
+                debugKD.index_NoKD++;
+            }
+        }
+
+
+
         // actual patch size (the size of patch when placed into the result)
         int truePatchSize = patchSize - overlapSize;
 
@@ -250,7 +268,6 @@ public class ChoosePatches : MonoBehaviour
         System.Random ran = new System.Random();
         // ranPatch describes which patch is chosen
         int ranPatch = ran.Next(allPatches.Length);
-        ranPatch = 3;
         //Debug.Log(":DF ranPatch = " + ranPatch);
         float[] chosenPatch = allPatches[ranPatch];
 
@@ -374,9 +391,9 @@ public class ChoosePatches : MonoBehaviour
             System.Random ran = new System.Random();
             ranPatch = ran.Next(possiblePatches.Length);
             float[] chosenPatch = possiblePatches[ranPatch];
-            //Debug.Log(":DF possiblePatches.Length = " + possiblePatches.Length);
-            //Debug.Log(":DF ranPatch = " + ranPatch);
-            //Debug.Log(":DF possiblePatches[ranPatch] = " + possiblePatches[ranPatch]);
+            UnityEngine.Debug.Log(":DF possiblePatches.Length = " + possiblePatches.Length);
+            UnityEngine.Debug.Log(":DF ranPatch = " + ranPatch);
+            UnityEngine.Debug.Log(":DF possiblePatches[ranPatch] = " + possiblePatches[ranPatch]);
             // save right and bottom overlays of the chosen patch
             overlapBottom = ProcessPatch.saveBottomOverlay(chosenPatch);
             overlapRight = ProcessPatch.saveRightOverlay(chosenPatch);
@@ -450,14 +467,11 @@ public class ChoosePatches : MonoBehaviour
             sumTarget += flattenedTarget[j];
         double fA_Target = sumTarget / flattenedTarget.Length;
 
-        //allFlattened[i] = flattened;
+        
         double[] targetFlattenedAverage = new double[1];
         targetFlattenedAverage[0] = fA_Target;
-        /*Debug.Log($"DDPRF Target Patch average value = {targetFlattenedAverage[0]}");
-
-        Debug.Log(":P flattenedTarget.Length = " + flattenedTarget.Length);
-        Debug.Log(":P allFlattened[0].Length = " + allFlattened[0].Length);*/
-
+        
+        
         // choose the 10 nearest patches if possible
         if (allFlattened.Length > 3)
         {
@@ -583,22 +597,30 @@ public class ChoosePatches : MonoBehaviour
         // store all flattened overlap values
         double[][] allFlattened = new double[allOverlays.Length][];
         // compare each 4 elements (RGBA values) of Left/Top overlays into 1 element by averaging
+        var time_in_KD = System.Diagnostics.Stopwatch.StartNew();
         for (int i = 0; i < allOverlays.Length; i++)
         {
+            // for GPU, abandoned
             // do this each patch overlay
-            double[] flattened = flattenArray(allOverlays[i]);
+            /*double[] flattened = flattenArray(allOverlays[i]);
             //get average of the averages
             double sum = 0;
             for (int j = 0; j < flattened.Length; j++)
                 sum += flattened[j];
 
-            double fA_Compare = sum / flattened.Length;
+            double fA_Compare = sum / flattened.Length;*/
 
+            allFlattened[i] = new double[] { ComputeAverage(allOverlays[i]) };
+
+            // for GPU, abandoned
             //allFlattened[i] = flattened;
-            allFlattened[i] = new double[1];
-            allFlattened[i][0] = fA_Compare;
+            //allFlattened[i] = new double[1];
+            //allFlattened[i][0] = fA_Compare;
 
         }
+        time_in_KD.Stop();
+        var time = time_in_KD.ElapsedMilliseconds;
+        UnityEngine.Debug.Log("Time required for creating the tree = " + time);
         // debug the averaged value of each patch
         /*for (int i = 0; i < allFlattened.Length; i++)
         {
@@ -611,8 +633,9 @@ public class ChoosePatches : MonoBehaviour
         for (int i = 0; i < allFlattened.Length; i++)
             treeNodes[i] = i.ToString();
         // create the KD Tree
+        
         var tree = new KDTree<double, string>(1, points: allFlattened, nodes: treeNodes, metric: averageDistance);
-
+        
         return (tree, allFlattened);
     }
 
@@ -641,6 +664,19 @@ public class ChoosePatches : MonoBehaviour
 
         return dFlattened;
     }
+
+    private double ComputeAverage(float[] overlayArray)
+    {
+        double sum = 0;
+
+        for (int i = 0; i < overlayArray.Length; i += 4)
+        {
+            sum += overlayArray[i] + overlayArray[i + 1] + overlayArray[i + 2] + overlayArray[i + 3];      
+        }
+
+        return sum / overlayArray.Length; // Get final average
+    }
+
 
     // calculate the eculidean distance of flattened overlap arrays (metric for kd tree)
     private double averageDistance(double[] overlay1, double[] overlay2)

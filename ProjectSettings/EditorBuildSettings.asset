@@ -4,5 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/CreatingBlock.unity
+    guid: 3fcf19227833ee048abb96f3060271dd
+  - enabled: 1
+    path: Assets/Scenes/New_Terrain.unity
+    guid: 9c43420327d89a8419280ba2fbc1cd1e
   m_configObjects: {}
