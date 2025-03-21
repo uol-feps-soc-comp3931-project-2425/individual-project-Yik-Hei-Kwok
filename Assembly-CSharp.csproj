@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Game_States\Start_Menu_State.cs" />
     <Compile Include="Assets\Scripts\Combine_Patches\CombinePatches.cs" />
+    <Compile Include="Assets\InputSystem\TextureSynthesisGame.cs" />
     <Compile Include="Assets\Scripts\Game_States\Cube_Preview_State.cs" />
     <Compile Include="Assets\Scripts\Create_New_Cube\createNewCube.cs" />
     <Compile Include="Assets\Scripts\Debugging\DebugFunctions.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="Assets\Scripts\createBlock.cs" />
     <Compile Include="Assets\Scripts\Choosing_Patches\ChoosePatches.cs" />
     <Compile Include="Assets\Scripts\Create_New_Cube\mergeTextures.cs" />
+    <Compile Include="Assets\Scripts\Player\Player_Controls_Building.cs" />
     <Compile Include="Assets\Scripts\global.cs" />
     <Compile Include="Assets\Scripts\Create_Terrain\CreateNewTerrain.cs" />
     <Compile Include="Assets\Scripts\Game_States\Choose_Texture_State.cs" />

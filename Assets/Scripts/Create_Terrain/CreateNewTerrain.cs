@@ -21,6 +21,8 @@ public class CreateNewTerrain : CubeClass
                 terrianStorage.name = "terrainStore";
 
                 createFirstTerrainCube(terrianStorage);
+                instansiateTerrainCubes(x,z, terrianStorage);
+
             }
         };
     }
@@ -28,9 +30,7 @@ public class CreateNewTerrain : CubeClass
 
     private void createFirstTerrainCube(GameObject terrianStorage)
     {
-        //createFirstCube();
         // create new cube primitive
-
         GameObject firstCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
         firstCube.transform.parent = terrianStorage.transform;
 
@@ -42,25 +42,25 @@ public class CreateNewTerrain : CubeClass
         
         firstCube.GetComponent<Renderer>().material = material;
 
-
-
-
-
-        // Create a new Terrain GameObject
-        /*GameObject terrainGO = new GameObject("GeneratedTerrain");
-        Terrain terrain = terrainGO.AddComponent<Terrain>();
-        TerrainData terrainData = new TerrainData();
-
-        // Set terrain size
-        terrainData.size = new Vector3(width, 50, depth); // 50 is the height scale
-
-        // Assign terrain data
-        terrain.terrainData = terrainData;
-
-        // Add a Terrain Collider
-        TerrainCollider terrainCollider = terrainGO.AddComponent<TerrainCollider>();
-        terrainCollider.terrainData = terrainData;*/
     }
+
+    private void instansiateTerrainCubes(int width, int height, GameObject terrianStorage)
+    {
+        // instansiate every block, add them into the terrianStorage object, and give them collider
+        GameObject cubePrefab = terrianStorage.transform.GetChild(0).gameObject;
+        for (int i = 0; i < height; i++)
+        {
+            for(int j = 0; j < width; j++)
+            {
+                GameObject newCube = Instantiate(cubePrefab, new Vector3(j, 0 , i), Quaternion.identity);
+                newCube.transform.parent = terrianStorage.transform;
+                newCube.AddComponent<BoxCollider>();
+            }
+        }
+    }
+
+
+
 
     private void createFirstTerrainCube()
     {
