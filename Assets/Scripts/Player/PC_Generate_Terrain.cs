@@ -14,8 +14,9 @@ public class PC_Generate_Terrain : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        createTerrain.onClick.AddListener(delegate { terrainFunction.initializeTerrain(Int32.Parse(inputField_X.text)); } );
+        createTerrain.onClick.AddListener(delegate { terrainFunction.initializeTerrain(Int32.Parse(inputField_X.text), Int32.Parse(inputField_X.text)); });
     }
+    
 
     // Update is called once per frame
     void Update()

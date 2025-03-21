@@ -1016,6 +1016,7 @@ MonoBehaviour:
   previewCubeObject: {fileID: 2065725886}
   texture_confirmButton: {fileID: 30885907}
   texture_cancelButton: {fileID: 400002861}
+  cancelPressed: 0
 --- !u!1 &185774156
 GameObject:
   m_ObjectHideFlags: 0
@@ -2868,7 +2869,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cubeView: {fileID: 2065725886}
   mergeTextures: {fileID: 472014935}
-  createTerrain: {fileID: 0}
+  createTerrain: {fileID: 1764640330}
+  createAtlas: {fileID: 472014932}
 --- !u!1 &492854079
 GameObject:
   m_ObjectHideFlags: 0

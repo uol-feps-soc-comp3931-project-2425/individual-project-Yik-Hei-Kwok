@@ -6,6 +6,9 @@ using UnityEngine.UI;
 
 public class State_Manager : MonoBehaviour
 {
+    // to make sure state manager doesn't get destroyed on load
+    private static State_Manager instance;
+
     Base_State current_state;
 
     public Start_Menu_State start_menu_state = new Start_Menu_State();
@@ -36,7 +39,18 @@ public class State_Manager : MonoBehaviour
     public Button texture_cancelButton;
     public bool cancelPressed = false;
 
-
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     private void Start()
     {

@@ -2,31 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
-using UnityEngine.UI;
-public class previewCube : CubeClass
+
+abstract public class CubeClass : MonoBehaviour
 {
-    public GameObject cubeView;
-    public Merge_Textures mergeTextures;
-    public CreateNewTerrain createTerrain;
-    public createNewCube createAtlas;
-    
-    // for allowing user to view how the cube looks like, and confirm if that is what they want
-    public void viewCubeResult(bool isTerrain)
+    public Material createCube(bool isTerrain, Mesh meshCube)
     {
-        int sizeFinalImage = createAtlas.sizeFinalImage;
-       
-        // all pixels will end up being in this array (3 rows, row 1 is empty, row 2 and 3 each have three faces)
-        mergeTextures.createNewAtlas(sizeFinalImage, isTerrain);
-
-        // modify the texture UV mapping
-        Mesh meshCube = GameObject.Find("Screen_2").GetComponentInChildren<MeshFilter>().mesh;
-
-        Material material = base.createCube(isTerrain, meshCube);
-
-        cubeView.GetComponent<Renderer>().material = material;
-        // modify the texture UV mapping
-        /*Mesh meshCube = GameObject.Find("Screen_2").GetComponentInChildren<MeshFilter>().mesh;
-
         Vector2[] UVs = setUVMapping(meshCube);
 
         meshCube.uv = UVs;
@@ -34,7 +14,7 @@ public class previewCube : CubeClass
         if (isTerrain)
         {
             path = "Terrain";
-            
+
         }
         else
         {
@@ -48,20 +28,10 @@ public class previewCube : CubeClass
         Material material = new Material(Shader.Find("Unlit/Texture"));
         material.mainTexture = newTexture;
 
-        //AssetDatabase.CreateAsset(material, "Assets/Saved/Final_Image/0/atlas.png");
-
-        //AssetDatabase.SaveAssets();
-        cubeView.GetComponent<Renderer>().material = material;*/
-
+        return material;
     }
 
-    private void confirmTerrainTexture()
-    {
-        createTerrain.terrainTextureSelected = true;
-    }
-
-    /*
-    private Vector2[] setUVMapping(Mesh mesh)
+    public Vector2[] setUVMapping(Mesh mesh)
     {
         Vector2[] UVs = new Vector2[mesh.vertices.Length];
         // Front
@@ -101,5 +71,6 @@ public class previewCube : CubeClass
         UVs[23] = new Vector2(1.0f, 0.334f);
 
         return UVs;
-    }*/
+    }
+
 }

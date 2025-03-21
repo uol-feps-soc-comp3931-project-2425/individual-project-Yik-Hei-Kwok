@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class CreateNewTerrain : MonoBehaviour
+public class CreateNewTerrain : CubeClass
 {
     // detect if the select texture button is pressed (should be set back to false after terrain texture is selected)
     public bool terrainTextureSelected = false;
-    public void initializeTerrain(int x)
+    public void initializeTerrain(int x, int z)
     {
         // load the scene 
         SceneManager.LoadScene(sceneName: "New_Terrain");
@@ -16,16 +16,38 @@ public class CreateNewTerrain : MonoBehaviour
         {
             if (scene.name == "New_Terrain")
             {
-                createTerrain(x, x);
+                // create new gameobject for storing terrain blocks
+                GameObject terrianStorage = new GameObject();
+                terrianStorage.name = "terrainStore";
+
+                createFirstTerrainCube(terrianStorage);
             }
         };
     }
 
 
-    private void createTerrain(int width, int depth)
+    private void createFirstTerrainCube(GameObject terrianStorage)
     {
+        //createFirstCube();
+        // create new cube primitive
+
+        GameObject firstCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        firstCube.transform.parent = terrianStorage.transform;
+
+        Mesh cubeMesh = firstCube.GetComponent<MeshFilter>().mesh;
+        // get the altas material and set the UV map of cube
+        bool isTerrain = true;
+        Material material = base.createCube(isTerrain, cubeMesh);
+
+        
+        firstCube.GetComponent<Renderer>().material = material;
+
+
+
+
+
         // Create a new Terrain GameObject
-        GameObject terrainGO = new GameObject("GeneratedTerrain");
+        /*GameObject terrainGO = new GameObject("GeneratedTerrain");
         Terrain terrain = terrainGO.AddComponent<Terrain>();
         TerrainData terrainData = new TerrainData();
 
@@ -37,6 +59,13 @@ public class CreateNewTerrain : MonoBehaviour
 
         // Add a Terrain Collider
         TerrainCollider terrainCollider = terrainGO.AddComponent<TerrainCollider>();
-        terrainCollider.terrainData = terrainData;
+        terrainCollider.terrainData = terrainData;*/
+    }
+
+    private void createFirstTerrainCube()
+    {
+        // create new cube
+        
+        // find texture atlas and 
     }
 }
