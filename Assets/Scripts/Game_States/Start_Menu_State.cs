@@ -27,6 +27,7 @@ public class Start_Menu_State : Base_State
 
         // listen to button press regarding changing terrain texture
         state.chooseTexture.onClick.AddListener(delegate { chooseTerrainTexture(state); });
+        state.createTerrain.onClick.AddListener(delegate { state.Create_Terrain.initializeTerrain(x_dim, y_dim); });
 
         generateButton = state.Screens.transform.Find("Screen_0/Terrain_Button").gameObject.GetComponent<Button>();
 
@@ -74,6 +75,7 @@ public class Start_Menu_State : Base_State
         else
         {
             invalidX = false;
+            x_dim = num_x;
         }
     }
 
@@ -89,6 +91,7 @@ public class Start_Menu_State : Base_State
         else
         {
             invalidY = false;
+            y_dim = num_y;
         }
     }
 

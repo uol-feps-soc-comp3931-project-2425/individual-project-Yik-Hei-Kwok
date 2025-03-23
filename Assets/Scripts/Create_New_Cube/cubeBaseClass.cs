@@ -5,7 +5,7 @@ using System.IO;
 
 abstract public class CubeClass : MonoBehaviour
 {
-    public Material createCube(bool isTerrain, Mesh meshCube)
+    public Material createCube(bool isTerrain, Mesh meshCube, int blockCount)
     {
         Vector2[] UVs = setUVMapping(meshCube);
 
@@ -18,7 +18,7 @@ abstract public class CubeClass : MonoBehaviour
         }
         else
         {
-            path = $"{global.blockCount}";
+            path = $"{blockCount}";
         }
 
         var createdTexture = File.ReadAllBytes($"Assets/Saved/Final_Image/{path}/atlas.png");

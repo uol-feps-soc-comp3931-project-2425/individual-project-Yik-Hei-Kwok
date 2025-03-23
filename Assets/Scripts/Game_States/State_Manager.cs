@@ -9,11 +9,12 @@ public class State_Manager : MonoBehaviour
     // to make sure state manager doesn't get destroyed on load
     private static State_Manager instance;
 
-    Base_State current_state;
+    public Base_State current_state;
 
     public Start_Menu_State start_menu_state = new Start_Menu_State();
     public Choose_Texture_State choose_texture_state = new Choose_Texture_State();
     public Cube_Preview_State Cube_Preview_State = new Cube_Preview_State();
+    
 
     // Activate canvases
     public GameObject Screens;
@@ -28,6 +29,7 @@ public class State_Manager : MonoBehaviour
     public TMP_InputField input_x_terrain;
     public TMP_InputField input_y_terrain;
     public Button chooseTexture;
+    public Button createTerrain;
 
     // for screen  1
     public bool isTerrain = false;
@@ -39,21 +41,11 @@ public class State_Manager : MonoBehaviour
     public Button texture_cancelButton;
     public bool cancelPressed = false;
 
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
+    
 
     private void Start()
     {
+
         current_state = start_menu_state;
 
         current_state.EnterState(this);

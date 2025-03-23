@@ -7,6 +7,7 @@ public class CreateNewTerrain : CubeClass
 {
     // detect if the select texture button is pressed (should be set back to false after terrain texture is selected)
     public bool terrainTextureSelected = false;
+
     public void initializeTerrain(int x, int z)
     {
         // load the scene 
@@ -37,7 +38,7 @@ public class CreateNewTerrain : CubeClass
         Mesh cubeMesh = firstCube.GetComponent<MeshFilter>().mesh;
         // get the altas material and set the UV map of cube
         bool isTerrain = true;
-        Material material = base.createCube(isTerrain, cubeMesh);
+        Material material = base.createCube(isTerrain, cubeMesh, global.blockCount);
 
         
         firstCube.GetComponent<Renderer>().material = material;
@@ -48,6 +49,7 @@ public class CreateNewTerrain : CubeClass
     {
         // instansiate every block, add them into the terrianStorage object, and give them collider
         GameObject cubePrefab = terrianStorage.transform.GetChild(0).gameObject;
+        int terrainLayer = LayerMask.NameToLayer("Tile");
         for (int i = 0; i < height; i++)
         {
             for(int j = 0; j < width; j++)
@@ -55,6 +57,8 @@ public class CreateNewTerrain : CubeClass
                 GameObject newCube = Instantiate(cubePrefab, new Vector3(j, 0 , i), Quaternion.identity);
                 newCube.transform.parent = terrianStorage.transform;
                 newCube.AddComponent<BoxCollider>();
+                newCube.layer = terrainLayer;
+                newCube.name = $"{j},{i}";
             }
         }
     }

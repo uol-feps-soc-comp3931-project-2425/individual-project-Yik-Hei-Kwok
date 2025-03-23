@@ -8,6 +8,7 @@ public static class State_List
     {
         start_menu,
         choose_textures,
-        cube_preview
+        cube_preview,
+        playing_game
     }
 }

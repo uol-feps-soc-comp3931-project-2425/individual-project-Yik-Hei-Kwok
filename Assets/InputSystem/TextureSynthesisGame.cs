@@ -842,6 +842,24 @@ public partial class @TextureSynthesisGame: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Inventory_Choose"",
+                    ""type"": ""Button"",
+                    ""id"": ""93f59f6f-5b9a-46ce-ad2e-3f6725f69eaf"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""New_Block_Create"",
+                    ""type"": ""Button"",
+                    ""id"": ""bb2bba55-2a90-4e50-8968-0878c76656be"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -965,6 +983,116 @@ public partial class @TextureSynthesisGame: IInputActionCollection2, IDisposable
                     ""action"": ""Mouse_Position"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""34622fd8-8781-4625-a690-e94581bd455e"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Inventory_Choose"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dd6b85c4-ef43-46ea-b2ad-9f2f08ad8040"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Inventory_Choose"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0dc3f00b-f427-4679-bf5a-ba7e99dbd079"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Inventory_Choose"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""333f5627-f73b-459c-bcb0-c248db0cecaf"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Inventory_Choose"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b042194f-897e-4b08-8ea5-ac9cf62e4e89"",
+                    ""path"": ""<Keyboard>/5"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Inventory_Choose"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""be19c16e-fa45-42ef-afa3-48f2a6261554"",
+                    ""path"": ""<Keyboard>/6"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Inventory_Choose"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f1d00f69-9159-4625-a30b-baf44e4f70a9"",
+                    ""path"": ""<Keyboard>/7"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Inventory_Choose"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7253cf59-9080-4563-af33-f4185f57236c"",
+                    ""path"": ""<Keyboard>/8"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Inventory_Choose"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c92c080f-4951-4f2d-8745-b742d4bd7498"",
+                    ""path"": ""<Keyboard>/9"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Inventory_Choose"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a9bcce80-ac9b-46ef-8496-d667cbeea27c"",
+                    ""path"": ""<Keyboard>/m"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""New_Block_Create"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -1056,6 +1184,8 @@ public partial class @TextureSynthesisGame: IInputActionCollection2, IDisposable
         m_Player_Controls_Left_Mouse = m_Player_Controls.FindAction("Left_Mouse", throwIfNotFound: true);
         m_Player_Controls_Right_Mouse = m_Player_Controls.FindAction("Right_Mouse", throwIfNotFound: true);
         m_Player_Controls_Mouse_Position = m_Player_Controls.FindAction("Mouse_Position", throwIfNotFound: true);
+        m_Player_Controls_Inventory_Choose = m_Player_Controls.FindAction("Inventory_Choose", throwIfNotFound: true);
+        m_Player_Controls_New_Block_Create = m_Player_Controls.FindAction("New_Block_Create", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1302,6 +1432,8 @@ public partial class @TextureSynthesisGame: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Controls_Left_Mouse;
     private readonly InputAction m_Player_Controls_Right_Mouse;
     private readonly InputAction m_Player_Controls_Mouse_Position;
+    private readonly InputAction m_Player_Controls_Inventory_Choose;
+    private readonly InputAction m_Player_Controls_New_Block_Create;
     public struct Player_ControlsActions
     {
         private @TextureSynthesisGame m_Wrapper;
@@ -1311,6 +1443,8 @@ public partial class @TextureSynthesisGame: IInputActionCollection2, IDisposable
         public InputAction @Left_Mouse => m_Wrapper.m_Player_Controls_Left_Mouse;
         public InputAction @Right_Mouse => m_Wrapper.m_Player_Controls_Right_Mouse;
         public InputAction @Mouse_Position => m_Wrapper.m_Player_Controls_Mouse_Position;
+        public InputAction @Inventory_Choose => m_Wrapper.m_Player_Controls_Inventory_Choose;
+        public InputAction @New_Block_Create => m_Wrapper.m_Player_Controls_New_Block_Create;
         public InputActionMap Get() { return m_Wrapper.m_Player_Controls; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1335,6 +1469,12 @@ public partial class @TextureSynthesisGame: IInputActionCollection2, IDisposable
             @Mouse_Position.started += instance.OnMouse_Position;
             @Mouse_Position.performed += instance.OnMouse_Position;
             @Mouse_Position.canceled += instance.OnMouse_Position;
+            @Inventory_Choose.started += instance.OnInventory_Choose;
+            @Inventory_Choose.performed += instance.OnInventory_Choose;
+            @Inventory_Choose.canceled += instance.OnInventory_Choose;
+            @New_Block_Create.started += instance.OnNew_Block_Create;
+            @New_Block_Create.performed += instance.OnNew_Block_Create;
+            @New_Block_Create.canceled += instance.OnNew_Block_Create;
         }
 
         private void UnregisterCallbacks(IPlayer_ControlsActions instance)
@@ -1354,6 +1494,12 @@ public partial class @TextureSynthesisGame: IInputActionCollection2, IDisposable
             @Mouse_Position.started -= instance.OnMouse_Position;
             @Mouse_Position.performed -= instance.OnMouse_Position;
             @Mouse_Position.canceled -= instance.OnMouse_Position;
+            @Inventory_Choose.started -= instance.OnInventory_Choose;
+            @Inventory_Choose.performed -= instance.OnInventory_Choose;
+            @Inventory_Choose.canceled -= instance.OnInventory_Choose;
+            @New_Block_Create.started -= instance.OnNew_Block_Create;
+            @New_Block_Create.performed -= instance.OnNew_Block_Create;
+            @New_Block_Create.canceled -= instance.OnNew_Block_Create;
         }
 
         public void RemoveCallbacks(IPlayer_ControlsActions instance)
@@ -1442,5 +1588,7 @@ public partial class @TextureSynthesisGame: IInputActionCollection2, IDisposable
         void OnLeft_Mouse(InputAction.CallbackContext context);
         void OnRight_Mouse(InputAction.CallbackContext context);
         void OnMouse_Position(InputAction.CallbackContext context);
+        void OnInventory_Choose(InputAction.CallbackContext context);
+        void OnNew_Block_Create(InputAction.CallbackContext context);
     }
 }

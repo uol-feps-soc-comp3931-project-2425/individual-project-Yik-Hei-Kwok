@@ -1011,6 +1011,7 @@ MonoBehaviour:
   input_x_terrain: {fileID: 2051624967}
   input_y_terrain: {fileID: 315749257}
   chooseTexture: {fileID: 1630148759}
+  createTerrain: {fileID: 498809670}
   isTerrain: 0
   prevCubeFunc: {fileID: 472014936}
   previewCubeObject: {fileID: 2065725886}
