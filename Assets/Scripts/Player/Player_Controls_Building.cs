@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -20,7 +21,7 @@ public class Player_Controls_Building : MonoBehaviour
 
     private Camera cameraMain;
     private Rigidbody rb;
-
+    private int bindingIndex;
 
     public LayerMask detectionLayer;
 
@@ -28,8 +29,10 @@ public class Player_Controls_Building : MonoBehaviour
 
     public int inventorySize = 9;
     public GameObject inventory;
+    public bool inMenu;
+    public GameObject PreviewPlacement;
+    public State_Manager_InGame manager;
 
-    
 
     private void Awake()
     {
@@ -52,6 +55,8 @@ public class Player_Controls_Building : MonoBehaviour
 
         // set to default inventory slot
         changeInventory(1);
+
+        inMenu = false;
     }
 
 
@@ -97,19 +102,23 @@ public class Player_Controls_Building : MonoBehaviour
 
     }
 
-
-
-
-
-
-    // Update is called once per frame
     void Update()
     {
-        MoveCamera();
-        RotateCamera();
+        if (inMenu == false)
+        {
+            MoveCamera();
+            RotateCamera();
 
-        // create raycast from center of camera to detect closest block
-        RayCast();
+            // create raycast from center of camera to detect closest block
+            RayCast();
+
+            rb.isKinematic = false;
+        }
+        else
+        {
+            rb.isKinematic = true;
+        }
+       
 
     }
 
@@ -119,8 +128,48 @@ public class Player_Controls_Building : MonoBehaviour
         var ray = Physics.Raycast(cameraMain.transform.position, cameraMain.transform.forward, out hit, 100.0f, detectionLayer);
         if (ray)
         {
+            // get which cube face the ray is detecting
+            Vector3 normal = hit.normal;
+            Vector3 localForward = hit.transform.forward;
+            Vector3 localRight = hit.transform.right;
+            Vector3 localUp = hit.transform.up;
 
-            Debug.Log("Interacted Object = " + hit.transform.gameObject);
+            Vector3 direction = Vector3.zero;
+            string direction_Debug = "ur mom";
+            // get the dot product values
+            float dotProductLocForward = Vector3.Dot(normal, localForward);
+            float dotProductLocBackward = Vector3.Dot(normal, -localForward);
+            float dotProductLocRight = Vector3.Dot(normal, localRight);
+            float dotProductLocLeft = Vector3.Dot(normal, -localRight);
+            float dotProductLocUp = Vector3.Dot(normal, localUp);
+            float dotProductLocDown = Vector3.Dot(normal, -localUp);
+
+            if (dotProductLocForward > 0.9f)
+                //direction_Debug = "forward";
+                direction = Vector3.forward;
+            else if (dotProductLocBackward > 0.9f)
+                //direction_Debug = "backward";
+                direction = Vector3.back;
+            else if (dotProductLocRight > 0.9f)
+                //direction_Debug = "rightward";
+                direction = Vector3.right;
+            else if (dotProductLocLeft > 0.9f)
+                //direction_Debug = "leftward";
+                direction = Vector3.left;
+            else if (dotProductLocUp > 0.9f)
+                //direction_Debug = "upward";
+                direction = Vector3.up;
+            else if (dotProductLocDown > 0.9f)
+                //direction_Debug = "downward";
+                direction = Vector3.down;
+
+            showPlacementPreview(hit.transform,direction);
+
+
+
+
+
+            Debug.Log("Interacted Object " + hit.transform.gameObject + " on direction " + direction_Debug);
         }
     }
 
@@ -147,7 +196,6 @@ public class Player_Controls_Building : MonoBehaviour
         }
     }
 
-
     private void RotateCamera()
     {
         Vector2 mousePosition = PositionMouse.ReadValue<Vector2>();
@@ -163,7 +211,7 @@ public class Player_Controls_Building : MonoBehaviour
     {
         // check which button is being pressed
         InputControl control = context.control;
-        int bindingIndex = InventoryChoose.GetBindingIndexForControl(control);
+        bindingIndex = InventoryChoose.GetBindingIndexForControl(control);
 
         changeInventory(bindingIndex);
     }
@@ -183,6 +231,49 @@ public class Player_Controls_Building : MonoBehaviour
                 border.color = Color.white;
             }
         }
+    }
+
+
+    // show where the cube will be placed
+    private void showPlacementPreview(Transform raycastedCube, Vector3 direction)
+    {
+        // check if the player has block in corresponding inventory.
+        // Only show preview if there is one
+        if (manager.inventoryList[bindingIndex] == 1)
+        {
+            GameObject pointedCube = raycastedCube.gameObject;
+            showPlacement(direction, pointedCube);
+        }
+        else
+        {
+            foreach (Transform child in PreviewPlacement.transform)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+       
+    }
+
+    private void showPlacement(Vector3 direction, GameObject pointedCube)
+    {
+        // clear all objects in PreviewPlacement 
+        foreach (Transform child in PreviewPlacement.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        Vector3 positionPointedCube = pointedCube.transform.position;
+
+        Vector3 positionToBePlaced = positionPointedCube + direction;
+
+
+        GameObject previewOnTerrain = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        Renderer renderer = previewOnTerrain.GetComponent<Renderer>();
+        renderer.material = AssetDatabase.LoadAssetAtPath<Material>("Assets/Sprite/transparency.mat");
+        previewOnTerrain.GetComponent<Collider>().enabled = false;
+
+        previewOnTerrain.transform.parent = PreviewPlacement.transform;
+
+        previewOnTerrain.transform.position = positionToBePlaced;
     }
 
     // for invoking the creation of a new block

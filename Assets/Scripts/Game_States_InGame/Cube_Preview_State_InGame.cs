@@ -63,7 +63,9 @@ public class Cube_Preview_State_InGame : Base_State_InGame
         // turn back on directional light
         GameObject.Find("Directional Light").GetComponent<Light>().enabled = true;
         // a new block is created, so add block count by 1
+        state.inventoryList[global.blockCount] = 1;
         global.blockCount += 1;
+        
 
         state.switchState(state.Play_Game_State);
         

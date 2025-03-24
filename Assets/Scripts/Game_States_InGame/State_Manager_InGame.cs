@@ -29,6 +29,8 @@ public class State_Manager_InGame : MonoBehaviour
     public createNewCube new_cube;
     public Button backToGame;
 
+    public Player_Controls_Building controlScript;
+
     // for screen 2
     public previewCube prevCubeFunc;
     public GameObject previewCubeObject;
@@ -36,7 +38,8 @@ public class State_Manager_InGame : MonoBehaviour
     public Button texture_cancelButton;
     public bool cancelPressed = false;
 
-    
+    public int[] inventoryList = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
 
     private void Start()
     {

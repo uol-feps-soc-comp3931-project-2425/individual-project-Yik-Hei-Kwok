@@ -7,6 +7,7 @@ public class Play_Game_State : Base_State_InGame
 {
     public override void EnterState(State_Manager_InGame state)
     {
+        state.controlScript.inMenu = false;
         state.switchScreens(state.Screens, 0);
         global.current_state = State_List.States.playing_game;
         // cannot reset texture of terrain for now

@@ -7,6 +7,7 @@ public class Choose_Texture_State_InGame : Base_State_InGame
 {
     public override void EnterState(State_Manager_InGame state)
     {
+        state.controlScript.inMenu = true;
         state.backToGame.onClick.AddListener(delegate { returnToGame(state); });
         state.switchScreens(state.Screens, 1);
         state.new_cube.initializeCubeMenu(state.isTerrain, state.cancelPressed);
