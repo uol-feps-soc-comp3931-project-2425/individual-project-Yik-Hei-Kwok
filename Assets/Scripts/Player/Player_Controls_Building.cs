@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEngine;
@@ -18,10 +19,20 @@ public class Player_Controls_Building : MonoBehaviour
     private InputAction PositionMouse;
     private InputAction InventoryChoose;
     private InputAction CreateNewBlock;
+    private InputAction Jump;
 
     private Camera cameraMain;
     private Rigidbody rb;
     private int bindingIndex;
+
+    private int space_counter = 0;
+    private int flight_mode = 0;
+    private bool startTimerJump = false;
+    public float timer = 0.3f;
+    private float timer_saved = 0.3f;
+    private int spaceHeld = 0;
+    private float flyVerticalSpeed = 3f;
+    private float flyHorizontalSpeed = 5f;
 
     public LayerMask detectionLayer;
 
@@ -33,6 +44,7 @@ public class Player_Controls_Building : MonoBehaviour
     public GameObject PreviewPlacement;
     public State_Manager_InGame manager;
 
+    public float jumpForce;
 
     private void Awake()
     {
@@ -45,18 +57,21 @@ public class Player_Controls_Building : MonoBehaviour
         LeftMouse = playerControls.Player_Controls.Left_Mouse;
 
         InventoryChoose = playerControls.Player_Controls.Inventory_Choose;
-
         CreateNewBlock = playerControls.Player_Controls.New_Block_Create;
 
+        Jump = playerControls.Player_Controls.Jump;
         // get the player camera
         cameraMain = gameObject.transform.Find("Main Camera").gameObject.GetComponent<Camera>();
         // get rigidbody of player
         rb = GetComponent<Rigidbody>();
 
         // set to default inventory slot
-        changeInventory(1);
+        changeInventory(0);
 
         inMenu = false;
+
+        // freeze the player rotation so that player doesn't fall down
+        rb.freezeRotation = true;
     }
 
 
@@ -68,9 +83,15 @@ public class Player_Controls_Building : MonoBehaviour
         CreateNewBlock.Enable();
         RightMouse.Enable();
         LeftMouse.Enable();
+        Jump.Enable();
 
         InventoryChoose.performed += changeInventory;
         CreateNewBlock.performed += invokeCreateMenu;
+
+        Jump.performed += spacePressed;
+        Jump.canceled += spaceCancelled;
+        
+
 
         RightMouse.performed += RightClicked;
         LeftMouse.performed += LeftClicked;
@@ -86,6 +107,9 @@ public class Player_Controls_Building : MonoBehaviour
         InventoryChoose.performed -= changeInventory;
         CreateNewBlock.performed -= invokeCreateMenu;
 
+        Jump.performed -= spacePressed;
+        Jump.canceled -= spaceCancelled;
+
         RightMouse.performed -= RightClicked;
         LeftMouse.performed -= LeftClicked;
         RightMouse.canceled -= RightReleased;
@@ -98,12 +122,16 @@ public class Player_Controls_Building : MonoBehaviour
         CreateNewBlock.Disable();
         RightMouse.Disable();
         LeftMouse.Disable();
+        Jump.Disable();
 
 
     }
 
     void Update()
     {
+        var wasPressed = Jump.triggered && Jump.ReadValue<float>() > 0;
+        var wasReleased = Jump.triggered && Jump.ReadValue<float>() == default;
+
         if (inMenu == false)
         {
             MoveCamera();
@@ -118,8 +146,43 @@ public class Player_Controls_Building : MonoBehaviour
         {
             rb.isKinematic = true;
         }
-       
+        int count = 0;
+        foreach (int i in manager.inventoryList)
+        {
+            Debug.Log($"inventory_list {count} = {i}");
+            count++;
+        }
+        
 
+        // for jump timer
+        if (startTimerJump == true)
+        {
+            if (timer > 0)
+                timer -= Time.deltaTime;
+            else
+            {
+                // reset the space counter after the time is up
+                timer = timer_saved;
+                space_counter = 0;
+                startTimerJump = false;
+            }
+                
+        }
+
+        Debug.Log("FG: flight_mode = " + flight_mode);
+        Debug.Log("FG: space_counter = " + space_counter);
+    }
+
+
+    private void FixedUpdate()
+    {
+        // fly upwards
+        if (flight_mode == 1 && spaceHeld == 1)
+        {
+            transform.position += Vector3.up * flyVerticalSpeed * Time.deltaTime;
+            Debug.Log("Space held down");
+        }
+    
     }
 
     private void RayCast()
@@ -205,6 +268,64 @@ public class Player_Controls_Building : MonoBehaviour
 
         cameraMain.transform.localRotation = Quaternion.Euler(-directionY * cameraLookSpeed, directionX * cameraLookSpeed, 0);
     }
+
+    private void spacePressed(InputAction.CallbackContext context)
+    {
+        space_counter += 1;
+        if (flight_mode == 0)
+        {
+            rb.useGravity = true;
+            // jump
+            if (space_counter == 1)
+            {
+                Debug.Log("Jumped");
+                rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+                startTimerJump = true;
+            }
+            // switch to flight mode
+            else
+            {
+                space_counter = 0;
+                startTimerJump = false;
+                timer = timer_saved;
+
+                flight_mode = 1;
+                spaceHeld = 0;
+                rb.useGravity = false;
+
+                // stop the jump force
+                rb.velocity = Vector3.zero;
+            }
+        }
+        // currently flying
+        else if (flight_mode == 1)
+        {
+
+            spaceHeld = 1;
+            if (space_counter == 1)
+                startTimerJump = true;
+            // turn back to gravity mode
+            else
+            {
+                space_counter = 0;
+                startTimerJump = false;
+                timer = timer_saved;
+
+                flight_mode = 0;
+                rb.useGravity = true;
+            }
+                
+        }
+        
+        
+    }
+
+    private void spaceCancelled(InputAction.CallbackContext context)
+    {
+        spaceHeld = 0;
+    }
+
+
 
     // changing inventory
     private void changeInventory(InputAction.CallbackContext context)

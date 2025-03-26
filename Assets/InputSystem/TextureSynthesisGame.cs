@@ -860,6 +860,15 @@ public partial class @TextureSynthesisGame: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Jump"",
+                    ""type"": ""Button"",
+                    ""id"": ""ccb06290-6b92-4792-8627-7c586c093a5e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1093,6 +1102,17 @@ public partial class @TextureSynthesisGame: IInputActionCollection2, IDisposable
                     ""action"": ""New_Block_Create"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4f5bca7a-6cd3-42c1-98df-93ae8d95c689"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -1186,6 +1206,7 @@ public partial class @TextureSynthesisGame: IInputActionCollection2, IDisposable
         m_Player_Controls_Mouse_Position = m_Player_Controls.FindAction("Mouse_Position", throwIfNotFound: true);
         m_Player_Controls_Inventory_Choose = m_Player_Controls.FindAction("Inventory_Choose", throwIfNotFound: true);
         m_Player_Controls_New_Block_Create = m_Player_Controls.FindAction("New_Block_Create", throwIfNotFound: true);
+        m_Player_Controls_Jump = m_Player_Controls.FindAction("Jump", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1434,6 +1455,7 @@ public partial class @TextureSynthesisGame: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Controls_Mouse_Position;
     private readonly InputAction m_Player_Controls_Inventory_Choose;
     private readonly InputAction m_Player_Controls_New_Block_Create;
+    private readonly InputAction m_Player_Controls_Jump;
     public struct Player_ControlsActions
     {
         private @TextureSynthesisGame m_Wrapper;
@@ -1445,6 +1467,7 @@ public partial class @TextureSynthesisGame: IInputActionCollection2, IDisposable
         public InputAction @Mouse_Position => m_Wrapper.m_Player_Controls_Mouse_Position;
         public InputAction @Inventory_Choose => m_Wrapper.m_Player_Controls_Inventory_Choose;
         public InputAction @New_Block_Create => m_Wrapper.m_Player_Controls_New_Block_Create;
+        public InputAction @Jump => m_Wrapper.m_Player_Controls_Jump;
         public InputActionMap Get() { return m_Wrapper.m_Player_Controls; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1475,6 +1498,9 @@ public partial class @TextureSynthesisGame: IInputActionCollection2, IDisposable
             @New_Block_Create.started += instance.OnNew_Block_Create;
             @New_Block_Create.performed += instance.OnNew_Block_Create;
             @New_Block_Create.canceled += instance.OnNew_Block_Create;
+            @Jump.started += instance.OnJump;
+            @Jump.performed += instance.OnJump;
+            @Jump.canceled += instance.OnJump;
         }
 
         private void UnregisterCallbacks(IPlayer_ControlsActions instance)
@@ -1500,6 +1526,9 @@ public partial class @TextureSynthesisGame: IInputActionCollection2, IDisposable
             @New_Block_Create.started -= instance.OnNew_Block_Create;
             @New_Block_Create.performed -= instance.OnNew_Block_Create;
             @New_Block_Create.canceled -= instance.OnNew_Block_Create;
+            @Jump.started -= instance.OnJump;
+            @Jump.performed -= instance.OnJump;
+            @Jump.canceled -= instance.OnJump;
         }
 
         public void RemoveCallbacks(IPlayer_ControlsActions instance)
@@ -1590,5 +1619,6 @@ public partial class @TextureSynthesisGame: IInputActionCollection2, IDisposable
         void OnMouse_Position(InputAction.CallbackContext context);
         void OnInventory_Choose(InputAction.CallbackContext context);
         void OnNew_Block_Create(InputAction.CallbackContext context);
+        void OnJump(InputAction.CallbackContext context);
     }
 }
