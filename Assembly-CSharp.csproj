@@ -62,7 +62,9 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Game_States\Start_Menu_State.cs" />
     <Compile Include="Assets\Scripts\Combine_Patches\CombinePatches.cs" />
+    <Compile Include="Assets\Scripts\Performance_Benchmarking\Test_CPU_GPU.cs" />
     <Compile Include="Assets\InputSystem\TextureSynthesisGame.cs" />
+    <Compile Include="Assets\Scripts\Player\Place_Cube.cs" />
     <Compile Include="Assets\Scripts\Game_States\Cube_Preview_State.cs" />
     <Compile Include="Assets\Scripts\Create_New_Cube\createNewCube.cs" />
     <Compile Include="Assets\Scripts\Debugging\DebugFunctions.cs" />

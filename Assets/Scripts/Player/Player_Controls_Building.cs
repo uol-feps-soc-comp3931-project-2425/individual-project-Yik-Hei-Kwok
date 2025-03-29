@@ -34,7 +34,12 @@ public class Player_Controls_Building : MonoBehaviour
     private float flyVerticalSpeed = 3f;
     private float flyHorizontalSpeed = 5f;
 
+    private Vector3 positionToBePlaced = Vector3.zero;
+    private GameObject pointedBlock;
+
     public LayerMask detectionLayer;
+
+    private int placeCount = 0;
 
     public float cameraLookSpeed = 0.1f;
 
@@ -43,6 +48,7 @@ public class Player_Controls_Building : MonoBehaviour
     public bool inMenu;
     public GameObject PreviewPlacement;
     public State_Manager_InGame manager;
+    public Place_Cube cubeClassScript;
 
     public float jumpForce;
 
@@ -90,7 +96,6 @@ public class Player_Controls_Building : MonoBehaviour
 
         Jump.performed += spacePressed;
         Jump.canceled += spaceCancelled;
-        
 
 
         RightMouse.performed += RightClicked;
@@ -99,8 +104,6 @@ public class Player_Controls_Building : MonoBehaviour
         LeftMouse.canceled += LeftReleased;
 
     }
-
-    
 
     private void OnDisable()
     {
@@ -168,9 +171,6 @@ public class Player_Controls_Building : MonoBehaviour
             }
                 
         }
-
-        Debug.Log("FG: flight_mode = " + flight_mode);
-        Debug.Log("FG: space_counter = " + space_counter);
     }
 
 
@@ -180,7 +180,6 @@ public class Player_Controls_Building : MonoBehaviour
         if (flight_mode == 1 && spaceHeld == 1)
         {
             transform.position += Vector3.up * flyVerticalSpeed * Time.deltaTime;
-            Debug.Log("Space held down");
         }
     
     }
@@ -191,6 +190,7 @@ public class Player_Controls_Building : MonoBehaviour
         var ray = Physics.Raycast(cameraMain.transform.position, cameraMain.transform.forward, out hit, 100.0f, detectionLayer);
         if (ray)
         {
+            pointedBlock = hit.transform.gameObject;
             // get which cube face the ray is detecting
             Vector3 normal = hit.normal;
             Vector3 localForward = hit.transform.forward;
@@ -384,7 +384,7 @@ public class Player_Controls_Building : MonoBehaviour
         }
         Vector3 positionPointedCube = pointedCube.transform.position;
 
-        Vector3 positionToBePlaced = positionPointedCube + direction;
+        positionToBePlaced = positionPointedCube + direction;
 
 
         GameObject previewOnTerrain = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -411,11 +411,29 @@ public class Player_Controls_Building : MonoBehaviour
     private void RightClicked(InputAction.CallbackContext context)
     {
         global.mouseHoldRight = true;
+
+        // if there is a block in hand, place the block at the area defined in showPlacement
+        if(manager.inventoryList[bindingIndex] == 1)
+        {
+            GameObject newCube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            Mesh mesh = newCube.GetComponent<MeshFilter>().mesh;
+            Material mat = cubeClassScript.placeNewBlock(mesh, bindingIndex);
+            newCube.GetComponent<MeshRenderer>().material = mat;
+
+            newCube.transform.position = positionToBePlaced;
+            newCube.name = $"id_{placeCount}";
+            newCube.transform.parent = GameObject.Find("Placed_Blocks").transform;
+            newCube.layer = LayerMask.NameToLayer("Tile");
+            placeCount++;
+        }
     }
 
     private void LeftClicked(InputAction.CallbackContext context)
     {
+        // destroy the block being pointed to
+        Destroy(pointedBlock);
         global.mouseHoldLeft = true;
+
     }
 
     private void RightReleased(InputAction.CallbackContext context)
