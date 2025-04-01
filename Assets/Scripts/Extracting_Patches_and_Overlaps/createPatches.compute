@@ -1,6 +1,7 @@
 // Each #kernel tells which function to compile; you can have many kernels
 #pragma kernel SegmentPatches
 #pragma kernel CombinePatches
+#pragma kernel SegmentPatchesUpdated
 
 // Create a RenderTexture with enableRandomWrite flag and set it
 // with cs.SetTexture
@@ -77,6 +78,49 @@ void SegmentPatches (uint3 id : SV_DispatchThreadID)
     outputPatches[outputIndex] = currentPixel;
    
 }
+
+
+int patchesPerRow;
+int patchesPerColumn;
+
+[numthreads(8, 8, 1)]
+void SegmentPatchesUpdated(uint3 id : SV_DispatchThreadID)
+{
+    // positions of pixel based on how large a patch is
+    uint x = id.x;
+    uint y = id.y;
+    
+    // prevent out of bounds
+    if (x >= imgWidth || y >= imgHeight)
+        return;
+    
+    
+    int patchIndex_X = x / sizePatch;
+    int patchIndex_Y = y / sizePatch;
+    
+    // skip pixels that are not in a patch
+    if (patchIndex_X >= patchesPerRow || patchIndex_Y >= patchesPerColumn)
+        return;
+    
+    int patchIndex = patchIndex_Y * patchesPerRow + patchIndex_X;
+    
+    //int pixelInArray = y * (imgWidth * 4) + x * 4;
+    int pixelInArray = (y * imgWidth + x) * 4;
+    
+    float4 currentPixel = float4(pixelData[pixelInArray + 0], pixelData[pixelInArray + 1], pixelData[pixelInArray + 2], pixelData[pixelInArray + 3]);
+    
+    int localX = x % sizePatch;
+    int localY = y % sizePatch;
+
+    int localIndexInPatch = (localY * sizePatch + localX) * 4;
+    
+    int pixelIndex = patchIndex * (sizePatch * sizePatch * 4) + localIndexInPatch;
+    
+    
+    outputPatches[pixelIndex / 4] = currentPixel;
+   
+}
+
 
 
 [numthreads(256, 1, 1)]

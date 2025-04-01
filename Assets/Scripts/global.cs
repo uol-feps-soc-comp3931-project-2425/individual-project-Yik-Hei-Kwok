@@ -39,4 +39,14 @@ public class global : MonoBehaviour
         public static float[] time_KD = new float[10];
         public static float[] time_NoKD = new float[10];
     }
+
+
+    public struct debugCPU_GPU
+    {
+        public static bool debug = false;
+        public static int index_CPU = 0;
+        public static int index_GPU = 0;
+        public static float[] time_CPU = new float[10];
+        public static float[] time_GPU = new float[10];
+    }
 }
