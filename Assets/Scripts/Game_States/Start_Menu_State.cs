@@ -19,6 +19,8 @@ public class Start_Menu_State : Base_State
 
     public override void EnterState(State_Manager state)
     {
+        state.clearTextures.clearDisplays(state.Screens.transform.Find("Screen_1").gameObject);
+        global.current_state = State_List.States.choose_textures;
         state.switchScreens(state.Screens, 0);
 
         // listen to input of x and y dimensions of terrain

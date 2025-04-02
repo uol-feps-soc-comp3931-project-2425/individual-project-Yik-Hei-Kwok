@@ -79,6 +79,7 @@
     <Compile Include="Assets\Scripts\Player\Player_Controls_Building.cs" />
     <Compile Include="Assets\Scripts\global.cs" />
     <Compile Include="Assets\Scripts\Create_Terrain\CreateNewTerrain.cs" />
+    <Compile Include="Assets\Scripts\Clear_Textures.cs" />
     <Compile Include="Assets\Scripts\Game_States\Choose_Texture_State.cs" />
     <Compile Include="Assets\PlayerControls.cs" />
     <Compile Include="Assets\Scripts\Game_States_InGame\State_Manager_InGame.cs" />

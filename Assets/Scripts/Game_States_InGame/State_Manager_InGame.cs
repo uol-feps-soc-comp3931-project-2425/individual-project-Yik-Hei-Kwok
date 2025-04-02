@@ -22,6 +22,7 @@ public class State_Manager_InGame : MonoBehaviour
     public PC_ChooseSize PC_ChooseSize;
     public PC_Choose_Textures PC_ChooseTextures;
     public GameObject inventory;
+    public GameObject inventory_camera;
     public CubeClass cubeClass;
 
     // for screen  1
@@ -37,6 +38,8 @@ public class State_Manager_InGame : MonoBehaviour
     public Button texture_confirmButton;
     public Button texture_cancelButton;
     public bool cancelPressed = false;
+
+    public Clear_Textures clearTextures;
 
     public int[] inventoryList = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 

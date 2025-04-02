@@ -41,7 +41,8 @@ public class State_Manager : MonoBehaviour
     public Button texture_cancelButton;
     public bool cancelPressed = false;
 
-    
+
+    public Clear_Textures clearTextures;
 
     private void Start()
     {

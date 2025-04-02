@@ -18,6 +18,11 @@ public class Choose_Texture_State : Base_State
         {
             state.switchState(state.Cube_Preview_State);
         }
+
+        if (global.current_state == State_List.States.start_menu)
+        {
+            state.switchState(state.start_menu_state);
+        }
     }
 
 }
