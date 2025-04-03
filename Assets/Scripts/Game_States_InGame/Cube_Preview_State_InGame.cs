@@ -10,6 +10,7 @@ public class Cube_Preview_State_InGame : Base_State_InGame
     private float cubeRotationSpeed = 0.5f;
     public override void EnterState(State_Manager_InGame state)
     {
+        state.lockCursor(false);
         state.switchScreens(state.Screens, 2);
         //disable all stuff in the first screen
 

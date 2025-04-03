@@ -1,12 +1,12 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+//using System;
+//using System.Collections;
+//using System.Collections.Generic;
+//using Unity.VisualScripting;
 using UnityEditor;
-using UnityEditor.PackageManager;
+//using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
+//using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Player_Controls_Building : MonoBehaviour
@@ -263,6 +263,17 @@ public class Player_Controls_Building : MonoBehaviour
     {
         Vector2 mousePosition = PositionMouse.ReadValue<Vector2>();
 
+        if (mousePosition.x <= 0)
+        {
+            Cursor.SetCursor(null, new Vector2(Screen.width - 1, mousePosition.y), CursorMode.Auto);
+            mousePosition.x = Screen.width - 1;
+        }
+        else if (mousePosition.x >= Screen.width - 1)
+        {
+            Cursor.SetCursor(null, new Vector2(0, mousePosition.y), CursorMode.Auto);
+            mousePosition.x = 0;
+        }
+
         float directionX = mousePosition.x - (Screen.width / 2);
         float directionY = mousePosition.y - (Screen.height / 2);
 
@@ -389,7 +400,8 @@ public class Player_Controls_Building : MonoBehaviour
 
         GameObject previewOnTerrain = GameObject.CreatePrimitive(PrimitiveType.Cube);
         Renderer renderer = previewOnTerrain.GetComponent<Renderer>();
-        renderer.material = AssetDatabase.LoadAssetAtPath<Material>("Assets/Sprite/transparency.mat");
+        //renderer.material = AssetDatabase.LoadAssetAtPath<Material>("Assets/Sprite/transparency.mat");
+        renderer.material = Resources.Load<Material>("transparency");
         previewOnTerrain.GetComponent<Collider>().enabled = false;
 
         previewOnTerrain.transform.parent = PreviewPlacement.transform;

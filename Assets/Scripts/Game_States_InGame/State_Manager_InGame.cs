@@ -89,6 +89,21 @@ public class State_Manager_InGame : MonoBehaviour
         }
     }
 
+    // determine if the cursor should be locked or not
+    public void lockCursor(bool locked)
+    {
+        if (locked)
+        {
+            Cursor.lockState = CursorLockMode.Confined;
+            Cursor.visible = false;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+    }
+
 
 
 }

@@ -8,6 +8,7 @@ using static System.Net.Mime.MediaTypeNames;
 using UnityEngine.Playables;
 using UnityEngine.InputSystem;
 using TMPro;
+using SimpleFileBrowser;
 
 public class createNewCube : MonoBehaviour
 {
@@ -135,12 +136,35 @@ public class createNewCube : MonoBehaviour
     }
 
 
+    IEnumerator ShowLoadDialogCoroutine(System.Action<string> callback)
+    {
+        yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.Files, true, null, null, "Select Files", "Load");
+
+        Debug.Log(FileBrowser.Success);
+
+        if (FileBrowser.Success)
+            //OnFilesSelected(FileBrowser.Result); // FileBrowser.Result is null, if FileBrowser.Success is false
+            callback(FileBrowser.Result[0]);
+        else
+            callback(null);
+    }
+
+
     // for importing the image from user's computer and running the synthesis algorithm
     public void Apply(string filename)
     {
         // open prompt for inputing image and save image to path
-        string path = EditorUtility.OpenFilePanel("Overwrite with png", "", "png");
-        if (path.Length != 0)
+        //string path = EditorUtility.OpenFilePanel("Overwrite with png", "", "png");
+        FileBrowser.SetFilters(true, new FileBrowser.Filter("Images", ".jpg", ".png"));
+        FileBrowser.AddQuickLink("Users", "C:\\Users", null);
+
+        StartCoroutine(ShowLoadDialogCoroutine((path) => OnFileSelected(path, filename)));
+    }
+
+    private void OnFileSelected(string path, string filename)
+    {
+        Debug.Log("path = " + path);
+        if (path.Length != 0 && path != null)
         {
             var fileContent = File.ReadAllBytes(path);
             Texture2D tex = new Texture2D(2, 2);
@@ -169,8 +193,6 @@ public class createNewCube : MonoBehaviour
 
 
             currentProcessingName = filename;
-
-
         }
     }
 

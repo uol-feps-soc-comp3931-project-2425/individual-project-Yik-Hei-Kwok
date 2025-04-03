@@ -7,6 +7,7 @@ public class Play_Game_State : Base_State_InGame
 {
     public override void EnterState(State_Manager_InGame state)
     {
+        state.lockCursor(true);
         Transform test = state.Screens.transform.Find("Screen_1");
         Debug.Log("test" + test);
         state.clearTextures.clearDisplays(state.Screens.transform.Find("Screen_1").gameObject);

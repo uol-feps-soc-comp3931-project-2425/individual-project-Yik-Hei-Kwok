@@ -1006,6 +1006,10 @@
       <Project>{6235DCF9-FE22-DBFE-25A5-42F221E57FFE}</Project>
       <Name>Unity.PlasticSCM.Editor</Name>
     </ProjectReference>
+    <ProjectReference Include="SimpleFileBrowser.Runtime.csproj">
+      <Project>{438C8E9C-31C1-BF1D-3B60-EBA3AD68B6DF}</Project>
+      <Name>SimpleFileBrowser.Runtime</Name>
+    </ProjectReference>
     <ProjectReference Include="Unity.VisualScripting.State.Editor.csproj">
       <Project>{ECDCC0F3-3F95-B50A-31AC-0ED883FB9F06}</Project>
       <Name>Unity.VisualScripting.State.Editor</Name>
