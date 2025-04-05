@@ -49,4 +49,7 @@ public class global : MonoBehaviour
         public static float[] time_CPU = new float[10];
         public static float[] time_GPU = new float[10];
     }
+
+    //public static string rootPath = "Assets";
+    public static string rootPath = Application.persistentDataPath;
 }

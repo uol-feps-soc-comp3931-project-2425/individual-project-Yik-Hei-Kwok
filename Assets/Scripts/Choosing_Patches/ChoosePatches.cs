@@ -8,7 +8,7 @@ using System;
 using Supercluster.KDTree;
 using UnityEngine.UIElements;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
-using Unity.VisualScripting;
+//using Unity.VisualScripting;
 using static global;
 using System.Diagnostics;
 
@@ -175,7 +175,7 @@ public class ChoosePatches : MonoBehaviour
         }
         for (int j = 0; j < finalImage.Length; j++)
         {
-            DebugFunctions.showData_CustomizedWH(resultImageSize, truePatchSize, finalImage[j], $"Saved/Final_Image_Per_Row/patch_row_{j}.png");
+            //DebugFunctions.showData_CustomizedWH(resultImageSize, truePatchSize, finalImage[j], $"Saved/Final_Image_Per_Row/patch_row_{j}.png");
         }
 
         string fileName = finalImageLocation.Split('/')[1];
@@ -223,10 +223,19 @@ public class ChoosePatches : MonoBehaviour
 
         string checkPath = checkLocation.Split('/')[0];
         // check if the path exist, if not, create the path
+        bool exists = System.IO.Directory.Exists($"{global.rootPath}/Saved/Final_Image/{checkPath}");
+        if (!exists)
+            System.IO.Directory.CreateDirectory($"{global.rootPath}/Saved/Final_Image/{checkPath}");
+
+        File.WriteAllBytes($"{global.rootPath}/Saved/Final_Image/{checkPath}/{fileName}.png", bytes);
+
+
+        /*
         bool exists = System.IO.Directory.Exists($"Assets/Saved/Final_Image/{checkPath}");
         if (!exists)
             System.IO.Directory.CreateDirectory($"Assets/Saved/Final_Image/{checkPath}");
             File.WriteAllBytes($"Assets/Saved/Final_Image/{checkPath}/{fileName}.png", bytes);
+         */
     }
 
     // for placing a new patch at a new position of the result image
@@ -287,9 +296,9 @@ public class ChoosePatches : MonoBehaviour
         toBePlacedPatch = getPatchWithoutOverlap(chosenPatch);
 
         // for debug only
-        DebugFunctions.showData_CustomizedWH(patchSize-overlapSize, overlapSize, overlapBottom, $"Saved/Save_Overlay_Bottom/bottom_{k}.png");
-        DebugFunctions.showData_CustomizedWH(overlapSize, patchSize - overlapSize, overlapRight, $"Saved/Save_Overlay_Right/right_{k}.png");
-        DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, patchSize - overlapSize, toBePlacedPatch, $"Saved/To_Be_Placed_Patches/to_be_placed_{k}.png");
+        //DebugFunctions.showData_CustomizedWH(patchSize-overlapSize, overlapSize, overlapBottom, $"Saved/Save_Overlay_Bottom/bottom_{k}.png");
+        //DebugFunctions.showData_CustomizedWH(overlapSize, patchSize - overlapSize, overlapRight, $"Saved/Save_Overlay_Right/right_{k}.png");
+        //DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, patchSize - overlapSize, toBePlacedPatch, $"Saved/To_Be_Placed_Patches/to_be_placed_{k}.png");
         
         return (toBePlacedPatch, ranPatch, overlapRight, overlapBottom);
     }

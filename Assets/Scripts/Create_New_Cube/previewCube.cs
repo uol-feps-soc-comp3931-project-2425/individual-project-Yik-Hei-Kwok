@@ -18,7 +18,7 @@ public class previewCube : CubeClass
         mergeTextures.createNewAtlas(sizeFinalImage, isTerrain);
 
         // modify the texture UV mapping
-        Mesh meshCube = GameObject.Find("Screen_2").GetComponentInChildren<MeshFilter>().mesh;
+        Mesh meshCube = GameObject.Find("preview_cube_render").GetComponentInChildren<MeshFilter>().mesh;
 
         Material material = base.createCube(isTerrain, meshCube, global.blockCount);
 

@@ -29,7 +29,7 @@ public class Play_Game_State : Base_State_InGame
             Transform t = childQuad.Find("block_f");
             Transform rawQuad = t.GetChild(0);
             //Transform childInventory = state.inventory.transform.Find($"Slot{i}");
-            bool exists = System.IO.File.Exists($"Assets/Saved/Final_Image/{i - 1}/atlas.png");
+            bool exists = System.IO.File.Exists($"{global.rootPath}/Saved/Final_Image/{i - 1}/atlas.png");
             if (exists)
             {
                 Transform childInventory = state.inventory_camera.transform.Find($"Slot {i}");

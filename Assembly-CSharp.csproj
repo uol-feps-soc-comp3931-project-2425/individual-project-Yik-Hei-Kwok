@@ -60,42 +60,48 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.3.9f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Game_States_InGame\Base_State_InGame.cs" />
+    <Compile Include="Assets\Scripts\Clear_Textures.cs" />
+    <Compile Include="Assets\Scripts\Game_States\Choose_Texture_State.cs" />
     <Compile Include="Assets\Scripts\Game_States\Start_Menu_State.cs" />
+    <Compile Include="Assets\PlayerControls.cs" />
+    <Compile Include="Assets\Scripts\Game_States_InGame\State_Manager_InGame.cs" />
+    <Compile Include="Assets\Unity-Logs-Viewer\Reporter\ReporterMessageReceiver.cs" />
     <Compile Include="Assets\Scripts\Combine_Patches\CombinePatches.cs" />
     <Compile Include="Assets\Scripts\Performance_Benchmarking\Test_CPU_GPU.cs" />
+    <Compile Include="Assets\Scripts\Game_States\Base_State.cs" />
     <Compile Include="Assets\InputSystem\TextureSynthesisGame.cs" />
     <Compile Include="Assets\Scripts\Player\Place_Cube.cs" />
     <Compile Include="Assets\Scripts\Game_States\Cube_Preview_State.cs" />
+    <Compile Include="Assets\Scripts\Game_States_InGame\Cube_Preview_State_InGame.cs" />
     <Compile Include="Assets\Scripts\Create_New_Cube\createNewCube.cs" />
     <Compile Include="Assets\Scripts\Debugging\DebugFunctions.cs" />
+    <Compile Include="Assets\Scripts\Performance_Benchmarking\Benchmarking.cs" />
+    <Compile Include="Assets\Scripts\Create_New_Cube\cubeBaseClass.cs" />
     <Compile Include="Assets\Scripts\Create_New_Cube\previewCube.cs" />
     <Compile Include="Assets\Scripts\Game_States_InGame\Play_Game_State.cs" />
     <Compile Include="Assets\Scripts\Choosing_Patches\ProcessPatches.cs" />
+    <Compile Include="Assets\Scripts\Extracting_Patches_and_Overlaps\Call_Synthesis.cs" />
     <Compile Include="Assets\Scripts\Extracting_Patches_and_Overlaps\ComputeShaderTest.cs" />
     <Compile Include="Assets\Scripts\Game_States\State_Manager.cs" />
+    <Compile Include="Assets\Unity-Logs-Viewer\Reporter\Reporter.cs" />
+    <Compile Include="Assets\Scripts\Game_States\State_List.cs" />
+    <Compile Include="Assets\Unity-Logs-Viewer\Reporter\Test\Rotate.cs" />
     <Compile Include="Assets\Scripts\createBlock.cs" />
     <Compile Include="Assets\Scripts\Choosing_Patches\ChoosePatches.cs" />
-    <Compile Include="Assets\Scripts\Create_New_Cube\mergeTextures.cs" />
-    <Compile Include="Assets\Scripts\Player\Player_Controls_Building.cs" />
-    <Compile Include="Assets\Scripts\global.cs" />
-    <Compile Include="Assets\Scripts\Create_Terrain\CreateNewTerrain.cs" />
-    <Compile Include="Assets\Scripts\Clear_Textures.cs" />
-    <Compile Include="Assets\Scripts\Game_States\Choose_Texture_State.cs" />
-    <Compile Include="Assets\PlayerControls.cs" />
-    <Compile Include="Assets\Scripts\Game_States_InGame\State_Manager_InGame.cs" />
-    <Compile Include="Assets\Scripts\Game_States\Base_State.cs" />
-    <Compile Include="Assets\Scripts\Game_States_InGame\Cube_Preview_State_InGame.cs" />
-    <Compile Include="Assets\Scripts\Create_New_Cube\cubeBaseClass.cs" />
-    <Compile Include="Assets\Scripts\Performance_Benchmarking\Benchmarking.cs" />
-    <Compile Include="Assets\Scripts\Extracting_Patches_and_Overlaps\Call_Synthesis.cs" />
-    <Compile Include="Assets\Scripts\Game_States\State_List.cs" />
     <Compile Include="Assets\Scripts\Player\PC_Generate_Terrain.cs" />
+    <Compile Include="Assets\Scripts\Create_New_Cube\mergeTextures.cs" />
     <Compile Include="Assets\Scripts\Player\PC_Choose_Size.cs" />
+    <Compile Include="Assets\Scripts\Player\Player_Controls_Building.cs" />
     <Compile Include="Assets\Scripts\Player\PC_Choose_Textures.cs" />
     <Compile Include="Assets\Scripts\Player\Player_Controls.cs" />
+    <Compile Include="Assets\Unity-Logs-Viewer\Reporter\MultiKeyDictionary.cs" />
     <Compile Include="Assets\Scripts\Game_States_InGame\Choose_Texture_State_InGame.cs" />
+    <Compile Include="Assets\Unity-Logs-Viewer\Reporter\Test\TestReporter.cs" />
+    <Compile Include="Assets\Scripts\global.cs" />
+    <Compile Include="Assets\Scripts\Create_Terrain\CreateNewTerrain.cs" />
+    <Compile Include="Assets\Unity-Logs-Viewer\Reporter\ReporterGUI.cs" />
     <Compile Include="Assets\Scripts\Performance_Benchmarking\Generate_Test_Images.cs" />
-    <Compile Include="Assets\Scripts\Game_States_InGame\Base_State_InGame.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
@@ -466,10 +472,6 @@
     </Reference>
     <Reference Include="Supercluster.KDTree">
       <HintPath>Assets\Plugins\Supercluster.KDTree.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
-      <HintPath>Library\PackageCache\com.unity.visualscripting@1.9.0\Runtime\VisualScripting.Flow\Dependencies\NCalc\Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="netstandard">
@@ -978,17 +980,9 @@
       <Project>{2D6996D6-3902-86F4-2087-67E2DAAADDCF}</Project>
       <Name>Unity.TestTools.CodeCoverage.Editor.OpenCover.Mono.Reflection</Name>
     </ProjectReference>
-    <ProjectReference Include="UnityEngine.UI.csproj">
-      <Project>{D21E1A80-2253-B8DD-2DBC-44394E829AEE}</Project>
-      <Name>UnityEngine.UI</Name>
-    </ProjectReference>
     <ProjectReference Include="Unity.EditorCoroutines.Editor.csproj">
       <Project>{8CD686E4-E430-BF0D-1DC6-9BAE25AE5F36}</Project>
       <Name>Unity.EditorCoroutines.Editor</Name>
-    </ProjectReference>
-    <ProjectReference Include="Unity.VisualScripting.SettingsProvider.Editor.csproj">
-      <Project>{1B06E69F-B432-795D-5FB1-050D00C6BC27}</Project>
-      <Name>Unity.VisualScripting.SettingsProvider.Editor</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.Performance.Profile-Analyzer.Editor.csproj">
       <Project>{2C4C08E7-1591-230E-DA9E-E4AFC674BC4D}</Project>
@@ -1010,17 +1004,9 @@
       <Project>{438C8E9C-31C1-BF1D-3B60-EBA3AD68B6DF}</Project>
       <Name>SimpleFileBrowser.Runtime</Name>
     </ProjectReference>
-    <ProjectReference Include="Unity.VisualScripting.State.Editor.csproj">
-      <Project>{ECDCC0F3-3F95-B50A-31AC-0ED883FB9F06}</Project>
-      <Name>Unity.VisualScripting.State.Editor</Name>
-    </ProjectReference>
     <ProjectReference Include="Unity.Timeline.Editor.csproj">
       <Project>{209A86A4-2BDF-1075-8BD4-904FF3CD7A4D}</Project>
       <Name>Unity.Timeline.Editor</Name>
-    </ProjectReference>
-    <ProjectReference Include="Unity.VisualScripting.Shared.Editor.csproj">
-      <Project>{E97526EF-10C0-BCE8-FC95-0EFB9DD77219}</Project>
-      <Name>Unity.VisualScripting.Shared.Editor</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.VisualStudio.Editor.csproj">
       <Project>{40CFBB81-B886-83AC-569D-0BE3E84B9F2C}</Project>
@@ -1030,41 +1016,25 @@
       <Project>{28E86DA6-3F7B-0D87-59A9-16988E33A0D7}</Project>
       <Name>Unity.TextMeshPro</Name>
     </ProjectReference>
-    <ProjectReference Include="Unity.VisualScripting.Core.csproj">
-      <Project>{22FBFF8A-E975-8D8F-7506-9E8C9C666BCF}</Project>
-      <Name>Unity.VisualScripting.Core</Name>
+    <ProjectReference Include="UnityEditor.UI.csproj">
+      <Project>{FC05093C-C300-17EF-806E-7DF0AD4F6655}</Project>
+      <Name>UnityEditor.UI</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.TextMeshPro.Editor.csproj">
       <Project>{966BC16B-9102-CEEA-8A3D-AB8C8F4ECF17}</Project>
       <Name>Unity.TextMeshPro.Editor</Name>
     </ProjectReference>
-    <ProjectReference Include="UnityEditor.UI.csproj">
-      <Project>{FC05093C-C300-17EF-806E-7DF0AD4F6655}</Project>
-      <Name>UnityEditor.UI</Name>
-    </ProjectReference>
-    <ProjectReference Include="Unity.VisualScripting.Core.Editor.csproj">
-      <Project>{32BD74B6-D44A-4BEE-9B87-99C6226D9F0D}</Project>
-      <Name>Unity.VisualScripting.Core.Editor</Name>
+    <ProjectReference Include="UnityEngine.UI.csproj">
+      <Project>{D21E1A80-2253-B8DD-2DBC-44394E829AEE}</Project>
+      <Name>UnityEngine.UI</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.Rider.Editor.csproj">
       <Project>{EAB2270C-FE9E-67F1-2439-378D03A8F2A2}</Project>
       <Name>Unity.Rider.Editor</Name>
     </ProjectReference>
-    <ProjectReference Include="Unity.VisualScripting.State.csproj">
-      <Project>{147D7C6C-8273-113E-F9F7-87B9C1ABF872}</Project>
-      <Name>Unity.VisualScripting.State</Name>
-    </ProjectReference>
     <ProjectReference Include="Unity.VSCode.Editor.csproj">
       <Project>{0E1B9D9C-497A-A593-DA6F-0B19A96632B6}</Project>
       <Name>Unity.VSCode.Editor</Name>
-    </ProjectReference>
-    <ProjectReference Include="Unity.VisualScripting.Flow.csproj">
-      <Project>{300B6BC3-A8D0-2345-A10D-F646919E2E2C}</Project>
-      <Name>Unity.VisualScripting.Flow</Name>
-    </ProjectReference>
-    <ProjectReference Include="Unity.VisualScripting.Flow.Editor.csproj">
-      <Project>{9322F9F3-5D44-3A26-D717-9902A661DE6A}</Project>
-      <Name>Unity.VisualScripting.Flow.Editor</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

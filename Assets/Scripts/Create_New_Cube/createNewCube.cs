@@ -4,7 +4,7 @@ using UnityEngine;
 using System.IO;
 using UnityEditor;
 using UnityEngine.UI;
-using static System.Net.Mime.MediaTypeNames;
+//using static System.Net.Mime.MediaTypeNames;
 using UnityEngine.Playables;
 using UnityEngine.InputSystem;
 using TMPro;
@@ -57,6 +57,8 @@ public class createNewCube : MonoBehaviour
         boundary_text = boundarySlider.gameObject.transform.Find("Slider_Value").Find("Value").gameObject.GetComponent<TextMeshProUGUI>();
 
         isTerrain = terrain;
+
+        Debug.Log("Application.persistentDataPath = " + Application.persistentDataPath);
 
         if(cancelPressed == false)
         {
@@ -176,10 +178,15 @@ public class createNewCube : MonoBehaviour
             Debug.Log("New1 sourceImageWidth = " + sourceImageWidth);
 
             byte[] bytes = tex.EncodeToPNG();
-            string savePath = $"Assets/Saved/Loaded_Images/{filename}.png";
+
+            string savePath = $"{global.rootPath}/Saved/Loaded_Images/{filename}.png";
 
             // save path of the texture
             textureLocation = savePath;
+
+            bool exists = System.IO.Directory.Exists($"{global.rootPath}/Saved/Loaded_Images");
+            if (!exists)
+                System.IO.Directory.CreateDirectory($"{global.rootPath}/Saved/Loaded_Images");
 
             File.WriteAllBytes(savePath, bytes);
 

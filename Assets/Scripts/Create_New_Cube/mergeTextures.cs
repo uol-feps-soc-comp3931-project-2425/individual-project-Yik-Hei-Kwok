@@ -36,15 +36,15 @@ public class Merge_Textures : MonoBehaviour
 
                 // get the pixel values of each individual face
                 Texture2D bottomTexture = new Texture2D(2, 2);
-                bottomTexture.LoadImage(File.ReadAllBytes($"Assets/Saved/Final_Image/{path}/Bottom.png"));
+                bottomTexture.LoadImage(File.ReadAllBytes($"{global.rootPath}/Saved/Final_Image/{path}/Bottom.png"));
                 float[] bottomPixels = readPixelsOneTexture(bottomTexture,sizeFinalImage);
 
                 Texture2D leftTexture = new Texture2D(2, 2);
-                leftTexture.LoadImage(File.ReadAllBytes($"Assets/Saved/Final_Image/{path}/Side1.png"));
+                leftTexture.LoadImage(File.ReadAllBytes($"{global.rootPath}/Saved/Final_Image/{path}/Side1.png"));
                 float[] leftPixels = readPixelsOneTexture(leftTexture, sizeFinalImage);
 
                 Texture2D rightTexture = new Texture2D(2, 2);
-                rightTexture.LoadImage(File.ReadAllBytes($"Assets/Saved/Final_Image/{path}/Side2.png"));
+                rightTexture.LoadImage(File.ReadAllBytes($"{global.rootPath}/Saved/Final_Image/{path}/Side2.png"));
                 float[] rightPixels = readPixelsOneTexture(rightTexture, sizeFinalImage);
 
 
@@ -58,7 +58,7 @@ public class Merge_Textures : MonoBehaviour
                 float[] orderedPixels = orderPixels(unorderedPixels, sizeFinalImage);
                 finalTexture[1] = orderedPixels;
 
-                DebugFunctions.showData_CustomizedWH(sizeFinalImage * 3, sizeFinalImage, finalTexture[1], "Saved/bottomleftright.png");
+                //DebugFunctions.showData_CustomizedWH(sizeFinalImage * 3, sizeFinalImage, finalTexture[1], "Saved/bottomleftright.png");
             }
             // row 2
             else if (i == 2)
@@ -67,15 +67,15 @@ public class Merge_Textures : MonoBehaviour
 
                 // get the pixel values of each individual face
                 Texture2D frontTexture = new Texture2D(2, 2);
-                frontTexture.LoadImage(File.ReadAllBytes($"Assets/Saved/Final_Image/{path}/Side3.png"));
+                frontTexture.LoadImage(File.ReadAllBytes($"{global.rootPath}/Saved/Final_Image/{path}/Side3.png"));
                 float[] frontPixels = readPixelsOneTexture(frontTexture,sizeFinalImage);
 
                 Texture2D topTexture = new Texture2D(2, 2);
-                topTexture.LoadImage(File.ReadAllBytes($"Assets/Saved/Final_Image/{path}/Top.png"));
+                topTexture.LoadImage(File.ReadAllBytes($"{global.rootPath}/Saved/Final_Image/{path}/Top.png"));
                 float[] topPixels = readPixelsOneTexture(topTexture, sizeFinalImage);
 
                 Texture2D backTexture = new Texture2D(2, 2);
-                backTexture.LoadImage(File.ReadAllBytes($"Assets/Saved/Final_Image/{path}/Side4.png"));
+                backTexture.LoadImage(File.ReadAllBytes($"{global.rootPath}/Saved/Final_Image/{path}/Side4.png"));
                 float[] backPixels = readPixelsOneTexture(backTexture, sizeFinalImage);
 
                 // put all of the pixels from these 3 faces into a single array
@@ -88,7 +88,7 @@ public class Merge_Textures : MonoBehaviour
                 float[] orderedPixels = orderPixels(unorderedPixels,sizeFinalImage);
                 finalTexture[2] = orderedPixels;
 
-                DebugFunctions.showData_CustomizedWH(sizeFinalImage * 3, sizeFinalImage, finalTexture[2], "Saved/fronttopback.png");
+                //DebugFunctions.showData_CustomizedWH(sizeFinalImage * 3, sizeFinalImage, finalTexture[2], "Saved/fronttopback.png");
             }
         }
 
@@ -117,7 +117,7 @@ public class Merge_Textures : MonoBehaviour
         // encode and save the texture atlas
         byte[] bytes = texture.EncodeToPNG();
         // save the atlas
-        File.WriteAllBytes($"Assets/Saved/Final_Image/{path}/atlas.png", bytes);
+        File.WriteAllBytes($"{global.rootPath}/Saved/Final_Image/{path}/atlas.png", bytes);
     }
 
 

@@ -21,7 +21,7 @@ abstract public class CubeClass : MonoBehaviour
             path = $"{blockCount}";
         }
 
-        var createdTexture = File.ReadAllBytes($"Assets/Saved/Final_Image/{path}/atlas.png");
+        var createdTexture = File.ReadAllBytes($"{global.rootPath}/Saved/Final_Image/{path}/atlas.png");
         Texture2D newTexture = new Texture2D(2, 2);
         newTexture.LoadImage(createdTexture);
 

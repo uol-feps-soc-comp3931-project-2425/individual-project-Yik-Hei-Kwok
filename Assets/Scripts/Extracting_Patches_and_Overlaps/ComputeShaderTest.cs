@@ -88,7 +88,7 @@ public class Texturesynthesis : MonoBehaviour
         outputBuffer.Release();
 
         // save the image for showing purposes
-        DebugFunctions.debugImage(allPixelDataRef, (int)sizeOfRef.x, (int)sizeOfRef.y);
+        //DebugFunctions.debugImage(allPixelDataRef, (int)sizeOfRef.x, (int)sizeOfRef.y);
 
         // -----------------------------------------------------------------------------------------------
         // for segementing all pixel data in the 1d array into patches of indicated size
@@ -122,7 +122,7 @@ public class Texturesynthesis : MonoBehaviour
 
 
         // save the patches as images for showing purposes
-        DebugFunctions.showData(patches, patchSize, "Saved/Save_Patches");
+        //DebugFunctions.showData(patches, patchSize, "Saved/Save_Patches");
 
         //choosePatches.placeFirstPatch(patches, 0);
         // ----------------------------------------------------------------------------------------------
@@ -130,8 +130,8 @@ public class Texturesynthesis : MonoBehaviour
         overlayPixels = SegmentOverlays_GPU(patches, overlapSize, sizeOfRef, patchSize,overlapSize);
         
         // save the top overlap as images for showing purposes
-        DebugFunctions.showData(overlayPixels[0], patchSize-overlapSize, "Saved/Save_Overlay_Top");
-        DebugFunctions.showData_left(overlayPixels[1], patchSize-overlapSize, overlapSize , "Saved/Save_Overlay_Left");
+        //DebugFunctions.showData(overlayPixels[0], patchSize-overlapSize, "Saved/Save_Overlay_Top");
+        //DebugFunctions.showData_left(overlayPixels[1], patchSize-overlapSize, overlapSize , "Saved/Save_Overlay_Left");
         //DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, overlapSize, overlayPixels[0][0], "Saved/Save_Overlay_Top/overlapPatch0.png");
         //DebugFunctions.showData_CustomizedWH(overlapSize, patchSize - overlapSize, overlayPixels[1][0], "Saved/Save_Overlay_Left/overlapPatch0.png");
 
