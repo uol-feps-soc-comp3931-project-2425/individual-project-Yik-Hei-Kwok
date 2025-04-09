@@ -33,6 +33,7 @@ public class State_Manager : MonoBehaviour
 
     // for screen  1
     public bool isTerrain = false;
+    public Button previewButton;
 
     // for screen 2
     public previewCube prevCubeFunc;

@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static UnityEditor.Progress;
 
 public class CreateNewTerrain : CubeClass
 {
     // detect if the select texture button is pressed (should be set back to false after terrain texture is selected)
     public bool terrainTextureSelected = false;
+    public createNewCube deleteTexture;
 
     public void initializeTerrain(int x, int z)
     {
@@ -20,10 +22,11 @@ public class CreateNewTerrain : CubeClass
                 // create new gameobject for storing terrain blocks
                 GameObject terrianStorage = new GameObject();
                 terrianStorage.name = "terrainStore";
-
+                terrianStorage.tag = "Terrain";
+                Debug.Log("Initialized");
                 createFirstTerrainCube(terrianStorage);
                 instansiateTerrainCubes(x,z, terrianStorage);
-
+                resetAtlas();
             }
         };
     }
@@ -63,8 +66,40 @@ public class CreateNewTerrain : CubeClass
         }
     }
 
+    private void resetAtlas()
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            deleteTexture.deleteTextureAltas(i.ToString());
+        }
+        
+    }
 
 
+    /*public void initializeTerrain(int x, int z)
+    {
+
+        xTemp = x;
+        zTemp = z;
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        SceneManager.LoadScene("New_Terrain");
+
+    }
+
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "New_Terrain")
+        {
+            GameObject terrainStorage = new GameObject("terrainStore");
+            Debug.Log("Initializing");
+            createFirstTerrainCube(terrainStorage);
+            instansiateTerrainCubes(xTemp, zTemp, terrainStorage);
+
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+    }*/
 
     private void createFirstTerrainCube()
     {

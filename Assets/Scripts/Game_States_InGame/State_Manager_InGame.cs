@@ -29,6 +29,7 @@ public class State_Manager_InGame : MonoBehaviour
     public bool isTerrain = false;
     public createNewCube new_cube;
     public Button backToGame;
+    public Button previewButton;
 
     public Player_Controls_Building controlScript;
 
@@ -94,12 +95,12 @@ public class State_Manager_InGame : MonoBehaviour
     {
         if (locked)
         {
-            Cursor.lockState = CursorLockMode.Confined;
+            Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
         else
         {
-            Cursor.lockState = CursorLockMode.None;
+            Cursor.lockState = CursorLockMode.Confined;
             Cursor.visible = true;
         }
     }

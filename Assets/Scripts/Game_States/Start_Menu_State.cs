@@ -99,6 +99,8 @@ public class Start_Menu_State : Base_State
 
     private void chooseTerrainTexture(State_Manager state)
     {
+        state.new_cube.textures_added = new string[6];
+        state.new_cube.inc_texture_added = 0;
         state.isTerrain = true;
         state.switchState(state.choose_texture_state);
     }

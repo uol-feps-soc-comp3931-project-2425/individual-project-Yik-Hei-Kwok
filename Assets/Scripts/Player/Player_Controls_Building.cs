@@ -33,6 +33,8 @@ public class Player_Controls_Building : MonoBehaviour
     private int spaceHeld = 0;
     private float flyVerticalSpeed = 3f;
     private float flyHorizontalSpeed = 5f;
+    private Vector2 cameraRotation = new Vector2(0,0);
+    private Quaternion rotationPosition;
 
     private Vector3 positionToBePlaced = Vector3.zero;
     private GameObject pointedBlock;
@@ -78,6 +80,17 @@ public class Player_Controls_Building : MonoBehaviour
 
         // freeze the player rotation so that player doesn't fall down
         rb.freezeRotation = true;
+    }
+
+    private void Start()
+    {
+        int inc = 0;
+        foreach (GameObject terrain in GameObject.FindGameObjectsWithTag("Terrain"))
+        {
+            if (inc != 0)
+                Destroy(terrain);
+            inc++;
+        }
     }
 
 
@@ -138,7 +151,7 @@ public class Player_Controls_Building : MonoBehaviour
         if (inMenu == false)
         {
             MoveCamera();
-            RotateCamera();
+            rotationPosition = RotateCamera(rotationPosition);
 
             // create raycast from center of camera to detect closest block
             RayCast();
@@ -259,25 +272,20 @@ public class Player_Controls_Building : MonoBehaviour
         }
     }
 
-    private void RotateCamera()
+    private Quaternion RotateCamera(Quaternion savedRotation)
     {
-        Vector2 mousePosition = PositionMouse.ReadValue<Vector2>();
+        Vector2 mouseDelta = Mouse.current.delta.ReadValue();
 
-        if (mousePosition.x <= 0)
-        {
-            Cursor.SetCursor(null, new Vector2(Screen.width - 1, mousePosition.y), CursorMode.Auto);
-            mousePosition.x = Screen.width - 1;
-        }
-        else if (mousePosition.x >= Screen.width - 1)
-        {
-            Cursor.SetCursor(null, new Vector2(0, mousePosition.y), CursorMode.Auto);
-            mousePosition.x = 0;
-        }
+        float yaw = mouseDelta.x * cameraLookSpeed;
+        float pitch = -mouseDelta.y * cameraLookSpeed;
 
-        float directionX = mousePosition.x - (Screen.width / 2);
-        float directionY = mousePosition.y - (Screen.height / 2);
+        cameraRotation.x += pitch;
+        cameraRotation.y += yaw;
+        cameraRotation.x = Mathf.Clamp(cameraRotation.x, -90f, 90f);
 
-        cameraMain.transform.localRotation = Quaternion.Euler(-directionY * cameraLookSpeed, directionX * cameraLookSpeed, 0);
+        cameraMain.transform.localRotation = Quaternion.Euler(cameraRotation.x, cameraRotation.y, 0);
+
+        return cameraMain.transform.localRotation;
     }
 
     private void spacePressed(InputAction.CallbackContext context)
@@ -415,6 +423,8 @@ public class Player_Controls_Building : MonoBehaviour
         // create new gameobject for storing terrain blocks
         global.current_state = State_List.States.choose_textures;
         State_Manager_InGame state_manager = GameObject.Find("State_Manager").GetComponent<State_Manager_InGame>();
+        state_manager.new_cube.textures_added = new string[6];
+        state_manager.new_cube.inc_texture_added = 0;
         state_manager.switchState(state_manager.choose_texture_state);
         
     }

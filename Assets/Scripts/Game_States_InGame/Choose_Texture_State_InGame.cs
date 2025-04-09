@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-
+using System.Linq;
+using System;
 public class Choose_Texture_State_InGame : Base_State_InGame
 {
     public override void EnterState(State_Manager_InGame state)
@@ -11,6 +12,7 @@ public class Choose_Texture_State_InGame : Base_State_InGame
         state.controlScript.inMenu = true;
         state.backToGame.onClick.AddListener(delegate { returnToGame(state); });
         state.switchScreens(state.Screens, 1);
+
         state.new_cube.initializeCubeMenu(state.isTerrain, state.cancelPressed);
         state.cancelPressed = false;
     }
@@ -18,7 +20,13 @@ public class Choose_Texture_State_InGame : Base_State_InGame
 
     public override void UpdateState(State_Manager_InGame state)
     {
-        if(global.current_state == State_List.States.cube_preview)
+        bool texture_filled = state.new_cube.textures_added.All(s => s != null);
+        if (texture_filled)
+            state.previewButton.interactable = true;
+        else
+            state.previewButton.interactable = false;
+
+        if (global.current_state == State_List.States.cube_preview)
         {
             state.switchState(state.Cube_Preview_State);
         }

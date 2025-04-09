@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class Clear_Textures : MonoBehaviour
 {
+
     public void clearDisplays(GameObject Screen)
     {
         foreach (Transform t in Screen.transform)

@@ -76,6 +76,10 @@ public class Cube_Preview_State_InGame : Base_State_InGame
         //state.Create_Terrain.terrainTextureSelected = false;
         global.current_state = State_List.States.choose_textures;
         state.cancelPressed = true;
+
+        // always delete the atlas if the block is not accepted
+        state.new_cube.deleteTextureAltas(global.blockCount.ToString());
+
         state.switchState(state.choose_texture_state);
     }
 }

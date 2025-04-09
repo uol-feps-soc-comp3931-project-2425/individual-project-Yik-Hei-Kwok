@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Choose_Texture_State : Base_State
 {
@@ -14,6 +15,12 @@ public class Choose_Texture_State : Base_State
 
     public override void UpdateState(State_Manager state)
     {
+        bool texture_filled = state.new_cube.textures_added.All(s => s != null);
+        if (texture_filled)
+            state.previewButton.interactable = true;
+        else
+            state.previewButton.interactable = false;
+
         if(global.current_state == State_List.States.cube_preview)
         {
             state.switchState(state.Cube_Preview_State);

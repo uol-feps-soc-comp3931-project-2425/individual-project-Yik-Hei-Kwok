@@ -42,11 +42,16 @@ public class createNewCube : MonoBehaviour
 
     public GameObject cubeView;
 
+    // for checking if all textures have been filled
+    public string[] textures_added;
+    public int inc_texture_added = 0;
+
     // determine if we are creating a new cube as a block, or creating a new cube for terrain
     private bool isTerrain = false;
 
     public void initializeCubeMenu(bool terrain, bool cancelPressed)
     {
+        
         GameObject player_controls = GameObject.Find("Player_Controller");
         chooseSizeController = player_controls.GetComponent<PC_ChooseSize>();
         chooseTexController = player_controls.GetComponent<PC_Choose_Textures>();
@@ -121,6 +126,20 @@ public class createNewCube : MonoBehaviour
 
         // run the synthesis algorithm
         invokeSynthesis.runSynthesis(currentProcessingName, sourceImageWidth, sourceImageHeight, textureLocation, sizeFinalImage, lambda, PS_point, BS_point,isTerrain);
+        // add the name to this array to inform that this texture side is added
+        bool same_side = false;
+        foreach(string side in textures_added)
+        {
+            if(side == currentProcessingName)
+                same_side = true;
+        }
+        if (!same_side)
+        {
+            textures_added[inc_texture_added] = currentProcessingName;
+            inc_texture_added++;
+        }
+                
+        
     }
 
     private void showSettingsMenu(bool show)
@@ -211,6 +230,13 @@ public class createNewCube : MonoBehaviour
             foreach (Transform t in obj.transform)
                 t.gameObject.SetActive(active);
         }
+    }
+
+
+    public void deleteTextureAltas(string atlas_index)
+    {
+        if(File.Exists($"{global.rootPath}/Saved/Final_Image/{atlas_index}/atlas.png"))
+            File.Delete($"{global.rootPath}/Saved/Final_Image/{atlas_index}/atlas.png");
     }
 
 
