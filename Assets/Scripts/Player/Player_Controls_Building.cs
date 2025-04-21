@@ -211,7 +211,7 @@ public class Player_Controls_Building : MonoBehaviour
             Vector3 localUp = hit.transform.up;
 
             Vector3 direction = Vector3.zero;
-            string direction_Debug = "ur mom";
+            
             // get the dot product values
             float dotProductLocForward = Vector3.Dot(normal, localForward);
             float dotProductLocBackward = Vector3.Dot(normal, -localForward);
@@ -245,7 +245,7 @@ public class Player_Controls_Building : MonoBehaviour
 
 
 
-            Debug.Log("Interacted Object " + hit.transform.gameObject + " on direction " + direction_Debug);
+            
         }
     }
 

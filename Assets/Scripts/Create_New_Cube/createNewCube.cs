@@ -167,7 +167,9 @@ public class createNewCube : MonoBehaviour
             //OnFilesSelected(FileBrowser.Result); // FileBrowser.Result is null, if FileBrowser.Success is false
             callback(FileBrowser.Result[0]);
         else
-            callback(null);
+            FileBrowser.HideDialog(true);
+            //callback(null);
+            
     }
 
 
