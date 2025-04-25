@@ -66,7 +66,11 @@ public class Cube_Preview_State_InGame : Base_State_InGame
         // a new block is created, so add block count by 1
         state.inventoryList[global.blockCount] = 1;
         global.blockCount += 1;
-        
+        Debug.Log("global.blockCount + 1");
+        Debug.Log("global.blockCount in button = " + global.blockCount);
+
+        state.texture_confirmButton.onClick.RemoveAllListeners();
+        state.texture_cancelButton.onClick.RemoveAllListeners();
 
         state.switchState(state.Play_Game_State);
         
@@ -79,6 +83,9 @@ public class Cube_Preview_State_InGame : Base_State_InGame
 
         // always delete the atlas if the block is not accepted
         state.new_cube.deleteTextureAltas(global.blockCount.ToString());
+
+        state.texture_confirmButton.onClick.RemoveAllListeners();
+        state.texture_cancelButton.onClick.RemoveAllListeners();
 
         state.switchState(state.choose_texture_state);
     }

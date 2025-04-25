@@ -86,8 +86,13 @@ public class State_Manager_InGame : MonoBehaviour
         if (obj != null)
         {
             foreach (Transform t in obj.transform)
+            {
                 t.gameObject.SetActive(active);
+                Debug.Log($"{t.gameObject.name} set to {active}");
+            }
         }
+        if(active == true)
+            Debug.Log($"{objectName} is set to active");
     }
 
     // determine if the cursor should be locked or not

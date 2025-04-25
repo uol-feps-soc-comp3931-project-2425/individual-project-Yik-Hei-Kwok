@@ -28,7 +28,6 @@ public class Play_Game_State : Base_State_InGame
             Transform childQuad = state.inventory.transform.Find($"Slot{i}");
             Transform t = childQuad.Find("block_f");
             Transform rawQuad = t.GetChild(0);
-            //Transform childInventory = state.inventory.transform.Find($"Slot{i}");
             bool exists = System.IO.File.Exists($"{global.rootPath}/Saved/Final_Image/{i - 1}/atlas.png");
             if (exists)
             {
@@ -44,32 +43,6 @@ public class Play_Game_State : Base_State_InGame
             {
                 rawQuad.gameObject.SetActive(false);
             }
-
-
-            //Transform blockF = childInventory.Find("block_f");
-            // for each cube, check if there is an atlas in the corresponding folder
-            /*foreach (Transform t in blockF)
-            {
-                // if an atlaas exist for the  block, show the block with the atlas texture
-                bool exists = System.IO.File.Exists($"Assets/Saved/Final_Image/{i-1}/atlas.png");
-                
-                if (exists == true)
-                {
-                    Debug.Log("t.gameObject = " + t.gameObject);
-                    t.gameObject.SetActive(true);
-                    Mesh meshCube = t.gameObject.GetComponent<MeshFilter>().mesh;
-
-                    Material material = state.cubeClass.createCube(false, meshCube, i-1);
-
-                    t.gameObject.GetComponent<Renderer>().material = material;
-                }
-                else
-                {
-                    t.gameObject.SetActive(false);
-                }
-                    
-                    
-            }*/
         }
         
     }

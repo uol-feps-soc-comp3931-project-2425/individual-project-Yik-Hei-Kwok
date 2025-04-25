@@ -145,6 +145,7 @@ public class Player_Controls_Building : MonoBehaviour
 
     void Update()
     {
+        Debug.Log("global.blockCount = " + global.blockCount);
         var wasPressed = Jump.triggered && Jump.ReadValue<float>() > 0;
         var wasReleased = Jump.triggered && Jump.ReadValue<float>() == default;
 
@@ -165,7 +166,7 @@ public class Player_Controls_Building : MonoBehaviour
         int count = 0;
         foreach (int i in manager.inventoryList)
         {
-            Debug.Log($"inventory_list {count} = {i}");
+            //Debug.Log($"inventory_list {count} = {i}");
             count++;
         }
         
