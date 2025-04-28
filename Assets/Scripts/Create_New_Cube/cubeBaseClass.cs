@@ -31,6 +31,7 @@ abstract public class CubeClass : MonoBehaviour
         return material;
     }
 
+    // UV mapping provided by robertbu: https://discussions.unity.com/t/change-texture-of-cube-sides/82546/4
     public Vector2[] setUVMapping(Mesh mesh)
     {
         Vector2[] UVs = new Vector2[mesh.vertices.Length];

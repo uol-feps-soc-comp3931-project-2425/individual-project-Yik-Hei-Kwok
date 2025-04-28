@@ -63,12 +63,6 @@ public class ChoosePatches : MonoBehaviour
         int totalPatchesNeeded = (int)Mathf.Ceil(Mathf.Pow((resultImageSize/(patchSize-overlapSize)) + 1,2f));
         // how many patches per row in the result( image
         int patchesPerRow = (int)Mathf.Ceil(resultImageSize / (patchSize - overlapSize)) + 1;
-        UnityEngine.Debug.Log("D:: this = " + resultImageSize / (patchSize - overlapSize));
-        UnityEngine.Debug.Log("D:: resultImageSize = " + resultImageSize);
-        UnityEngine.Debug.Log("D:: patchSize = " + patchSize);
-        UnityEngine.Debug.Log("D:: overlapSize = " + overlapSize);
-        UnityEngine.Debug.Log("D:: totalPatchesNeeded = " + totalPatchesNeeded);
-        UnityEngine.Debug.Log("D:: patchesPerRow = " + patchesPerRow);
 
         // set the  lamda value
         lambda = lambdaValue;
@@ -173,10 +167,7 @@ public class ChoosePatches : MonoBehaviour
 
             processingRow++;
         }
-        for (int j = 0; j < finalImage.Length; j++)
-        {
-            //DebugFunctions.showData_CustomizedWH(resultImageSize, truePatchSize, finalImage[j], $"Saved/Final_Image_Per_Row/patch_row_{j}.png");
-        }
+        
 
         string fileName = finalImageLocation.Split('/')[1];
         createFinalImage(resultImageSize, finalImage, numOfRows, truePatchSize , fileName, finalImageLocation);
@@ -229,13 +220,6 @@ public class ChoosePatches : MonoBehaviour
 
         File.WriteAllBytes($"{global.rootPath}/Saved/Final_Image/{checkPath}/{fileName}.png", bytes);
 
-
-        /*
-        bool exists = System.IO.Directory.Exists($"Assets/Saved/Final_Image/{checkPath}");
-        if (!exists)
-            System.IO.Directory.CreateDirectory($"Assets/Saved/Final_Image/{checkPath}");
-            File.WriteAllBytes($"Assets/Saved/Final_Image/{checkPath}/{fileName}.png", bytes);
-         */
     }
 
     // for placing a new patch at a new position of the result image
@@ -294,11 +278,6 @@ public class ChoosePatches : MonoBehaviour
 
         // need to get the patch pixel data without the overlap areas (this will be the data to be placed in the image)
         toBePlacedPatch = getPatchWithoutOverlap(chosenPatch);
-
-        // for debug only
-        //DebugFunctions.showData_CustomizedWH(patchSize-overlapSize, overlapSize, overlapBottom, $"Saved/Save_Overlay_Bottom/bottom_{k}.png");
-        //DebugFunctions.showData_CustomizedWH(overlapSize, patchSize - overlapSize, overlapRight, $"Saved/Save_Overlay_Right/right_{k}.png");
-        //DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, patchSize - overlapSize, toBePlacedPatch, $"Saved/To_Be_Placed_Patches/to_be_placed_{k}.png");
         
         return (toBePlacedPatch, ranPatch, overlapRight, overlapBottom);
     }
@@ -343,15 +322,9 @@ public class ChoosePatches : MonoBehaviour
                 overlapBottom = ProcessPatch.saveBottomOverlay(chosenPatch);
                 overlapRight = ProcessPatch.saveRightOverlay(chosenPatch);
             }
-            
 
             // need to get the patch pixel data without the overlap areas (this will be the data to be placed in the image)
             toBePlacedPatch = getPatchWithoutOverlap(chosenPatch);
-
-            //DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, overlapSize, overlapBottom, $"Saved/Save_Overlay_Bottom/bottom_{patchNumber}.png");
-            //DebugFunctions.showData_CustomizedWH(overlapSize, patchSize - overlapSize, overlapRight, $"Saved/Save_Overlay_Right/right_{patchNumber}.png");
-            //DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, patchSize - overlapSize, toBePlacedPatch, $"Saved/To_Be_Placed_Patches/to_be_placed_{patchNumber}.png");
-            
         }
         // if we are at the first patch of the row, we don't need to compare left overlays
         else if (patchNumber % (patchesPerRow) == 0)
@@ -375,15 +348,6 @@ public class ChoosePatches : MonoBehaviour
 
             // need to get the patch pixel data without the overlap areas (this will be the data to be placed in the image)
             toBePlacedPatch = getPatchWithoutOverlap(chosenPatch);
-
-            //DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, overlapSize, overlapBottom, $"Saved/Save_Overlay_Bottom/bottom_{patchNumber}.png");
-            //DebugFunctions.showData_CustomizedWH(overlapSize, patchSize - overlapSize, overlapRight, $"Saved/Save_Overlay_Right/right_{patchNumber}.png");
-            //DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, patchSize - overlapSize, toBePlacedPatch, $"Saved/To_Be_Placed_Patches/to_be_placed_{patchNumber}.png");
-
-
-            //float possiblePatches = compareTopOverlays();
-
-
         }
         // otherwise, both left and bottom have to be compared with right and up respectively
         else
@@ -400,23 +364,14 @@ public class ChoosePatches : MonoBehaviour
             System.Random ran = new System.Random();
             ranPatch = ran.Next(possiblePatches.Length);
             float[] chosenPatch = possiblePatches[ranPatch];
-            UnityEngine.Debug.Log(":DF possiblePatches.Length = " + possiblePatches.Length);
-            UnityEngine.Debug.Log(":DF ranPatch = " + ranPatch);
-            UnityEngine.Debug.Log(":DF possiblePatches[ranPatch] = " + possiblePatches[ranPatch]);
+
             // save right and bottom overlays of the chosen patch
             overlapBottom = ProcessPatch.saveBottomOverlay(chosenPatch);
             overlapRight = ProcessPatch.saveRightOverlay(chosenPatch);
 
             // need to get the patch pixel data without the overlap areas (this will be the data to be placed in the image)
             toBePlacedPatch = getPatchWithoutOverlap(chosenPatch);
-
-            //DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, overlapSize, overlapBottom, $"Saved/Save_Overlay_Bottom/bottom_{patchNumber}.png");
-            //DebugFunctions.showData_CustomizedWH(overlapSize, patchSize - overlapSize, overlapRight, $"Saved/Save_Overlay_Right/right_{patchNumber}.png");
-            //DebugFunctions.showData_CustomizedWH(patchSize - overlapSize, patchSize - overlapSize, toBePlacedPatch, $"Saved/To_Be_Placed_Patches/to_be_placed_{patchNumber}.png");
-
         }
-        //Debug.Log("patch number = " +  patchNumber);
-        //Debug.Log("actual patch number = " + allPatches.Length);
         return (toBePlacedPatch, ranPatch, overlapRight, overlapBottom);
     }
 
@@ -609,40 +564,17 @@ public class ChoosePatches : MonoBehaviour
         var time_in_KD = System.Diagnostics.Stopwatch.StartNew();
         for (int i = 0; i < allOverlays.Length; i++)
         {
-            // for GPU, abandoned
-            // do this each patch overlay
-            /*double[] flattened = flattenArray(allOverlays[i]);
-            //get average of the averages
-            double sum = 0;
-            for (int j = 0; j < flattened.Length; j++)
-                sum += flattened[j];
-
-            double fA_Compare = sum / flattened.Length;*/
-
             allFlattened[i] = new double[] { ComputeAverage(allOverlays[i]) };
-
-            // for GPU, abandoned
-            //allFlattened[i] = flattened;
-            //allFlattened[i] = new double[1];
-            //allFlattened[i][0] = fA_Compare;
-
         }
         time_in_KD.Stop();
         var time = time_in_KD.ElapsedMilliseconds;
         UnityEngine.Debug.Log("Time required for creating the tree = " + time);
-        // debug the averaged value of each patch
-        /*for (int i = 0; i < allFlattened.Length; i++)
-        {
-            Debug.Log($"DDPRF Patch {i} average value = {allFlattened[i][0]}");
-        }*/
-
-        // allFlattened.Select(p => p.ToString()).ToArray();
         // name each node
         string[] treeNodes = new string[allFlattened.Length];
         for (int i = 0; i < allFlattened.Length; i++)
             treeNodes[i] = i.ToString();
         // create the KD Tree
-        
+        // KD Tree Module provided by: https://github.com/ericreg/Supercluster.KDTree
         var tree = new KDTree<double, string>(1, points: allFlattened, nodes: treeNodes, metric: averageDistance);
         
         return (tree, allFlattened);
