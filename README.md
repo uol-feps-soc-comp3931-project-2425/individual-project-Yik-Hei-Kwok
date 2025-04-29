@@ -4,6 +4,7 @@ Textures are generated for blocks using a patch synthesis algorithm influenced b
 
 
 ## How To Run the Program
+The application is only available for Windows
 Within this repositry, there contains a folder named "Final_Build". Run the executive file in that folder to run the application
 
 ## Controls
@@ -27,7 +28,7 @@ Keys 1-9: Change Inventory
 ### File Input Conditions
 When choosing textures for a block texture, a file browser will appear. THis system doesn't validate file types, so make sure images of either JPG or PNG file formats are chosen.
 
-Also make sure images of at least 50x50 pixels are chosen.
+Also make sure images of at least 50x50 pixels are chosen. However, the expected size range for input textures should be between 100 and 1500 pixels.
 
 A folder named "Reference Images" contain images I have used for the project's evaluation, feel free to use these images as input if needed.
 
