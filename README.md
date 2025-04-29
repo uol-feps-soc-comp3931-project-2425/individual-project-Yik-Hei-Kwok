@@ -4,7 +4,8 @@ Textures are generated for blocks using a patch synthesis algorithm influenced b
 
 
 ## How To Run the Program
-The application is only available for Windows
+The application is only available for Windows.
+
 Within this repositry, there contains a folder named "Final_Build". Run the executive file in that folder to run the application
 
 ## Controls
